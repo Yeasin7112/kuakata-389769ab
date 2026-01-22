@@ -1,15 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Sunrise, Sunset, Wifi, WifiOff } from 'lucide-react';
 import heroBanner from '@/assets/hero-banner.jpg';
 
+interface SunTime {
+  sunrise: string;
+  sunset: string;
+}
+
 const Banner: React.FC = () => {
   const { t, language } = useLanguage();
-  const isOnline = navigator.onLine;
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [sunTime, setSunTime] = useState<SunTime | null>(null);
 
-  // Mock data - would come from API/database
-  const sunriseTime = '05:42';
-  const sunsetTime = '18:23';
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchSunTime = async () => {
+      const today = new Date().toISOString().split('T')[0];
+      const { data } = await supabase
+        .from('sun_times')
+        .select('sunrise, sunset')
+        .eq('date', today)
+        .single();
+      
+      if (data) {
+        setSunTime({
+          sunrise: data.sunrise.substring(0, 5),
+          sunset: data.sunset.substring(0, 5),
+        });
+      } else {
+        // Default values if no data
+        setSunTime({ sunrise: '05:42', sunset: '18:23' });
+      }
+    };
+    
+    fetchSunTime();
+  }, []);
 
   return (
     <div className="px-4 py-4">
@@ -62,7 +101,7 @@ const Banner: React.FC = () => {
           </div>
           <div>
             <p className="text-xs text-muted-foreground font-bangla">{t('sunrise')}</p>
-            <p className="text-lg font-bold text-foreground">{sunriseTime}</p>
+            <p className="text-lg font-bold text-foreground">{sunTime?.sunrise || '--:--'}</p>
           </div>
         </div>
         
@@ -72,7 +111,7 @@ const Banner: React.FC = () => {
           </div>
           <div>
             <p className="text-xs text-muted-foreground font-bangla">{t('sunset')}</p>
-            <p className="text-lg font-bold text-foreground">{sunsetTime}</p>
+            <p className="text-lg font-bold text-foreground">{sunTime?.sunset || '--:--'}</p>
           </div>
         </div>
       </div>

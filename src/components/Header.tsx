@@ -1,9 +1,12 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Bell, Search, Menu } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Bell, Search, Menu, User, LogIn, Shield } from 'lucide-react';
 
 const Header: React.FC = () => {
   const { t, language, toggleLanguage } = useLanguage();
+  const { user, isAdmin } = useAuth();
 
   return (
     <header className="bg-gradient-header text-primary-foreground safe-area-top">
@@ -29,11 +32,40 @@ const Header: React.FC = () => {
               {language === 'bn' ? 'EN' : 'বাং'}
             </button>
             
+            {/* Admin Link */}
+            {isAdmin && (
+              <Link 
+                to="/admin"
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                title="Admin Panel"
+              >
+                <Shield className="w-5 h-5" />
+              </Link>
+            )}
+            
             {/* Notifications */}
             <button className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors relative">
               <Bell className="w-5 h-5" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full"></span>
             </button>
+            
+            {/* Login/Profile */}
+            {user ? (
+              <Link 
+                to="/profile"
+                className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+              >
+                <User className="w-5 h-5" />
+              </Link>
+            ) : (
+              <Link 
+                to="/login"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-white text-primary rounded-full hover:bg-white/90 transition-colors"
+              >
+                <LogIn className="w-4 h-4" />
+                {language === 'bn' ? 'লগইন' : 'Login'}
+              </Link>
+            )}
           </div>
         </div>
         
