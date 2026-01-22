@@ -1,45 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
 import { MapPin, Star, ChevronRight } from 'lucide-react';
 
 interface Place {
   id: string;
-  nameBn: string;
-  nameEn: string;
-  rating: number;
-  distance: string;
-  image: string;
+  name_bn: string;
+  name_en: string;
+  rating: number | null;
+  distance_from_beach: string | null;
+  image_url: string | null;
 }
-
-const places: Place[] = [
-  {
-    id: '1',
-    nameBn: 'কুয়াকাটা সমুদ্র সৈকত',
-    nameEn: 'Kuakata Sea Beach',
-    rating: 4.8,
-    distance: '0.5 km',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=300&fit=crop',
-  },
-  {
-    id: '2',
-    nameBn: 'ঝাউবন',
-    nameEn: 'Jhaubon Forest',
-    rating: 4.5,
-    distance: '2.3 km',
-    image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&h=300&fit=crop',
-  },
-  {
-    id: '3',
-    nameBn: 'লেবুর বন',
-    nameEn: 'Lebur Bon',
-    rating: 4.3,
-    distance: '3.1 km',
-    image: 'https://images.unsplash.com/photo-1476362555312-ab9e108a0b7e?w=400&h=300&fit=crop',
-  },
-];
 
 const PopularPlaces: React.FC = () => {
   const { t, language } = useLanguage();
+  const [places, setPlaces] = useState<Place[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPlaces = async () => {
+      const { data, error } = await supabase
+        .from('places')
+        .select('id, name_bn, name_en, rating, distance_from_beach, image_url')
+        .eq('is_active', true)
+        .order('rating', { ascending: false })
+        .limit(5);
+      
+      if (data) {
+        setPlaces(data);
+      }
+      setLoading(false);
+    };
+    
+    fetchPlaces();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="py-4 px-4">
+        <div className="flex gap-3 overflow-x-auto hide-scrollbar">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="card-elevated flex-shrink-0 w-48 h-44 animate-pulse bg-muted" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (places.length === 0) return null;
 
   return (
     <div className="py-4">
@@ -57,27 +65,31 @@ const PopularPlaces: React.FC = () => {
         {places.map((place) => (
           <div
             key={place.id}
-            className="card-elevated flex-shrink-0 w-48 overflow-hidden"
+            className="card-elevated flex-shrink-0 w-48 overflow-hidden cursor-pointer hover:shadow-lg transition-shadow"
           >
             <div className="relative h-28">
               <img
-                src={place.image}
-                alt={language === 'bn' ? place.nameBn : place.nameEn}
+                src={place.image_url || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400'}
+                alt={language === 'bn' ? place.name_bn : place.name_en}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
-                <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                <span className="text-[10px] text-white font-medium">{place.rating}</span>
-              </div>
+              {place.rating && (
+                <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
+                  <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                  <span className="text-[10px] text-white font-medium">{place.rating}</span>
+                </div>
+              )}
             </div>
             <div className="p-3">
               <h4 className="font-medium text-sm text-foreground font-bangla line-clamp-1">
-                {language === 'bn' ? place.nameBn : place.nameEn}
+                {language === 'bn' ? place.name_bn : place.name_en}
               </h4>
-              <div className="flex items-center gap-1 mt-1 text-muted-foreground">
-                <MapPin className="w-3 h-3" />
-                <span className="text-xs">{place.distance}</span>
-              </div>
+              {place.distance_from_beach && (
+                <div className="flex items-center gap-1 mt-1 text-muted-foreground">
+                  <MapPin className="w-3 h-3" />
+                  <span className="text-xs">{place.distance_from_beach}</span>
+                </div>
+              )}
             </div>
           </div>
         ))}
