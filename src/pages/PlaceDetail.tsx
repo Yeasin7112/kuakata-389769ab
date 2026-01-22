@@ -1,0 +1,201 @@
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
+import Header from '@/components/Header';
+import BottomNav from '@/components/BottomNav';
+import { Button } from '@/components/ui/button';
+import { 
+  ArrowLeft, 
+  MapPin, 
+  Star, 
+  Navigation, 
+  Clock,
+  Share2,
+  Heart
+} from 'lucide-react';
+
+interface Place {
+  id: string;
+  name_bn: string;
+  name_en: string;
+  description_bn: string | null;
+  description_en: string | null;
+  image_url: string | null;
+  rating: number | null;
+  category: string | null;
+  distance_from_beach: string | null;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+const PlaceDetail: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const { language } = useLanguage();
+  const navigate = useNavigate();
+  const [place, setPlace] = useState<Place | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    const fetchPlace = async () => {
+      if (!id) return;
+      
+      const { data, error } = await supabase
+        .from('places')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (data && !error) {
+        setPlace(data);
+      }
+      setLoading(false);
+    };
+
+    fetchPlace();
+  }, [id]);
+
+  const handleShare = async () => {
+    if (navigator.share && place) {
+      await navigator.share({
+        title: language === 'bn' ? place.name_bn : place.name_en,
+        text: language === 'bn' ? place.description_bn || '' : place.description_en || '',
+        url: window.location.href,
+      });
+    }
+  };
+
+  const openInMaps = () => {
+    if (place?.latitude && place?.longitude) {
+      window.open(`https://www.google.com/maps?q=${place.latitude},${place.longitude}`, '_blank');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <Header />
+        <div className="animate-pulse p-4 max-w-lg mx-auto">
+          <div className="h-64 bg-muted rounded-2xl mb-4" />
+          <div className="h-8 bg-muted rounded w-3/4 mb-2" />
+          <div className="h-4 bg-muted rounded w-1/2" />
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
+
+  if (!place) {
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <Header />
+        <div className="p-8 text-center">
+          <p className="text-muted-foreground font-bangla">
+            {language === 'bn' ? 'স্থান পাওয়া যায়নি' : 'Place not found'}
+          </p>
+          <Button onClick={() => navigate(-1)} className="mt-4">
+            {language === 'bn' ? 'ফিরে যান' : 'Go Back'}
+          </Button>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      {/* Hero Image */}
+      <div className="relative">
+        {place.image_url ? (
+          <img 
+            src={place.image_url} 
+            alt={language === 'bn' ? place.name_bn : place.name_en}
+            className="w-full h-72 object-cover"
+          />
+        ) : (
+          <div className="w-full h-72 bg-gradient-header" />
+        )}
+        
+        {/* Overlay buttons */}
+        <div className="absolute top-4 left-4 right-4 flex justify-between">
+          <button 
+            onClick={() => navigate(-1)}
+            className="p-2 rounded-full bg-black/30 backdrop-blur-sm text-white"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setIsSaved(!isSaved)}
+              className={`p-2 rounded-full backdrop-blur-sm ${isSaved ? 'bg-red-500 text-white' : 'bg-black/30 text-white'}`}
+            >
+              <Heart className={`w-5 h-5 ${isSaved ? 'fill-white' : ''}`} />
+            </button>
+            <button 
+              onClick={handleShare}
+              className="p-2 rounded-full bg-black/30 backdrop-blur-sm text-white"
+            >
+              <Share2 className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <main className="px-4 -mt-6 relative z-10 max-w-lg mx-auto">
+        <div className="card-elevated p-4 mb-4">
+          <div className="flex items-start justify-between mb-3">
+            <div>
+              <h1 className="text-xl font-bold font-bangla">
+                {language === 'bn' ? place.name_bn : place.name_en}
+              </h1>
+              {place.category && (
+                <span className="text-xs text-muted-foreground capitalize">
+                  {place.category.replace('_', ' ')}
+                </span>
+              )}
+            </div>
+            {place.rating && (
+              <div className="flex items-center gap-1 bg-amber-100 px-2 py-1 rounded-full">
+                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                <span className="text-sm font-medium text-amber-700">{place.rating}</span>
+              </div>
+            )}
+          </div>
+
+          {place.distance_from_beach && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+              <MapPin className="w-4 h-4" />
+              <span className="font-bangla">
+                {language === 'bn' ? 'সমুদ্র সৈকত থেকে' : 'From beach'}: {place.distance_from_beach}
+              </span>
+            </div>
+          )}
+
+          <p className="text-sm text-foreground font-bangla leading-relaxed">
+            {language === 'bn' ? place.description_bn : place.description_en}
+          </p>
+        </div>
+
+        {/* Actions */}
+        <div className="grid grid-cols-2 gap-3">
+          {place.latitude && place.longitude && (
+            <Button onClick={openInMaps} className="gap-2">
+              <Navigation className="w-4 h-4" />
+              {language === 'bn' ? 'দিকনির্দেশনা' : 'Directions'}
+            </Button>
+          )}
+          <Button variant="outline" className="gap-2">
+            <Clock className="w-4 h-4" />
+            {language === 'bn' ? 'সময়সূচী' : 'Timing'}
+          </Button>
+        </div>
+      </main>
+
+      <BottomNav />
+    </div>
+  );
+};
+
+export default PlaceDetail;
