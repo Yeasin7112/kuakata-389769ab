@@ -17,6 +17,10 @@ import EmergencyManager from '@/components/admin/EmergencyManager';
 import EventsManager from '@/components/admin/EventsManager';
 import PrayerTimesManager from '@/components/admin/PrayerTimesManager';
 import SunTimesManager from '@/components/admin/SunTimesManager';
+import WarningZonesManager from '@/components/admin/WarningZonesManager';
+import BeachSafetyManager from '@/components/admin/BeachSafetyManager';
+import TideAlertsManager from '@/components/admin/TideAlertsManager';
+import RestaurantsManager from '@/components/admin/RestaurantsManager';
 import { Loader2 } from 'lucide-react';
 
 type AdminSection = 
@@ -33,7 +37,10 @@ type AdminSection =
   | 'emergency'
   | 'events'
   | 'prayer-times'
-  | 'sun-times';
+  | 'sun-times'
+  | 'warning-zones'
+  | 'beach-safety'
+  | 'tide-alerts';
 
 const AdminDashboard: React.FC = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -106,6 +113,14 @@ const AdminDashboard: React.FC = () => {
         return <PrayerTimesManager />;
       case 'sun-times':
         return <SunTimesManager />;
+      case 'warning-zones':
+        return <WarningZonesManager />;
+      case 'beach-safety':
+        return <BeachSafetyManager />;
+      case 'tide-alerts':
+        return <TideAlertsManager />;
+      case 'restaurants':
+        return <RestaurantsManager />;
       default:
         return <DashboardOverview />;
     }
