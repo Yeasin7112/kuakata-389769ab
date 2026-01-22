@@ -24,6 +24,14 @@ import HotelsList from "./pages/HotelsList";
 import HotelDetail from "./pages/HotelDetail";
 import RestaurantsList from "./pages/RestaurantsList";
 import RestaurantDetail from "./pages/RestaurantDetail";
+import EmergencyServices from "./pages/EmergencyServices";
+import BanksList from "./pages/BanksList";
+import TransportList from "./pages/TransportList";
+import WarningZones from "./pages/WarningZones";
+import BeachSafety from "./pages/BeachSafety";
+import LiveNotices from "./pages/LiveNotices";
+import Weather from "./pages/Weather";
+import BeachChairs from "./pages/BeachChairs";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +67,16 @@ const App = () => (
               {/* Restaurants */}
               <Route path="/restaurants" element={<RestaurantsList />} />
               <Route path="/restaurants/:id" element={<RestaurantDetail />} />
+              
+              {/* Other Features */}
+              <Route path="/emergency" element={<EmergencyServices />} />
+              <Route path="/banks" element={<BanksList />} />
+              <Route path="/transport" element={<TransportList />} />
+              <Route path="/warnings" element={<WarningZones />} />
+              <Route path="/beach-safety" element={<BeachSafety />} />
+              <Route path="/notices" element={<LiveNotices />} />
+              <Route path="/weather" element={<Weather />} />
+              <Route path="/beach-chairs" element={<BeachChairs />} />
               
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
