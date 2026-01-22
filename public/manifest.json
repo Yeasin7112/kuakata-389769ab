@@ -1,0 +1,27 @@
+{
+  "name": "OurKuakata - Smart Tourist Guide",
+  "short_name": "OurKuakata",
+  "description": "Smart Tourist & Citizen Guide App for Kuakata, Patuakhali",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0ea5e9",
+  "theme_color": "#0ea5e9",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["travel", "navigation", "lifestyle"],
+  "lang": "bn",
+  "dir": "ltr"
+}
