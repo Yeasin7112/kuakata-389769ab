@@ -1,0 +1,133 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import AdminSidebar from '@/components/admin/AdminSidebar';
+import AdminHeader from '@/components/admin/AdminHeader';
+import DashboardOverview from '@/components/admin/DashboardOverview';
+import PlacesManager from '@/components/admin/PlacesManager';
+import HotelsManager from '@/components/admin/HotelsManager';
+import BannersManager from '@/components/admin/BannersManager';
+import NoticesManager from '@/components/admin/NoticesManager';
+import TranslationsManager from '@/components/admin/TranslationsManager';
+import SettingsManager from '@/components/admin/SettingsManager';
+import BanksManager from '@/components/admin/BanksManager';
+import TransportManager from '@/components/admin/TransportManager';
+import EmergencyManager from '@/components/admin/EmergencyManager';
+import EventsManager from '@/components/admin/EventsManager';
+import PrayerTimesManager from '@/components/admin/PrayerTimesManager';
+import SunTimesManager from '@/components/admin/SunTimesManager';
+import { Loader2 } from 'lucide-react';
+
+type AdminSection = 
+  | 'dashboard' 
+  | 'places' 
+  | 'hotels' 
+  | 'restaurants'
+  | 'banners' 
+  | 'notices' 
+  | 'translations' 
+  | 'settings'
+  | 'banks'
+  | 'transport'
+  | 'emergency'
+  | 'events'
+  | 'prayer-times'
+  | 'sun-times';
+
+const AdminDashboard: React.FC = () => {
+  const { user, loading, isAdmin } = useAuth();
+  const { language } = useLanguage();
+  const navigate = useNavigate();
+  const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="card-elevated p-8 text-center max-w-md">
+          <h1 className="text-2xl font-bold text-destructive mb-4">
+            {language === 'bn' ? 'অ্যাক্সেস নিষিদ্ধ' : 'Access Denied'}
+          </h1>
+          <p className="text-muted-foreground mb-6">
+            {language === 'bn' 
+              ? 'এই পৃষ্ঠায় প্রবেশ করতে অ্যাডমিন অনুমতি প্রয়োজন।' 
+              : 'You need admin permissions to access this page.'}
+          </p>
+          <button 
+            onClick={() => navigate('/')}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg"
+          >
+            {language === 'bn' ? 'হোমে ফিরে যান' : 'Go to Home'}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const renderSection = () => {
+    switch (activeSection) {
+      case 'dashboard':
+        return <DashboardOverview />;
+      case 'places':
+        return <PlacesManager />;
+      case 'hotels':
+        return <HotelsManager />;
+      case 'banners':
+        return <BannersManager />;
+      case 'notices':
+        return <NoticesManager />;
+      case 'translations':
+        return <TranslationsManager />;
+      case 'settings':
+        return <SettingsManager />;
+      case 'banks':
+        return <BanksManager />;
+      case 'transport':
+        return <TransportManager />;
+      case 'emergency':
+        return <EmergencyManager />;
+      case 'events':
+        return <EventsManager />;
+      case 'prayer-times':
+        return <PrayerTimesManager />;
+      case 'sun-times':
+        return <SunTimesManager />;
+      default:
+        return <DashboardOverview />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-muted flex">
+      <AdminSidebar 
+        activeSection={activeSection}
+        onSectionChange={setActiveSection}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+      
+      <div className="flex-1 flex flex-col min-h-screen lg:ml-64">
+        <AdminHeader onMenuClick={() => setSidebarOpen(true)} />
+        <main className="flex-1 p-4 lg:p-6">
+          {renderSection()}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;
