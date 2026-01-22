@@ -1,40 +1,37 @@
 import React from 'react';
-import { LucideIcon } from 'lucide-react';
 
 interface FeatureCardProps {
-  icon: LucideIcon;
+  icon: string;
   title: string;
-  color: string;
+  bgColor: string;
   onClick?: () => void;
   badge?: string;
-  className?: string;
 }
 
 const FeatureCard: React.FC<FeatureCardProps> = ({
-  icon: Icon,
+  icon,
   title,
-  color,
+  bgColor,
   onClick,
   badge,
-  className = '',
 }) => {
   return (
     <button
       onClick={onClick}
-      className={`card-feature relative ${className}`}
+      className="card-feature relative"
     >
       {badge && (
-        <span className="absolute -top-1 -right-1 px-2 py-0.5 bg-accent text-accent-foreground text-[10px] font-medium rounded-full">
+        <span className="absolute -top-1 -right-1 px-2 py-0.5 bg-accent text-accent-foreground text-[9px] font-medium rounded-full">
           {badge}
         </span>
       )}
       <div 
         className="icon-container"
-        style={{ backgroundColor: color }}
+        style={{ backgroundColor: bgColor }}
       >
-        <Icon className="w-6 h-6 text-white" />
+        <span className="text-2xl">{icon}</span>
       </div>
-      <span className="text-xs font-medium text-foreground text-center font-bangla leading-tight">
+      <span className="text-[11px] font-medium text-foreground text-center font-bangla leading-tight line-clamp-2">
         {title}
       </span>
     </button>

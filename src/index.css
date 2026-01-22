@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+/* Better Bengali font - Noto Sans Bengali */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -53,20 +54,22 @@
     /* Gradient Colors */
     --gradient-start: 199 89% 55%;
     --gradient-end: 217 91% 45%;
-    --gradient-sunset-start: 24 95% 53%;
-    --gradient-sunset-end: 340 82% 52%;
+    --gradient-sunset-start: 270 70% 55%;
+    --gradient-sunset-end: 290 80% 45%;
 
-    /* Category Colors */
-    --category-places: 199 89% 48%;
-    --category-weather: 217 91% 60%;
-    --category-bank: 142 76% 36%;
-    --category-alert: 0 84% 60%;
-    --category-transport: 271 81% 56%;
-    --category-hotel: 340 82% 52%;
-    --category-food: 24 95% 53%;
-    --category-event: 43 96% 56%;
-    --category-emergency: 0 84% 60%;
-    --category-ai: 199 89% 48%;
+    /* Category Colors - Pastel backgrounds */
+    --category-places: 199 89% 92%;
+    --category-weather: 43 96% 90%;
+    --category-bank: 180 60% 90%;
+    --category-alert: 43 96% 90%;
+    --category-beach: 350 85% 92%;
+    --category-transport: 43 96% 90%;
+    --category-ai: 350 85% 92%;
+    --category-emergency: 142 76% 90%;
+    --category-hotel: 199 89% 92%;
+    --category-restaurant: 350 85% 92%;
+    --category-safety: 350 85% 92%;
+    --category-notice: 24 95% 90%;
 
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 hsl(222 47% 11% / 0.05);
@@ -114,13 +117,14 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', 'Hind Siliguri', sans-serif;
+    font-family: 'Inter', 'Noto Sans Bengali', sans-serif;
     -webkit-tap-highlight-color: transparent;
   }
 
   /* Bangla font for Bengali text */
   .font-bangla {
-    font-family: 'Hind Siliguri', sans-serif;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    font-weight: 500;
   }
 }
 
@@ -138,6 +142,14 @@
     background: linear-gradient(180deg, hsl(199 89% 48%) 0%, hsl(217 91% 45%) 100%);
   }
 
+  .bg-gradient-orange {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  }
+
+  .bg-gradient-purple {
+    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+  }
+
   /* Card styles */
   .card-elevated {
     @apply bg-card rounded-2xl;
@@ -145,8 +157,8 @@
   }
 
   .card-feature {
-    @apply bg-card rounded-2xl p-4 flex flex-col items-center justify-center gap-2 transition-all duration-200 active:scale-95;
-    box-shadow: var(--shadow-card);
+    @apply bg-card rounded-2xl p-3 flex flex-col items-center justify-center gap-2 transition-all duration-200 active:scale-95;
+    box-shadow: var(--shadow-sm);
   }
 
   /* Safe area for mobile */
@@ -160,13 +172,13 @@
 
   /* Bottom nav styling */
   .bottom-nav {
-    @apply fixed bottom-0 left-0 right-0 bg-card border-t border-border;
+    @apply fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50;
     box-shadow: 0 -4px 20px -4px hsl(222 47% 11% / 0.1);
   }
 
-  /* Icon containers */
+  /* Icon containers - Circular pastel backgrounds like reference */
   .icon-container {
-    @apply w-12 h-12 rounded-xl flex items-center justify-center;
+    @apply w-14 h-14 rounded-full flex items-center justify-center;
   }
 
   .icon-container-sm {

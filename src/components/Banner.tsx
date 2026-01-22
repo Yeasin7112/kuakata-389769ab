@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Sunrise, Sunset, Wifi, WifiOff } from 'lucide-react';
+import { Wifi, WifiOff, Sunrise, Sunset } from 'lucide-react';
 import heroBanner from '@/assets/hero-banner.jpg';
 
 interface SunTime {
@@ -10,7 +10,7 @@ interface SunTime {
 }
 
 const Banner: React.FC = () => {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [sunTime, setSunTime] = useState<SunTime | null>(null);
 
@@ -42,76 +42,88 @@ const Banner: React.FC = () => {
           sunset: data.sunset.substring(0, 5),
         });
       } else {
-        // Default values if no data
-        setSunTime({ sunrise: '05:42', sunset: '18:23' });
+        setSunTime({ sunrise: '06:12', sunset: '05:48' });
       }
     };
     
     fetchSunTime();
   }, []);
 
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${String(displayHour).padStart(2, '0')}:${minutes} ${ampm}`;
+  };
+
   return (
-    <div className="px-4 py-4">
-      {/* Welcome Banner */}
-      <div className="card-elevated overflow-hidden mb-4">
-        <div className="relative h-44">
+    <div className="px-4 pt-0">
+      {/* Hero Banner */}
+      <div className="relative -mx-4 -mt-0">
+        <div className="relative h-52">
           <img 
             src={heroBanner} 
-            alt="Kuakata Beach Sunset"
-            className="absolute inset-0 w-full h-full object-cover"
+            alt="Kuakata Beach"
+            className="w-full h-full object-cover"
           />
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
           
-          <div className="absolute inset-0 p-4 flex flex-col justify-between">
-            <div className="flex justify-end">
-              {/* Online/Offline badge */}
-              {isOnline ? (
-                <span className="badge-online flex items-center gap-1.5">
-                  <Wifi className="w-3 h-3" />
-                  {t('online')}
-                </span>
-              ) : (
-                <span className="badge-offline flex items-center gap-1.5">
-                  <WifiOff className="w-3 h-3" />
-                  {t('offline')}
-                </span>
-              )}
-            </div>
-            
-            <div>
-              <h2 className="text-2xl font-bold text-white font-bangla drop-shadow-lg">
-                {t('welcomeMessage')}
-              </h2>
-              <p className="text-white/90 text-sm mt-1 drop-shadow">
-                {language === 'bn' 
-                  ? 'সাগর দর্শনের এক অনন্য স্থান' 
-                  : 'A unique place to see the sea'}
-              </p>
-            </div>
+          {/* Online indicator */}
+          <div className="absolute top-3 right-3">
+            {isOnline ? (
+              <span className="flex items-center gap-1.5 px-3 py-1 bg-black/30 backdrop-blur-sm rounded-full text-white text-xs">
+                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                {language === 'bn' ? 'অনলাইন' : 'Online'}
+              </span>
+            ) : (
+              <span className="flex items-center gap-1.5 px-3 py-1 bg-black/30 backdrop-blur-sm rounded-full text-white text-xs">
+                <WifiOff className="w-3 h-3" />
+                {language === 'bn' ? 'অফলাইন' : 'Offline'}
+              </span>
+            )}
+          </div>
+          
+          {/* Welcome text */}
+          <div className="absolute bottom-4 left-4 right-4">
+            <h2 className="text-2xl font-bold text-white font-bangla drop-shadow-lg">
+              {language === 'bn' ? 'কুয়াকাটায় স্বাগতম' : 'Welcome to Kuakata'}
+            </h2>
+            <p className="text-white/90 text-sm mt-1 font-bangla">
+              {language === 'bn' 
+                ? 'সাগরকন্যা কুয়াকাটার সব সেবা এখন হাতের মুঠোয়' 
+                : 'All services of Kuakata now at your fingertips'}
+            </p>
           </div>
         </div>
       </div>
 
       {/* Sunrise/Sunset Cards */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="card-elevated p-3 flex items-center gap-3">
-          <div className="icon-container bg-gradient-to-br from-amber-400 to-orange-500">
-            <Sunrise className="w-6 h-6 text-white" />
+      <div className="grid grid-cols-2 gap-3 mt-4">
+        {/* Sunrise Card */}
+        <div className="bg-gradient-orange rounded-2xl p-4 flex items-center gap-3 text-white">
+          <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+            <Sunrise className="w-7 h-7" />
           </div>
           <div>
-            <p className="text-xs text-muted-foreground font-bangla">{t('sunrise')}</p>
-            <p className="text-lg font-bold text-foreground">{sunTime?.sunrise || '--:--'}</p>
+            <p className="text-xs text-white/80 font-bangla">
+              {language === 'bn' ? 'সূর্যোদয়' : 'Sunrise'}
+            </p>
+            <p className="text-xl font-bold">{sunTime ? formatTime(sunTime.sunrise) : '--:--'}</p>
           </div>
         </div>
         
-        <div className="card-elevated p-3 flex items-center gap-3">
-          <div className="icon-container bg-gradient-sunset">
-            <Sunset className="w-6 h-6 text-white" />
+        {/* Sunset Card */}
+        <div className="bg-gradient-purple rounded-2xl p-4 flex items-center gap-3 text-white">
+          <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+            <Sunset className="w-7 h-7" />
           </div>
           <div>
-            <p className="text-xs text-muted-foreground font-bangla">{t('sunset')}</p>
-            <p className="text-lg font-bold text-foreground">{sunTime?.sunset || '--:--'}</p>
+            <p className="text-xs text-white/80 font-bangla">
+              {language === 'bn' ? 'সূর্যাস্ত' : 'Sunset'}
+            </p>
+            <p className="text-xl font-bold">{sunTime ? formatTime(sunTime.sunset) : '--:--'}</p>
           </div>
         </div>
       </div>

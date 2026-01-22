@@ -2,24 +2,28 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Bell, Search, Menu, User, LogIn, Shield } from 'lucide-react';
+import { User, LogIn, Shield } from 'lucide-react';
 
 const Header: React.FC = () => {
-  const { t, language, toggleLanguage } = useLanguage();
+  const { language, toggleLanguage } = useLanguage();
   const { user, isAdmin } = useAuth();
 
   return (
     <header className="bg-gradient-header text-primary-foreground safe-area-top">
       <div className="px-4 py-3">
-        {/* Top bar */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between">
+          {/* Logo and App Name */}
           <div className="flex items-center gap-3">
-            <button className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors">
-              <Menu className="w-5 h-5" />
-            </button>
+            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+              <span className="text-lg">🌊</span>
+            </div>
             <div>
-              <h1 className="text-xl font-bold font-bangla">{t('appName')}</h1>
-              <p className="text-xs text-white/80">{t('tagline')}</p>
+              <h1 className="text-lg font-bold font-bangla">
+                {language === 'bn' ? 'আমাদের কুয়াকাটা' : 'OurKuakata'}
+              </h1>
+              <p className="text-[10px] text-white/80 uppercase tracking-wide">
+                {language === 'bn' ? 'স্মার্ট ট্যুরিস্ট গাইড' : 'KUAKATA SMART GUIDE'}
+              </p>
             </div>
           </div>
           
@@ -27,9 +31,11 @@ const Header: React.FC = () => {
             {/* Language Toggle */}
             <button 
               onClick={toggleLanguage}
-              className="px-3 py-1.5 text-xs font-medium bg-white/20 hover:bg-white/30 rounded-full transition-colors"
+              className="px-3 py-1.5 text-xs font-medium bg-white/20 hover:bg-white/30 rounded-full transition-colors flex items-center gap-1"
             >
-              {language === 'bn' ? 'EN' : 'বাং'}
+              <span className={language === 'bn' ? 'font-semibold' : 'opacity-70'}>বাংলা</span>
+              <span className="opacity-50">|</span>
+              <span className={language === 'en' ? 'font-semibold' : 'opacity-70'}>ENG</span>
             </button>
             
             {/* Admin Link */}
@@ -43,12 +49,6 @@ const Header: React.FC = () => {
               </Link>
             )}
             
-            {/* Notifications */}
-            <button className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-accent rounded-full"></span>
-            </button>
-            
             {/* Login/Profile */}
             {user ? (
               <Link 
@@ -60,23 +60,12 @@ const Header: React.FC = () => {
             ) : (
               <Link 
                 to="/login"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-white text-primary rounded-full hover:bg-white/90 transition-colors"
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
               >
-                <LogIn className="w-4 h-4" />
-                {language === 'bn' ? 'লগইন' : 'Login'}
+                <LogIn className="w-5 h-5" />
               </Link>
             )}
           </div>
-        </div>
-        
-        {/* Search bar */}
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder={t('search')}
-            className="w-full pl-10 pr-4 py-2.5 bg-white rounded-xl text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-white/50"
-          />
         </div>
       </div>
     </header>
