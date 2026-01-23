@@ -2,11 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { User, LogIn, Shield } from 'lucide-react';
+import { User, LogIn, Shield, Building2, UtensilsCrossed } from 'lucide-react';
 
 const Header: React.FC = () => {
   const { language, toggleLanguage } = useLanguage();
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isHotelOwner, isRestaurantOwner } = useAuth();
 
   return (
     <header className="bg-gradient-header text-primary-foreground safe-area-top">
@@ -46,6 +46,28 @@ const Header: React.FC = () => {
                 title="Admin Panel"
               >
                 <Shield className="w-5 h-5" />
+              </Link>
+            )}
+
+            {/* Hotel Owner Dashboard */}
+            {isHotelOwner && (
+              <Link 
+                to="/hotel-dashboard"
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                title={language === 'bn' ? 'হোটেল ড্যাশবোর্ড' : 'Hotel Dashboard'}
+              >
+                <Building2 className="w-5 h-5" />
+              </Link>
+            )}
+
+            {/* Restaurant Owner Dashboard */}
+            {isRestaurantOwner && (
+              <Link 
+                to="/restaurant-dashboard"
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                title={language === 'bn' ? 'রেস্তোরাঁ ড্যাশবোর্ড' : 'Restaurant Dashboard'}
+              >
+                <UtensilsCrossed className="w-5 h-5" />
               </Link>
             )}
             

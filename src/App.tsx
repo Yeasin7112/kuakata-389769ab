@@ -33,6 +33,11 @@ import LiveNotices from "./pages/LiveNotices";
 import Weather from "./pages/Weather";
 import BeachChairs from "./pages/BeachChairs";
 
+// Owner Dashboards
+import HotelOwnerDashboard from "./pages/HotelOwnerDashboard";
+import RestaurantOwnerDashboard from "./pages/RestaurantOwnerDashboard";
+import RoomBooking from "./pages/RoomBooking";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -53,6 +58,10 @@ const App = () => (
               <Route path="/saved" element={<Saved />} />
               <Route path="/admin" element={<AdminDashboard />} />
               
+              {/* Owner Dashboards */}
+              <Route path="/hotel-dashboard" element={<HotelOwnerDashboard />} />
+              <Route path="/restaurant-dashboard" element={<RestaurantOwnerDashboard />} />
+              
               {/* Feature Routes */}
               <Route path="/ai-planner" element={<AiTourPlanner />} />
               
@@ -63,6 +72,7 @@ const App = () => (
               {/* Hotels */}
               <Route path="/hotels" element={<HotelsList />} />
               <Route path="/hotels/:id" element={<HotelDetail />} />
+              <Route path="/hotels/:hotelId/rooms/:roomId/book" element={<RoomBooking />} />
               
               {/* Restaurants */}
               <Route path="/restaurants" element={<RestaurantsList />} />

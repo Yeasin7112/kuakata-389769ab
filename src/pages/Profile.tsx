@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
+import Footer from '@/components/Footer';
 import { 
   User, 
   Settings, 
@@ -15,12 +16,14 @@ import {
   Bell, 
   Shield,
   HelpCircle,
-  LogIn
+  LogIn,
+  Building2,
+  UtensilsCrossed
 } from 'lucide-react';
 
 const Profile: React.FC = () => {
   const { language } = useLanguage();
-  const { user, isAdmin, signOut } = useAuth();
+  const { user, isAdmin, isHotelOwner, isRestaurantOwner, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -35,9 +38,9 @@ const Profile: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background pb-20">
+      <div className="min-h-screen bg-background pb-20 flex flex-col">
         <Header />
-        <main className="max-w-lg mx-auto px-4 py-8">
+        <main className="flex-1 max-w-lg mx-auto px-4 py-8">
           <div className="card-elevated p-8 text-center">
             <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
               <User className="w-10 h-10 text-muted-foreground" />
@@ -58,13 +61,14 @@ const Profile: React.FC = () => {
                 </Button>
               </Link>
               <Link to="/signup">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full font-bangla">
                   {language === 'bn' ? 'নতুন অ্যাকাউন্ট তৈরি করুন' : 'Create New Account'}
                 </Button>
               </Link>
             </div>
           </div>
         </main>
+        <Footer />
         <BottomNav />
       </div>
     );
@@ -78,9 +82,9 @@ const Profile: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-20 flex flex-col">
       <Header />
-      <main className="max-w-lg mx-auto px-4 py-4">
+      <main className="flex-1 max-w-lg mx-auto px-4 py-4">
         {/* Profile Card */}
         <div className="card-elevated p-4 mb-4">
           <div className="flex items-center gap-4">
@@ -92,12 +96,26 @@ const Profile: React.FC = () => {
                 {user.email?.split('@')[0]}
               </h3>
               <p className="text-sm text-muted-foreground">{user.email}</p>
-              {isAdmin && (
-                <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full">
-                  <Shield className="w-3 h-3" />
-                  Admin
-                </span>
-              )}
+              <div className="flex flex-wrap gap-1 mt-1">
+                {isAdmin && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full">
+                    <Shield className="w-3 h-3" />
+                    Admin
+                  </span>
+                )}
+                {isHotelOwner && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/10 text-blue-600 text-xs rounded-full">
+                    <Building2 className="w-3 h-3" />
+                    {language === 'bn' ? 'হোটেল মালিক' : 'Hotel Owner'}
+                  </span>
+                )}
+                {isRestaurantOwner && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-orange-500/10 text-orange-600 text-xs rounded-full">
+                    <UtensilsCrossed className="w-3 h-3" />
+                    {language === 'bn' ? 'রেস্তোরাঁ মালিক' : 'Restaurant Owner'}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -111,6 +129,36 @@ const Profile: React.FC = () => {
               </div>
               <span className="font-medium font-bangla">
                 {language === 'bn' ? 'অ্যাডমিন প্যানেল' : 'Admin Panel'}
+              </span>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </Link>
+        )}
+
+        {/* Hotel Owner Dashboard Link */}
+        {isHotelOwner && (
+          <Link to="/hotel-dashboard" className="card-elevated p-4 mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
+                <Building2 className="w-5 h-5 text-blue-600" />
+              </div>
+              <span className="font-medium font-bangla">
+                {language === 'bn' ? 'হোটেল ড্যাশবোর্ড' : 'Hotel Dashboard'}
+              </span>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+          </Link>
+        )}
+
+        {/* Restaurant Owner Dashboard Link */}
+        {isRestaurantOwner && (
+          <Link to="/restaurant-dashboard" className="card-elevated p-4 mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center">
+                <UtensilsCrossed className="w-5 h-5 text-orange-600" />
+              </div>
+              <span className="font-medium font-bangla">
+                {language === 'bn' ? 'রেস্তোরাঁ ড্যাশবোর্ড' : 'Restaurant Dashboard'}
               </span>
             </div>
             <ChevronRight className="w-5 h-5 text-muted-foreground" />
@@ -137,13 +185,14 @@ const Profile: React.FC = () => {
         {/* Logout Button */}
         <Button 
           variant="outline" 
-          className="w-full mt-4 gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+          className="w-full mt-4 gap-2 text-destructive border-destructive/30 hover:bg-destructive/10 font-bangla"
           onClick={handleSignOut}
         >
           <LogOut className="w-4 h-4" />
           {language === 'bn' ? 'লগ আউট' : 'Logout'}
         </Button>
       </main>
+      <Footer />
       <BottomNav />
     </div>
   );
