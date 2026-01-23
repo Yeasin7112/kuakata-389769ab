@@ -6,7 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Eye, EyeOff, Mail, Lock, User, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, ArrowLeft, Building2, UtensilsCrossed, Plane } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+
+type UserRole = 'traveler' | 'hotel_owner' | 'restaurant_owner';
 
 const Signup: React.FC = () => {
   const { signUp } = useAuth();
@@ -20,6 +23,34 @@ const Signup: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<UserRole>('traveler');
+
+  const roles = [
+    { 
+      id: 'traveler' as UserRole, 
+      icon: Plane, 
+      labelBn: 'ভ্রমণকারী', 
+      labelEn: 'Traveler',
+      descBn: 'হোটেল বুকিং ও তথ্য দেখুন',
+      descEn: 'Book hotels & explore'
+    },
+    { 
+      id: 'hotel_owner' as UserRole, 
+      icon: Building2, 
+      labelBn: 'হোটেল মালিক', 
+      labelEn: 'Hotel Owner',
+      descBn: 'আপনার হোটেল পরিচালনা করুন',
+      descEn: 'Manage your hotel'
+    },
+    { 
+      id: 'restaurant_owner' as UserRole, 
+      icon: UtensilsCrossed, 
+      labelBn: 'রেস্তোরাঁ মালিক', 
+      labelEn: 'Restaurant Owner',
+      descBn: 'আপনার রেস্তোরাঁ পরিচালনা করুন',
+      descEn: 'Manage your restaurant'
+    },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,11 +83,35 @@ const Signup: React.FC = () => {
         description: error.message,
         variant: 'destructive',
       });
+      setLoading(false);
+      return;
+    }
+
+    // Assign role if not traveler (travelers don't need a role entry, they're default users)
+    if (selectedRole !== 'traveler') {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { error: roleError } = await supabase
+          .from('user_roles')
+          .insert({ user_id: user.id, role: selectedRole });
+        
+        if (roleError) {
+          console.error('Error assigning role:', roleError);
+        }
+      }
+    }
+
+    toast({
+      title: language === 'bn' ? 'সফল!' : 'Success!',
+      description: language === 'bn' ? 'অ্যাকাউন্ট তৈরি হয়েছে' : 'Account created successfully',
+    });
+    
+    // Redirect based on role
+    if (selectedRole === 'hotel_owner') {
+      navigate('/hotel-dashboard');
+    } else if (selectedRole === 'restaurant_owner') {
+      navigate('/restaurant-dashboard');
     } else {
-      toast({
-        title: language === 'bn' ? 'সফল!' : 'Success!',
-        description: language === 'bn' ? 'অ্যাকাউন্ট তৈরি হয়েছে' : 'Account created successfully',
-      });
       navigate('/');
     }
     
@@ -83,14 +138,49 @@ const Signup: React.FC = () => {
               <h2 className="text-2xl font-bold text-foreground font-bangla">
                 {language === 'bn' ? 'অ্যাকাউন্ট তৈরি করুন' : 'Create Account'}
               </h2>
-              <p className="text-muted-foreground mt-2">
+              <p className="text-muted-foreground mt-2 font-bangla">
                 {language === 'bn' ? 'কুয়াকাটা এক্সপ্লোর করতে যোগ দিন' : 'Join to explore Kuakata'}
+              </p>
+            </div>
+
+            {/* Role Selection */}
+            <div className="mb-6">
+              <Label className="font-bangla mb-3 block">
+                {language === 'bn' ? 'অ্যাকাউন্ট টাইপ নির্বাচন করুন' : 'Select Account Type'}
+              </Label>
+              <div className="grid grid-cols-3 gap-2">
+                {roles.map((role) => (
+                  <button
+                    key={role.id}
+                    type="button"
+                    onClick={() => setSelectedRole(role.id)}
+                    className={`p-3 rounded-xl border-2 transition-all text-center ${
+                      selectedRole === role.id
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                  >
+                    <role.icon className={`w-6 h-6 mx-auto mb-1 ${
+                      selectedRole === role.id ? 'text-primary' : 'text-muted-foreground'
+                    }`} />
+                    <p className={`text-xs font-medium font-bangla ${
+                      selectedRole === role.id ? 'text-primary' : 'text-foreground'
+                    }`}>
+                      {language === 'bn' ? role.labelBn : role.labelEn}
+                    </p>
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground text-center mt-2 font-bangla">
+                {language === 'bn' 
+                  ? roles.find(r => r.id === selectedRole)?.descBn 
+                  : roles.find(r => r.id === selectedRole)?.descEn}
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="fullName">{language === 'bn' ? 'পুরো নাম' : 'Full Name'}</Label>
+                <Label htmlFor="fullName" className="font-bangla">{language === 'bn' ? 'পুরো নাম' : 'Full Name'}</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
@@ -106,7 +196,7 @@ const Signup: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">{language === 'bn' ? 'ইমেইল' : 'Email'}</Label>
+                <Label htmlFor="email" className="font-bangla">{language === 'bn' ? 'ইমেইল' : 'Email'}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
@@ -122,7 +212,7 @@ const Signup: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">{language === 'bn' ? 'পাসওয়ার্ড' : 'Password'}</Label>
+                <Label htmlFor="password" className="font-bangla">{language === 'bn' ? 'পাসওয়ার্ড' : 'Password'}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
@@ -146,7 +236,7 @@ const Signup: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">{language === 'bn' ? 'পাসওয়ার্ড নিশ্চিত করুন' : 'Confirm Password'}</Label>
+                <Label htmlFor="confirmPassword" className="font-bangla">{language === 'bn' ? 'পাসওয়ার্ড নিশ্চিত করুন' : 'Confirm Password'}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                   <Input
@@ -162,7 +252,7 @@ const Signup: React.FC = () => {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full font-bangla" disabled={loading}>
                 {loading 
                   ? (language === 'bn' ? 'তৈরি হচ্ছে...' : 'Creating...') 
                   : (language === 'bn' ? 'সাইন আপ' : 'Sign Up')
@@ -171,7 +261,7 @@ const Signup: React.FC = () => {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground font-bangla">
                 {language === 'bn' ? 'ইতিমধ্যে অ্যাকাউন্ট আছে?' : 'Already have an account?'}{' '}
                 <Link to="/login" className="text-primary font-medium hover:underline">
                   {language === 'bn' ? 'লগইন করুন' : 'Login'}

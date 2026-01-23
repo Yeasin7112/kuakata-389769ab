@@ -2,11 +2,16 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
+type AppRole = 'admin' | 'moderator' | 'user' | 'hotel_owner' | 'restaurant_owner';
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   isAdmin: boolean;
+  isHotelOwner: boolean;
+  isRestaurantOwner: boolean;
+  userRoles: AppRole[];
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -19,24 +24,33 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isHotelOwner, setIsHotelOwner] = useState(false);
+  const [isRestaurantOwner, setIsRestaurantOwner] = useState(false);
+  const [userRoles, setUserRoles] = useState<AppRole[]>([]);
 
-  const checkAdminRole = async (userId: string) => {
+  const checkUserRoles = async (userId: string) => {
     try {
       const { data, error } = await supabase
         .from('user_roles')
         .select('role')
-        .eq('user_id', userId)
-        .eq('role', 'admin')
-        .single();
+        .eq('user_id', userId);
       
-      if (error && error.code !== 'PGRST116') {
-        console.error('Error checking admin role:', error);
+      if (error) {
+        console.error('Error checking user roles:', error);
+        return;
       }
       
-      setIsAdmin(!!data);
+      const roles = data?.map(r => r.role as AppRole) || [];
+      setUserRoles(roles);
+      setIsAdmin(roles.includes('admin'));
+      setIsHotelOwner(roles.includes('hotel_owner'));
+      setIsRestaurantOwner(roles.includes('restaurant_owner'));
     } catch (error) {
-      console.error('Error checking admin role:', error);
+      console.error('Error checking user roles:', error);
       setIsAdmin(false);
+      setIsHotelOwner(false);
+      setIsRestaurantOwner(false);
+      setUserRoles([]);
     }
   };
 
@@ -50,10 +64,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (session?.user) {
           // Use setTimeout to avoid race conditions
           setTimeout(() => {
-            checkAdminRole(session.user.id);
+            checkUserRoles(session.user.id);
           }, 0);
         } else {
           setIsAdmin(false);
+          setIsHotelOwner(false);
+          setIsRestaurantOwner(false);
+          setUserRoles([]);
         }
         
         setLoading(false);
@@ -66,7 +83,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        checkAdminRole(session.user.id);
+        checkUserRoles(session.user.id);
       }
       
       setLoading(false);
@@ -100,10 +117,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signOut = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
+    setIsHotelOwner(false);
+    setIsRestaurantOwner(false);
+    setUserRoles([]);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, isAdmin, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      session, 
+      loading, 
+      isAdmin, 
+      isHotelOwner, 
+      isRestaurantOwner, 
+      userRoles,
+      signUp, 
+      signIn, 
+      signOut 
+    }}>
       {children}
     </AuthContext.Provider>
   );
