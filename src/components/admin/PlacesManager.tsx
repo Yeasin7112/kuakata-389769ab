@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
+import ImageUpload from '@/components/ImageUpload';
 import { Plus, Pencil, Trash2, Loader2, X } from 'lucide-react';
 import {
   Dialog,
@@ -14,6 +15,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface Place {
   id: string;
@@ -299,13 +307,35 @@ const PlacesManager: React.FC = () => {
               />
             </div>
 
+            <ImageUpload
+              currentImage={formData.image_url}
+              onImageUploaded={(url) => setFormData({...formData, image_url: url})}
+              folder="places"
+            />
+
             <div className="space-y-2">
-              <Label>{language === 'bn' ? 'ছবির URL' : 'Image URL'}</Label>
+              <Label>{language === 'bn' ? 'অথবা ছবির URL' : 'Or Image URL'}</Label>
               <Input
                 value={formData.image_url}
                 onChange={(e) => setFormData({...formData, image_url: e.target.value})}
                 placeholder="https://..."
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label>{language === 'bn' ? 'ক্যাটাগরি' : 'Category'}</Label>
+              <Select value={formData.category} onValueChange={(v) => setFormData({...formData, category: v})}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tourist_spot">{language === 'bn' ? 'দর্শনীয় স্থান' : 'Tourist Spot'}</SelectItem>
+                  <SelectItem value="beach">{language === 'bn' ? 'সমুদ্র সৈকত' : 'Beach'}</SelectItem>
+                  <SelectItem value="nature">{language === 'bn' ? 'প্রকৃতি' : 'Nature'}</SelectItem>
+                  <SelectItem value="religious">{language === 'bn' ? 'ধর্মীয়' : 'Religious'}</SelectItem>
+                  <SelectItem value="historical">{language === 'bn' ? 'ঐতিহাসিক' : 'Historical'}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

@@ -302,6 +302,136 @@ export type Database = {
         }
         Relationships: []
       }
+      food_items: {
+        Row: {
+          category: string | null
+          created_at: string
+          description_bn: string | null
+          description_en: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          is_available: boolean | null
+          is_popular: boolean | null
+          is_vegetarian: boolean | null
+          name_bn: string
+          name_en: string
+          owner_id: string
+          price: number
+          restaurant_id: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_available?: boolean | null
+          is_popular?: boolean | null
+          is_vegetarian?: boolean | null
+          name_bn: string
+          name_en: string
+          owner_id: string
+          price?: number
+          restaurant_id: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_available?: boolean | null
+          is_popular?: boolean | null
+          is_vegetarian?: boolean | null
+          name_bn?: string
+          name_en?: string
+          owner_id?: string
+          price?: number
+          restaurant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "food_items_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hotel_rooms: {
+        Row: {
+          amenities: string[] | null
+          created_at: string
+          description_bn: string | null
+          description_en: string | null
+          hotel_id: string
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          is_available: boolean | null
+          max_guests: number | null
+          name_bn: string
+          name_en: string
+          owner_id: string
+          price_per_night: number
+          room_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          amenities?: string[] | null
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          hotel_id: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_available?: boolean | null
+          max_guests?: number | null
+          name_bn: string
+          name_en: string
+          owner_id: string
+          price_per_night?: number
+          room_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amenities?: string[] | null
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          hotel_id?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_available?: boolean | null
+          max_guests?: number | null
+          name_bn?: string
+          name_en?: string
+          owner_id?: string
+          price_per_night?: number
+          room_type?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hotel_rooms_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hotels: {
         Row: {
           address_bn: string | null
@@ -318,6 +448,7 @@ export type Database = {
           longitude: number | null
           name_bn: string
           name_en: string
+          owner_id: string | null
           phone: string | null
           price_range: string | null
           rating: number | null
@@ -339,6 +470,7 @@ export type Database = {
           longitude?: number | null
           name_bn: string
           name_en: string
+          owner_id?: string | null
           phone?: string | null
           price_range?: string | null
           rating?: number | null
@@ -360,6 +492,7 @@ export type Database = {
           longitude?: number | null
           name_bn?: string
           name_en?: string
+          owner_id?: string | null
           phone?: string | null
           price_range?: string | null
           rating?: number | null
@@ -732,6 +865,7 @@ export type Database = {
           is_active: boolean | null
           name_bn: string
           name_en: string
+          owner_id: string | null
           phone: string | null
           price_range: string | null
           rating: number | null
@@ -749,6 +883,7 @@ export type Database = {
           is_active?: boolean | null
           name_bn: string
           name_en: string
+          owner_id?: string | null
           phone?: string | null
           price_range?: string | null
           rating?: number | null
@@ -766,6 +901,7 @@ export type Database = {
           is_active?: boolean | null
           name_bn?: string
           name_en?: string
+          owner_id?: string | null
           phone?: string | null
           price_range?: string | null
           rating?: number | null
@@ -808,6 +944,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      room_bookings: {
+        Row: {
+          check_in_date: string
+          check_out_date: string
+          created_at: string
+          guest_name: string | null
+          guests: number | null
+          id: string
+          notes: string | null
+          phone: string | null
+          room_id: string
+          status: string | null
+          total_price: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          check_in_date: string
+          check_out_date: string
+          created_at?: string
+          guest_name?: string | null
+          guests?: number | null
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          room_id: string
+          status?: string | null
+          total_price: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          check_in_date?: string
+          check_out_date?: string
+          created_at?: string
+          guest_name?: string | null
+          guests?: number | null
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          room_id?: string
+          status?: string | null
+          total_price?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_bookings_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sun_times: {
         Row: {
@@ -1030,7 +1222,12 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      app_role:
+        | "admin"
+        | "moderator"
+        | "user"
+        | "hotel_owner"
+        | "restaurant_owner"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1158,7 +1355,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
+      app_role: [
+        "admin",
+        "moderator",
+        "user",
+        "hotel_owner",
+        "restaurant_owner",
+      ],
     },
   },
 } as const
