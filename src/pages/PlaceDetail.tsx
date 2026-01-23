@@ -4,7 +4,9 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
+import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
 import { 
   ArrowLeft, 
   MapPin, 
@@ -36,21 +38,45 @@ const PlaceDetail: React.FC = () => {
   const [place, setPlace] = useState<Place | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPlace = async () => {
-      if (!id) return;
-      
-      const { data, error } = await supabase
-        .from('places')
-        .select('*')
-        .eq('id', id)
-        .single();
-      
-      if (data && !error) {
-        setPlace(data);
+      if (!id) {
+        setError('No place ID provided');
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+      
+      try {
+        console.log('Fetching place with ID:', id);
+        
+        const { data, error: fetchError } = await supabase
+          .from('places')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle();
+        
+        if (fetchError) {
+          console.error('Supabase error:', fetchError);
+          setError(fetchError.message);
+          setLoading(false);
+          return;
+        }
+        
+        if (data) {
+          console.log('Place data:', data);
+          setPlace(data);
+        } else {
+          console.log('No place found with ID:', id);
+          setError('Place not found');
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+        setError('Failed to load place');
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchPlace();
@@ -58,11 +84,15 @@ const PlaceDetail: React.FC = () => {
 
   const handleShare = async () => {
     if (navigator.share && place) {
-      await navigator.share({
-        title: language === 'bn' ? place.name_bn : place.name_en,
-        text: language === 'bn' ? place.description_bn || '' : place.description_en || '',
-        url: window.location.href,
-      });
+      try {
+        await navigator.share({
+          title: language === 'bn' ? place.name_bn : place.name_en,
+          text: language === 'bn' ? place.description_bn || '' : place.description_en || '',
+          url: window.location.href,
+        });
+      } catch (err) {
+        console.log('Share cancelled');
+      }
     }
   };
 
@@ -76,35 +106,37 @@ const PlaceDetail: React.FC = () => {
     return (
       <div className="min-h-screen bg-background pb-20">
         <Header />
-        <div className="animate-pulse p-4 max-w-lg mx-auto">
-          <div className="h-64 bg-muted rounded-2xl mb-4" />
-          <div className="h-8 bg-muted rounded w-3/4 mb-2" />
-          <div className="h-4 bg-muted rounded w-1/2" />
+        <div className="flex items-center justify-center p-8">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
         <BottomNav />
       </div>
     );
   }
 
-  if (!place) {
+  if (error || !place) {
     return (
-      <div className="min-h-screen bg-background pb-20">
+      <div className="min-h-screen bg-background pb-20 flex flex-col">
         <Header />
-        <div className="p-8 text-center">
-          <p className="text-muted-foreground font-bangla">
-            {language === 'bn' ? 'স্থান পাওয়া যায়নি' : 'Place not found'}
-          </p>
-          <Button onClick={() => navigate(-1)} className="mt-4">
-            {language === 'bn' ? 'ফিরে যান' : 'Go Back'}
-          </Button>
-        </div>
+        <main className="flex-1 flex items-center justify-center p-8">
+          <div className="text-center">
+            <MapPin className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+            <p className="text-muted-foreground font-bangla mb-4">
+              {language === 'bn' ? 'স্থান পাওয়া যায়নি' : 'Place not found'}
+            </p>
+            <Button onClick={() => navigate('/places')}>
+              {language === 'bn' ? 'সব স্থান দেখুন' : 'View All Places'}
+            </Button>
+          </div>
+        </main>
+        <Footer />
         <BottomNav />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-20 flex flex-col">
       {/* Hero Image */}
       <div className="relative">
         {place.image_url ? (
@@ -143,7 +175,7 @@ const PlaceDetail: React.FC = () => {
       </div>
 
       {/* Content */}
-      <main className="px-4 -mt-6 relative z-10 max-w-lg mx-auto">
+      <main className="flex-1 px-4 -mt-6 relative z-10 max-w-lg mx-auto w-full">
         <div className="card-elevated p-4 mb-4">
           <div className="flex items-start justify-between mb-3">
             <div>
@@ -193,6 +225,7 @@ const PlaceDetail: React.FC = () => {
         </div>
       </main>
 
+      <Footer />
       <BottomNav />
     </div>
   );
