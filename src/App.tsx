@@ -41,6 +41,7 @@ import RestaurantOwnerDashboard from "./pages/RestaurantOwnerDashboard";
 import RoomBooking from "./pages/RoomBooking";
 import MyBookings from "./pages/MyBookings";
 import Settings from "./pages/Settings";
+import Notifications from "./pages/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,7 @@ const App = () => (
               <Route path="/restaurant-dashboard" element={<RestaurantOwnerDashboard />} />
               <Route path="/my-bookings" element={<MyBookings />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/notifications" element={<Notifications />} />
               
               {/* Feature Routes */}
               <Route path="/ai-planner" element={<AiTourPlanner />} />

@@ -81,7 +81,7 @@ const Profile: React.FC = () => {
     { icon: Heart, label: language === 'bn' ? 'প্রিয় স্থান' : 'Saved Places', route: '/saved' },
     { icon: Bell, label: language === 'bn' ? 'নোটিফিকেশন' : 'Notifications', route: '/notifications' },
     { icon: Settings, label: language === 'bn' ? 'সেটিংস' : 'Settings', route: '/settings' },
-    { icon: HelpCircle, label: language === 'bn' ? 'সাহায্য' : 'Help & Support', route: '/help' },
+    { icon: HelpCircle, label: language === 'bn' ? 'সাহায্য ও পরামর্শ' : 'Help & Support', route: '/complaints' },
   ];
 
   return (

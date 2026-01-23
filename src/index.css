@@ -2,8 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Premium Bengali Fonts - Self-hosted for reliable mobile rendering */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* Premium Fonts - Alata for English, Bengali fonts for Bangla */
+@import url('https://fonts.googleapis.com/css2?family=Alata&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
 
@@ -137,7 +137,7 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;
+    font-family: 'Alata', 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;
     -webkit-tap-highlight-color: transparent;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
