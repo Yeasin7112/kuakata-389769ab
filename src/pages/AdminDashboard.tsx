@@ -88,7 +88,7 @@ const AdminDashboard: React.FC = () => {
   const renderSection = () => {
     switch (activeSection) {
       case 'dashboard':
-        return <DashboardOverview />;
+        return <DashboardOverview onNavigate={(section) => setActiveSection(section as AdminSection)} />;
       case 'places':
         return <PlacesManager />;
       case 'hotels':
@@ -122,7 +122,7 @@ const AdminDashboard: React.FC = () => {
       case 'restaurants':
         return <RestaurantsManager />;
       default:
-        return <DashboardOverview />;
+        return <DashboardOverview onNavigate={(section) => setActiveSection(section as AdminSection)} />;
     }
   };
 

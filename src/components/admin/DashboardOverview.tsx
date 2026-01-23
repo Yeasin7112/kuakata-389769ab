@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { 
   MapPin, 
   Hotel, 
   Bell, 
-  Users,
-  TrendingUp,
   Building2,
   Bus,
-  Calendar
+  Calendar,
+  Plus,
+  TrendingUp,
+  Utensils,
+  AlertTriangle
 } from 'lucide-react';
 
 interface Stats {
@@ -19,10 +22,17 @@ interface Stats {
   banks: number;
   transport: number;
   events: number;
+  restaurants: number;
+  warnings: number;
 }
 
-const DashboardOverview: React.FC = () => {
+interface DashboardOverviewProps {
+  onNavigate: (section: string) => void;
+}
+
+const DashboardOverview: React.FC<DashboardOverviewProps> = ({ onNavigate }) => {
   const { language } = useLanguage();
+  const navigate = useNavigate();
   const [stats, setStats] = useState<Stats>({
     places: 0,
     hotels: 0,
@@ -30,19 +40,23 @@ const DashboardOverview: React.FC = () => {
     banks: 0,
     transport: 0,
     events: 0,
+    restaurants: 0,
+    warnings: 0,
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [places, hotels, notices, banks, transport, events] = await Promise.all([
+        const [places, hotels, notices, banks, transport, events, restaurants, warnings] = await Promise.all([
           supabase.from('places').select('id', { count: 'exact', head: true }),
           supabase.from('hotels').select('id', { count: 'exact', head: true }),
           supabase.from('notices').select('id', { count: 'exact', head: true }),
           supabase.from('banks').select('id', { count: 'exact', head: true }),
           supabase.from('transport').select('id', { count: 'exact', head: true }),
           supabase.from('events').select('id', { count: 'exact', head: true }),
+          supabase.from('restaurants').select('id', { count: 'exact', head: true }),
+          supabase.from('warning_zones').select('id', { count: 'exact', head: true }),
         ]);
 
         setStats({
@@ -52,6 +66,8 @@ const DashboardOverview: React.FC = () => {
           banks: banks.count || 0,
           transport: transport.count || 0,
           events: events.count || 0,
+          restaurants: restaurants.count || 0,
+          warnings: warnings.count || 0,
         });
       } catch (error) {
         console.error('Error fetching stats:', error);
@@ -70,6 +86,7 @@ const DashboardOverview: React.FC = () => {
       labelEn: 'Tourist Spots', 
       value: stats.places,
       color: 'bg-primary/10 text-primary',
+      section: 'places'
     },
     { 
       icon: Hotel, 
@@ -77,6 +94,15 @@ const DashboardOverview: React.FC = () => {
       labelEn: 'Hotels', 
       value: stats.hotels,
       color: 'bg-category-hotel/10 text-category-hotel',
+      section: 'hotels'
+    },
+    { 
+      icon: Utensils, 
+      labelBn: 'রেস্টুরেন্ট', 
+      labelEn: 'Restaurants', 
+      value: stats.restaurants,
+      color: 'bg-category-restaurant/10 text-destructive',
+      section: 'restaurants'
     },
     { 
       icon: Building2, 
@@ -84,6 +110,7 @@ const DashboardOverview: React.FC = () => {
       labelEn: 'Banks/ATM', 
       value: stats.banks,
       color: 'bg-category-bank/10 text-category-bank',
+      section: 'banks'
     },
     { 
       icon: Bus, 
@@ -91,6 +118,7 @@ const DashboardOverview: React.FC = () => {
       labelEn: 'Transport', 
       value: stats.transport,
       color: 'bg-category-transport/10 text-category-transport',
+      section: 'transport'
     },
     { 
       icon: Calendar, 
@@ -98,6 +126,7 @@ const DashboardOverview: React.FC = () => {
       labelEn: 'Events', 
       value: stats.events,
       color: 'bg-category-event/10 text-category-event',
+      section: 'events'
     },
     { 
       icon: Bell, 
@@ -105,6 +134,46 @@ const DashboardOverview: React.FC = () => {
       labelEn: 'Notices', 
       value: stats.notices,
       color: 'bg-warning/10 text-warning',
+      section: 'notices'
+    },
+    { 
+      icon: AlertTriangle, 
+      labelBn: 'সতর্কতা', 
+      labelEn: 'Warnings', 
+      value: stats.warnings,
+      color: 'bg-destructive/10 text-destructive',
+      section: 'warnings'
+    },
+  ];
+
+  const quickActions = [
+    { 
+      icon: MapPin, 
+      labelBn: 'স্থান যোগ করুন', 
+      labelEn: 'Add Place', 
+      color: 'text-primary',
+      action: () => onNavigate('places')
+    },
+    { 
+      icon: Hotel, 
+      labelBn: 'হোটেল যোগ করুন', 
+      labelEn: 'Add Hotel', 
+      color: 'text-category-hotel',
+      action: () => onNavigate('hotels')
+    },
+    { 
+      icon: Bell, 
+      labelBn: 'নোটিশ পাঠান', 
+      labelEn: 'Send Notice', 
+      color: 'text-warning',
+      action: () => onNavigate('notices')
+    },
+    { 
+      icon: TrendingUp, 
+      labelBn: 'রিপোর্ট দেখুন', 
+      labelEn: 'View Reports', 
+      color: 'text-success',
+      action: () => navigate('/')
     },
   ];
 
@@ -121,11 +190,15 @@ const DashboardOverview: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {statCards.map((card, index) => {
           const Icon = card.icon;
           return (
-            <div key={index} className="card-elevated p-4">
+            <button 
+              key={index} 
+              onClick={() => onNavigate(card.section)}
+              className="card-elevated p-4 text-left hover:shadow-lg transition-shadow"
+            >
               <div className="flex items-center gap-3">
                 <div className={`p-3 rounded-xl ${card.color}`}>
                   <Icon className="w-6 h-6" />
@@ -139,7 +212,7 @@ const DashboardOverview: React.FC = () => {
                   </p>
                 </div>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
@@ -149,30 +222,21 @@ const DashboardOverview: React.FC = () => {
           {language === 'bn' ? 'দ্রুত কাজ' : 'Quick Actions'}
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <button className="p-4 border border-border rounded-xl hover:bg-muted transition-colors text-center">
-            <MapPin className="w-6 h-6 mx-auto mb-2 text-primary" />
-            <span className="text-sm font-medium font-bangla">
-              {language === 'bn' ? 'স্থান যোগ করুন' : 'Add Place'}
-            </span>
-          </button>
-          <button className="p-4 border border-border rounded-xl hover:bg-muted transition-colors text-center">
-            <Hotel className="w-6 h-6 mx-auto mb-2 text-category-hotel" />
-            <span className="text-sm font-medium font-bangla">
-              {language === 'bn' ? 'হোটেল যোগ করুন' : 'Add Hotel'}
-            </span>
-          </button>
-          <button className="p-4 border border-border rounded-xl hover:bg-muted transition-colors text-center">
-            <Bell className="w-6 h-6 mx-auto mb-2 text-warning" />
-            <span className="text-sm font-medium font-bangla">
-              {language === 'bn' ? 'নোটিশ পাঠান' : 'Send Notice'}
-            </span>
-          </button>
-          <button className="p-4 border border-border rounded-xl hover:bg-muted transition-colors text-center">
-            <TrendingUp className="w-6 h-6 mx-auto mb-2 text-success" />
-            <span className="text-sm font-medium font-bangla">
-              {language === 'bn' ? 'রিপোর্ট দেখুন' : 'View Reports'}
-            </span>
-          </button>
+          {quickActions.map((action, index) => {
+            const Icon = action.icon;
+            return (
+              <button 
+                key={index}
+                onClick={action.action}
+                className="p-4 border border-border rounded-xl hover:bg-muted transition-colors text-center"
+              >
+                <Icon className={`w-6 h-6 mx-auto mb-2 ${action.color}`} />
+                <span className="text-sm font-medium font-bangla">
+                  {language === 'bn' ? action.labelBn : action.labelEn}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

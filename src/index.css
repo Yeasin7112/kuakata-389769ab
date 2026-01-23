@@ -2,10 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Premium Bengali Fonts - SolaimanLipi, Kalpurush */
+/* Premium Bengali Fonts - Self-hosted for mobile compatibility */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.maateen.me/solaiman-lipi/font.css');
-@import url('https://fonts.maateen.me/kalpurush/font.css');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+
+/* Local font fallbacks for Bengali */
+@font-face {
+  font-family: 'SolaimanLipi';
+  src: url('https://cdn.jsdelivr.net/gh/nicothin/web-fonts@master/solaiman-lipi/SolaimanLipi.woff2') format('woff2'),
+       url('https://cdn.jsdelivr.net/gh/nicothin/web-fonts@master/solaiman-lipi/SolaimanLipi.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 @layer base {
   :root {
@@ -119,15 +129,18 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', 'SolaimanLipi', 'Kalpurush', sans-serif;
+    font-family: 'Inter', 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;
     -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Premium Bangla font styling */
+  /* Premium Bangla font styling - optimized for mobile */
   .font-bangla {
-    font-family: 'SolaimanLipi', 'Kalpurush', sans-serif;
+    font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', 'Kalpurush', sans-serif;
     font-weight: 400;
     letter-spacing: 0.01em;
+    text-rendering: optimizeLegibility;
   }
 }
 
