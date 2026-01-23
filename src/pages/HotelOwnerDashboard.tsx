@@ -8,6 +8,7 @@ import BottomNav from '@/components/BottomNav';
 import ImageUpload from '@/components/ImageUpload';
 import RoomImageUpload from '@/components/RoomImageUpload';
 import CreateHotelForm from '@/components/CreateHotelForm';
+import EditHotelForm from '@/components/EditHotelForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -75,6 +76,7 @@ const HotelOwnerDashboard: React.FC = () => {
   const [isImagesDialogOpen, setIsImagesDialogOpen] = useState(false);
   const [selectedRoomForImages, setSelectedRoomForImages] = useState<Room | null>(null);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
+  const [isEditHotelOpen, setIsEditHotelOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'rooms' | 'bookings'>('rooms');
 
   const [formData, setFormData] = useState({
@@ -295,24 +297,42 @@ const HotelOwnerDashboard: React.FC = () => {
       <main className="max-w-lg mx-auto px-4 py-4">
         {/* Hotel Info */}
         <div className="card-elevated p-4 mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden">
-              {hotel.image_url ? (
-                <img src={hotel.image_url} alt={hotel.name_en} className="w-full h-full object-cover" />
-              ) : (
-                <Hotel className="w-8 h-8 text-primary" />
-              )}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden">
+                {hotel.image_url ? (
+                  <img src={hotel.image_url} alt={hotel.name_en} className="w-full h-full object-cover" />
+                ) : (
+                  <Hotel className="w-8 h-8 text-primary" />
+                )}
+              </div>
+              <div>
+                <h1 className="text-lg font-bold font-bangla">
+                  {language === 'bn' ? hotel.name_bn : hotel.name_en}
+                </h1>
+                <p className="text-sm text-muted-foreground font-bangla">
+                  {language === 'bn' ? 'হোটেল মালিক ড্যাশবোর্ড' : 'Hotel Owner Dashboard'}
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg font-bold font-bangla">
-                {language === 'bn' ? hotel.name_bn : hotel.name_en}
-              </h1>
-              <p className="text-sm text-muted-foreground font-bangla">
-                {language === 'bn' ? 'হোটেল মালিক ড্যাশবোর্ড' : 'Hotel Owner Dashboard'}
-              </p>
-            </div>
+            <button
+              onClick={() => setIsEditHotelOpen(true)}
+              className="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
           </div>
         </div>
+
+        {/* Edit Hotel Dialog */}
+        {hotel && (
+          <EditHotelForm
+            hotel={hotel}
+            isOpen={isEditHotelOpen}
+            onClose={() => setIsEditHotelOpen(false)}
+            onUpdated={fetchHotelAndRooms}
+          />
+        )}
 
         {/* Tabs */}
         <div className="flex gap-2 mb-4">

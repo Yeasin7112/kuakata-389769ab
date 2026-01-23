@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
@@ -18,6 +19,7 @@ interface Place {
 
 const Explore: React.FC = () => {
   const { language } = useLanguage();
+  const navigate = useNavigate();
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +61,11 @@ const Explore: React.FC = () => {
         ) : places.length > 0 ? (
           <div className="space-y-4">
             {places.map((place) => (
-              <div key={place.id} className="card-elevated overflow-hidden">
+              <button
+                key={place.id}
+                onClick={() => navigate(`/places/${place.id}`)}
+                className="card-elevated overflow-hidden w-full text-left"
+              >
                 {place.image_url && (
                   <img 
                     src={place.image_url} 
@@ -84,12 +90,12 @@ const Explore: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <button className="flex items-center gap-1 text-primary text-sm font-medium mt-3">
+                  <div className="flex items-center gap-1 text-primary text-sm font-medium mt-3">
                     {language === 'bn' ? 'বিস্তারিত দেখুন' : 'View Details'}
                     <ArrowRight className="w-4 h-4" />
-                  </button>
+                  </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         ) : (

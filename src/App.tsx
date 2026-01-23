@@ -32,6 +32,8 @@ import BeachSafety from "./pages/BeachSafety";
 import LiveNotices from "./pages/LiveNotices";
 import Weather from "./pages/Weather";
 import BeachChairs from "./pages/BeachChairs";
+import AboutKuakata from "./pages/AboutKuakata";
+import ComplaintForm from "./pages/ComplaintForm";
 
 // Owner Dashboards
 import HotelOwnerDashboard from "./pages/HotelOwnerDashboard";
@@ -87,6 +89,8 @@ const App = () => (
               <Route path="/notices" element={<LiveNotices />} />
               <Route path="/weather" element={<Weather />} />
               <Route path="/beach-chairs" element={<BeachChairs />} />
+              <Route path="/about-kuakata" element={<AboutKuakata />} />
+              <Route path="/complaints" element={<ComplaintForm />} />
               
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
