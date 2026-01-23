@@ -18,7 +18,9 @@ import {
   HelpCircle,
   LogIn,
   Building2,
-  UtensilsCrossed
+  UtensilsCrossed,
+  CalendarCheck,
+  Briefcase
 } from 'lucide-react';
 
 const Profile: React.FC = () => {
@@ -75,6 +77,7 @@ const Profile: React.FC = () => {
   }
 
   const menuItems = [
+    { icon: CalendarCheck, label: language === 'bn' ? 'আমার বুকিং' : 'My Bookings', route: '/my-bookings' },
     { icon: Heart, label: language === 'bn' ? 'প্রিয় স্থান' : 'Saved Places', route: '/saved' },
     { icon: Bell, label: language === 'bn' ? 'নোটিফিকেশন' : 'Notifications', route: '/notifications' },
     { icon: Settings, label: language === 'bn' ? 'সেটিংস' : 'Settings', route: '/settings' },
@@ -163,6 +166,37 @@ const Profile: React.FC = () => {
             </div>
             <ChevronRight className="w-5 h-5 text-muted-foreground" />
           </Link>
+        )}
+
+        {/* Business Management - Always visible for potential owners */}
+        {!isHotelOwner && !isRestaurantOwner && (
+          <div className="card-elevated p-4 mb-4">
+            <div className="flex items-center gap-3 mb-3">
+              <Briefcase className="w-5 h-5 text-primary" />
+              <h3 className="font-medium font-bangla">
+                {language === 'bn' ? 'ব্যবসা শুরু করুন' : 'Start Your Business'}
+              </h3>
+            </div>
+            <p className="text-sm text-muted-foreground font-bangla mb-3">
+              {language === 'bn' 
+                ? 'কুয়াকাটায় আপনার হোটেল বা রেস্তোরাঁ যোগ করুন'
+                : 'Add your hotel or restaurant in Kuakata'}
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <Link to="/hotel-dashboard">
+                <Button variant="outline" className="w-full gap-2 text-sm">
+                  <Building2 className="w-4 h-4" />
+                  {language === 'bn' ? 'হোটেল' : 'Hotel'}
+                </Button>
+              </Link>
+              <Link to="/restaurant-dashboard">
+                <Button variant="outline" className="w-full gap-2 text-sm">
+                  <UtensilsCrossed className="w-4 h-4" />
+                  {language === 'bn' ? 'রেস্তোরাঁ' : 'Restaurant'}
+                </Button>
+              </Link>
+            </div>
+          </div>
         )}
 
         {/* Menu Items */}

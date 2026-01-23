@@ -39,6 +39,8 @@ import ComplaintForm from "./pages/ComplaintForm";
 import HotelOwnerDashboard from "./pages/HotelOwnerDashboard";
 import RestaurantOwnerDashboard from "./pages/RestaurantOwnerDashboard";
 import RoomBooking from "./pages/RoomBooking";
+import MyBookings from "./pages/MyBookings";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +65,8 @@ const App = () => (
               {/* Owner Dashboards */}
               <Route path="/hotel-dashboard" element={<HotelOwnerDashboard />} />
               <Route path="/restaurant-dashboard" element={<RestaurantOwnerDashboard />} />
+              <Route path="/my-bookings" element={<MyBookings />} />
+              <Route path="/settings" element={<Settings />} />
               
               {/* Feature Routes */}
               <Route path="/ai-planner" element={<AiTourPlanner />} />
@@ -74,7 +78,7 @@ const App = () => (
               {/* Hotels */}
               <Route path="/hotels" element={<HotelsList />} />
               <Route path="/hotels/:id" element={<HotelDetail />} />
-              <Route path="/hotels/:hotelId/rooms/:roomId/book" element={<RoomBooking />} />
+              <Route path="/hotels/:hotelId/book" element={<RoomBooking />} />
               
               {/* Restaurants */}
               <Route path="/restaurants" element={<RestaurantsList />} />
