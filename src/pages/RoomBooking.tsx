@@ -5,18 +5,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
+import Footer from '@/components/Footer';
+import RoomGallery from '@/components/RoomGallery';
+import AvailabilityCalendar from '@/components/AvailabilityCalendar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { format, differenceInDays } from 'date-fns';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import {
   Dialog,
   DialogContent,
@@ -28,9 +25,10 @@ import {
   Star,
   Bed,
   Users,
-  Calendar as CalendarIcon,
   Loader2,
-  Check
+  Check,
+  Calendar,
+  Images
 } from 'lucide-react';
 
 interface Room {
@@ -46,6 +44,11 @@ interface Room {
   room_type: string;
   amenities: string[] | null;
   is_available: boolean;
+}
+
+interface RoomImage {
+  id: string;
+  image_url: string;
 }
 
 interface Hotel {
@@ -65,10 +68,12 @@ const RoomBooking: React.FC = () => {
 
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [roomImages, setRoomImages] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(true);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [showCalendar, setShowCalendar] = useState<string | null>(null);
 
   const [checkIn, setCheckIn] = useState<Date | undefined>();
   const [checkOut, setCheckOut] = useState<Date | undefined>();
@@ -91,7 +96,28 @@ const RoomBooking: React.FC = () => {
       ]);
 
       if (hotelRes.data) setHotel(hotelRes.data);
-      if (roomsRes.data) setRooms(roomsRes.data);
+      if (roomsRes.data) {
+        setRooms(roomsRes.data);
+        
+        // Fetch room images for all rooms
+        const roomIds = roomsRes.data.map(r => r.id);
+        if (roomIds.length > 0) {
+          const { data: imagesData } = await supabase
+            .from('room_images')
+            .select('room_id, image_url')
+            .in('room_id', roomIds)
+            .order('display_order');
+          
+          if (imagesData) {
+            const imagesMap: Record<string, string[]> = {};
+            imagesData.forEach((img: any) => {
+              if (!imagesMap[img.room_id]) imagesMap[img.room_id] = [];
+              imagesMap[img.room_id].push(img.image_url);
+            });
+            setRoomImages(imagesMap);
+          }
+        }
+      }
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -99,10 +125,23 @@ const RoomBooking: React.FC = () => {
     }
   };
 
+  const getRoomImages = (room: Room) => {
+    const galleryImages = roomImages[room.id] || [];
+    if (room.image_url) {
+      return [room.image_url, ...galleryImages];
+    }
+    return galleryImages;
+  };
+
   const calculateTotal = () => {
     if (!selectedRoom || !checkIn || !checkOut) return 0;
     const nights = differenceInDays(checkOut, checkIn);
     return nights > 0 ? nights * selectedRoom.price_per_night : 0;
+  };
+
+  const handleDateSelect = (start: Date, end: Date) => {
+    setCheckIn(start);
+    setCheckOut(end);
   };
 
   const handleBooking = async () => {
@@ -151,6 +190,8 @@ const RoomBooking: React.FC = () => {
 
   const openBookingDialog = (room: Room) => {
     setSelectedRoom(room);
+    setCheckIn(undefined);
+    setCheckOut(undefined);
     setIsBookingOpen(true);
     setBookingSuccess(false);
   };
@@ -164,7 +205,7 @@ const RoomBooking: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-20 flex flex-col">
       {/* Header */}
       <header className="bg-gradient-header text-primary-foreground p-4 sticky top-0 z-10">
         <div className="flex items-center gap-3 max-w-lg mx-auto">
@@ -185,7 +226,7 @@ const RoomBooking: React.FC = () => {
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-4">
+      <main className="flex-1 max-w-lg mx-auto px-4 py-4 w-full">
         {rooms.length === 0 ? (
           <div className="card-elevated p-8 text-center">
             <Bed className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
@@ -194,52 +235,77 @@ const RoomBooking: React.FC = () => {
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {rooms.map((room) => (
-              <div key={room.id} className="card-elevated overflow-hidden">
-                {room.image_url && (
-                  <img
-                    src={room.image_url}
-                    alt={room.name_en}
-                    className="w-full h-40 object-cover"
-                  />
-                )}
-                <div className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="font-semibold font-bangla text-lg">
-                        {language === 'bn' ? room.name_bn : room.name_en}
-                      </h3>
-                      <p className="text-sm text-muted-foreground capitalize">
-                        {room.room_type.replace('_', ' ')}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-primary">৳{room.price_per_night}</p>
-                      <p className="text-xs text-muted-foreground">/night</p>
-                    </div>
+          <div className="space-y-6">
+            {rooms.map((room) => {
+              const images = getRoomImages(room);
+              
+              return (
+                <div key={room.id} className="card-elevated overflow-hidden">
+                  {/* Room Gallery */}
+                  <div className="p-3 pb-0">
+                    <RoomGallery images={images} roomName={room.name_en} />
                   </div>
 
-                  <p className="text-sm text-muted-foreground font-bangla mb-3">
-                    {language === 'bn' ? room.description_bn : room.description_en}
-                  </p>
+                  <div className="p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-semibold font-bangla text-lg">
+                          {language === 'bn' ? room.name_bn : room.name_en}
+                        </h3>
+                        <p className="text-sm text-muted-foreground capitalize">
+                          {room.room_type.replace('_', ' ')}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-primary">৳{room.price_per_night}</p>
+                        <p className="text-xs text-muted-foreground">/night</p>
+                      </div>
+                    </div>
 
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                    <span className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      {room.max_guests} {language === 'bn' ? 'অতিথি' : 'Guests'}
-                    </span>
+                    <p className="text-sm text-muted-foreground font-bangla mb-3">
+                      {language === 'bn' ? room.description_bn : room.description_en}
+                    </p>
+
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-3">
+                      <span className="flex items-center gap-1">
+                        <Users className="w-4 h-4" />
+                        {room.max_guests} {language === 'bn' ? 'অতিথি' : 'Guests'}
+                      </span>
+                      {images.length > 1 && (
+                        <span className="flex items-center gap-1">
+                          <Images className="w-4 h-4" />
+                          {images.length} {language === 'bn' ? 'ছবি' : 'Photos'}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Availability Calendar Toggle */}
+                    <button
+                      onClick={() => setShowCalendar(showCalendar === room.id ? null : room.id)}
+                      className="w-full mb-3 py-2 px-3 rounded-lg border border-border text-sm font-medium flex items-center justify-center gap-2 hover:bg-muted transition-colors"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      {language === 'bn' ? 'উপলব্ধতা দেখুন' : 'View Availability'}
+                    </button>
+
+                    {showCalendar === room.id && (
+                      <div className="mb-3">
+                        <AvailabilityCalendar roomId={room.id} />
+                      </div>
+                    )}
+
+                    <Button onClick={() => openBookingDialog(room)} className="w-full">
+                      {language === 'bn' ? 'এখনই বুক করুন' : 'Book Now'}
+                    </Button>
                   </div>
-
-                  <Button onClick={() => openBookingDialog(room)} className="w-full">
-                    {language === 'bn' ? 'এখনই বুক করুন' : 'Book Now'}
-                  </Button>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>
+
+      <Footer />
 
       {/* Booking Dialog */}
       <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
@@ -283,45 +349,20 @@ const RoomBooking: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-2">
-                      <Label className="font-bangla">{language === 'bn' ? 'চেক-ইন' : 'Check-in'}</Label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button variant="outline" className="w-full justify-start">
-                            <CalendarIcon className="w-4 h-4 mr-2" />
-                            {checkIn ? format(checkIn, 'PP') : (language === 'bn' ? 'তারিখ' : 'Date')}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={checkIn}
-                            onSelect={setCheckIn}
-                            disabled={(date) => date < new Date()}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="font-bangla">{language === 'bn' ? 'চেক-আউট' : 'Check-out'}</Label>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button variant="outline" className="w-full justify-start">
-                            <CalendarIcon className="w-4 h-4 mr-2" />
-                            {checkOut ? format(checkOut, 'PP') : (language === 'bn' ? 'তারিখ' : 'Date')}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={checkOut}
-                            onSelect={setCheckOut}
-                            disabled={(date) => date <= (checkIn || new Date())}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
+                  {/* Availability Calendar */}
+                  <div>
+                    <Label className="font-bangla mb-2 block">
+                      {language === 'bn' ? 'তারিখ নির্বাচন করুন' : 'Select Dates'}
+                    </Label>
+                    <AvailabilityCalendar 
+                      roomId={selectedRoom.id} 
+                      onDateSelect={handleDateSelect}
+                    />
+                    {checkIn && checkOut && (
+                      <p className="text-sm text-center mt-2 text-muted-foreground">
+                        {format(checkIn, 'PP')} → {format(checkOut, 'PP')} ({differenceInDays(checkOut, checkIn)} nights)
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">

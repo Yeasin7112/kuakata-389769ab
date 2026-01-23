@@ -828,7 +828,9 @@ export type Database = {
           created_at: string
           full_name: string | null
           id: string
+          notification_enabled: boolean | null
           phone: string | null
+          push_subscription: Json | null
           updated_at: string
           user_id: string
         }
@@ -837,7 +839,9 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          notification_enabled?: boolean | null
           phone?: string | null
+          push_subscription?: Json | null
           updated_at?: string
           user_id: string
         }
@@ -846,7 +850,9 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          notification_enabled?: boolean | null
           phone?: string | null
+          push_subscription?: Json | null
           updated_at?: string
           user_id?: string
         }
@@ -994,6 +1000,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "room_bookings_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "hotel_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      room_images: {
+        Row: {
+          created_at: string
+          display_order: number | null
+          id: string
+          image_url: string
+          room_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url: string
+          room_id: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          room_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_images_room_id_fkey"
             columns: ["room_id"]
             isOneToOne: false
             referencedRelation: "hotel_rooms"
