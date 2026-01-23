@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'SolaimanLipi', 'Kalpurush', 'sans-serif'],
-        bangla: ['SolaimanLipi', 'Kalpurush', 'sans-serif'],
+        sans: ['Alata', 'SolaimanLipi', 'Kalpurush', 'sans-serif'],
+        bangla: ['Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', 'Kalpurush', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
