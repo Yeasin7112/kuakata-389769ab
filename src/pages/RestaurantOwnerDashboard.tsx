@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import ImageUpload from '@/components/ImageUpload';
+import CreateRestaurantForm from '@/components/CreateRestaurantForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -252,21 +253,12 @@ const RestaurantOwnerDashboard: React.FC = () => {
     );
   }
 
+  // Show create restaurant form if no restaurant exists
   if (!restaurant) {
     return (
       <div className="min-h-screen bg-background pb-20">
         <Header />
-        <div className="p-8 text-center max-w-lg mx-auto">
-          <Utensils className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-          <h2 className="text-xl font-bold font-bangla mb-2">
-            {language === 'bn' ? 'কোনো রেস্টুরেন্ট পাওয়া যায়নি' : 'No Restaurant Found'}
-          </h2>
-          <p className="text-muted-foreground font-bangla">
-            {language === 'bn'
-              ? 'আপনার অ্যাকাউন্টে কোনো রেস্টুরেন্ট নিবন্ধিত নেই। অ্যাডমিনের সাথে যোগাযোগ করুন।'
-              : 'No restaurant registered to your account. Please contact admin.'}
-          </p>
-        </div>
+        <CreateRestaurantForm onRestaurantCreated={fetchRestaurantAndFood} />
         <BottomNav />
       </div>
     );
@@ -280,8 +272,12 @@ const RestaurantOwnerDashboard: React.FC = () => {
         {/* Restaurant Info */}
         <div className="card-elevated p-4 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-16 h-16 rounded-xl bg-category-restaurant/20 flex items-center justify-center">
-              <Utensils className="w-8 h-8 text-category-restaurant" />
+            <div className="w-16 h-16 rounded-xl bg-category-restaurant/20 flex items-center justify-center overflow-hidden">
+              {restaurant.image_url ? (
+                <img src={restaurant.image_url} alt={restaurant.name_en} className="w-full h-full object-cover" />
+              ) : (
+                <Utensils className="w-8 h-8 text-category-restaurant" />
+              )}
             </div>
             <div>
               <h1 className="text-lg font-bold font-bangla">
@@ -476,14 +472,12 @@ const RestaurantOwnerDashboard: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="flex-1">
-                {language === 'bn' ? 'বাতিল' : 'Cancel'}
-              </Button>
-              <Button type="submit" className="flex-1">
-                {editingItem ? (language === 'bn' ? 'আপডেট' : 'Update') : (language === 'bn' ? 'যোগ করুন' : 'Add')}
-              </Button>
-            </div>
+            <Button type="submit" className="w-full">
+              {editingItem
+                ? (language === 'bn' ? 'আপডেট করুন' : 'Update')
+                : (language === 'bn' ? 'যোগ করুন' : 'Add Item')
+              }
+            </Button>
           </form>
         </DialogContent>
       </Dialog>

@@ -6,6 +6,8 @@ import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import ImageUpload from '@/components/ImageUpload';
+import RoomImageUpload from '@/components/RoomImageUpload';
+import CreateHotelForm from '@/components/CreateHotelForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -27,7 +29,8 @@ import {
   Bed,
   Calendar,
   Eye,
-  EyeOff
+  EyeOff,
+  Images
 } from 'lucide-react';
 
 interface Room {
@@ -69,6 +72,8 @@ const HotelOwnerDashboard: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isImagesDialogOpen, setIsImagesDialogOpen] = useState(false);
+  const [selectedRoomForImages, setSelectedRoomForImages] = useState<Room | null>(null);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [activeTab, setActiveTab] = useState<'rooms' | 'bookings'>('rooms');
 
@@ -97,7 +102,6 @@ const HotelOwnerDashboard: React.FC = () => {
     if (!user) return;
 
     try {
-      // Fetch hotel owned by user
       const { data: hotelData } = await supabase
         .from('hotels')
         .select('*')
@@ -107,7 +111,6 @@ const HotelOwnerDashboard: React.FC = () => {
       if (hotelData) {
         setHotel(hotelData);
 
-        // Fetch rooms for this hotel
         const { data: roomsData } = await supabase
           .from('hotel_rooms')
           .select('*')
@@ -116,14 +119,15 @@ const HotelOwnerDashboard: React.FC = () => {
 
         setRooms(roomsData || []);
 
-        // Fetch bookings for hotel rooms
-        const { data: bookingsData } = await supabase
-          .from('room_bookings')
-          .select('*')
-          .in('room_id', (roomsData || []).map(r => r.id))
-          .order('created_at', { ascending: false });
+        if (roomsData && roomsData.length > 0) {
+          const { data: bookingsData } = await supabase
+            .from('room_bookings')
+            .select('*')
+            .in('room_id', roomsData.map(r => r.id))
+            .order('created_at', { ascending: false });
 
-        setBookings(bookingsData || []);
+          setBookings(bookingsData || []);
+        }
       }
     } catch (error) {
       console.error('Error:', error);
@@ -244,6 +248,11 @@ const HotelOwnerDashboard: React.FC = () => {
     setIsDialogOpen(true);
   };
 
+  const openImagesDialog = (room: Room) => {
+    setSelectedRoomForImages(room);
+    setIsImagesDialogOpen(true);
+  };
+
   const resetForm = () => {
     setEditingRoom(null);
     setFormData({
@@ -268,21 +277,12 @@ const HotelOwnerDashboard: React.FC = () => {
     );
   }
 
+  // Show create hotel form if no hotel exists
   if (!hotel) {
     return (
       <div className="min-h-screen bg-background pb-20">
         <Header />
-        <div className="p-8 text-center max-w-lg mx-auto">
-          <Hotel className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-          <h2 className="text-xl font-bold font-bangla mb-2">
-            {language === 'bn' ? 'কোনো হোটেল পাওয়া যায়নি' : 'No Hotel Found'}
-          </h2>
-          <p className="text-muted-foreground font-bangla">
-            {language === 'bn' 
-              ? 'আপনার অ্যাকাউন্টে কোনো হোটেল নিবন্ধিত নেই। অ্যাডমিনের সাথে যোগাযোগ করুন।' 
-              : 'No hotel registered to your account. Please contact admin.'}
-          </p>
-        </div>
+        <CreateHotelForm onHotelCreated={fetchHotelAndRooms} />
         <BottomNav />
       </div>
     );
@@ -296,8 +296,12 @@ const HotelOwnerDashboard: React.FC = () => {
         {/* Hotel Info */}
         <div className="card-elevated p-4 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Hotel className="w-8 h-8 text-primary" />
+            <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center overflow-hidden">
+              {hotel.image_url ? (
+                <img src={hotel.image_url} alt={hotel.name_en} className="w-full h-full object-cover" />
+              ) : (
+                <Hotel className="w-8 h-8 text-primary" />
+              )}
             </div>
             <div>
               <h1 className="text-lg font-bold font-bangla">
@@ -394,6 +398,13 @@ const HotelOwnerDashboard: React.FC = () => {
                         </span>
                       </div>
                       <div className="flex gap-2 mt-2">
+                        <button
+                          onClick={() => openImagesDialog(room)}
+                          className="p-1.5 rounded bg-primary/10 text-primary hover:bg-primary/20"
+                          title={language === 'bn' ? 'ছবি যোগ করুন' : 'Manage Images'}
+                        >
+                          <Images className="w-3.5 h-3.5" />
+                        </button>
                         <button
                           onClick={() => openEditDialog(room)}
                           className="p-1.5 rounded bg-muted hover:bg-muted/80"
@@ -528,7 +539,7 @@ const HotelOwnerDashboard: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label className="font-bangla">{language === 'bn' ? 'প্রতি রাতের মূল্য (৳)' : 'Price per Night (৳)'}</Label>
+                <Label className="font-bangla">{language === 'bn' ? 'মূল্য (প্রতি রাত)' : 'Price (per night)'}</Label>
                 <Input
                   type="number"
                   value={formData.price_per_night}
@@ -542,8 +553,18 @@ const HotelOwnerDashboard: React.FC = () => {
                   type="number"
                   value={formData.max_guests}
                   onChange={(e) => setFormData({...formData, max_guests: parseInt(e.target.value)})}
+                  required
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-bangla">{language === 'bn' ? 'রুম টাইপ' : 'Room Type'}</Label>
+              <Input
+                value={formData.room_type}
+                onChange={(e) => setFormData({...formData, room_type: e.target.value})}
+                placeholder="standard, deluxe, suite..."
+              />
             </div>
 
             <div className="flex items-center justify-between">
@@ -554,15 +575,36 @@ const HotelOwnerDashboard: React.FC = () => {
               />
             </div>
 
-            <div className="flex gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="flex-1">
-                {language === 'bn' ? 'বাতিল' : 'Cancel'}
-              </Button>
-              <Button type="submit" className="flex-1">
-                {editingRoom ? (language === 'bn' ? 'আপডেট' : 'Update') : (language === 'bn' ? 'যোগ করুন' : 'Add')}
-              </Button>
-            </div>
+            <Button type="submit" className="w-full">
+              {editingRoom 
+                ? (language === 'bn' ? 'আপডেট করুন' : 'Update')
+                : (language === 'bn' ? 'যোগ করুন' : 'Add Room')
+              }
+            </Button>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Room Images Dialog */}
+      <Dialog open={isImagesDialogOpen} onOpenChange={setIsImagesDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="font-bangla">
+              {language === 'bn' ? 'রুমের ছবি পরিচালনা' : 'Manage Room Images'}
+              {selectedRoomForImages && (
+                <span className="text-sm font-normal text-muted-foreground ml-2">
+                  ({language === 'bn' ? selectedRoomForImages.name_bn : selectedRoomForImages.name_en})
+                </span>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedRoomForImages && (
+            <RoomImageUpload 
+              roomId={selectedRoomForImages.id}
+              onImagesUpdated={() => {}}
+            />
+          )}
         </DialogContent>
       </Dialog>
 
