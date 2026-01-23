@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import ImageUpload from '@/components/ImageUpload';
 import CreateRestaurantForm from '@/components/CreateRestaurantForm';
+import EditRestaurantForm from '@/components/EditRestaurantForm';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -64,6 +65,7 @@ const RestaurantOwnerDashboard: React.FC = () => {
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditRestaurantOpen, setIsEditRestaurantOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<FoodItem | null>(null);
   const [filter, setFilter] = useState<'all' | 'available' | 'unavailable'>('all');
 
@@ -271,24 +273,42 @@ const RestaurantOwnerDashboard: React.FC = () => {
       <main className="max-w-lg mx-auto px-4 py-4">
         {/* Restaurant Info */}
         <div className="card-elevated p-4 mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-16 h-16 rounded-xl bg-category-restaurant/20 flex items-center justify-center overflow-hidden">
-              {restaurant.image_url ? (
-                <img src={restaurant.image_url} alt={restaurant.name_en} className="w-full h-full object-cover" />
-              ) : (
-                <Utensils className="w-8 h-8 text-category-restaurant" />
-              )}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-16 h-16 rounded-xl bg-category-restaurant/20 flex items-center justify-center overflow-hidden">
+                {restaurant.image_url ? (
+                  <img src={restaurant.image_url} alt={restaurant.name_en} className="w-full h-full object-cover" />
+                ) : (
+                  <Utensils className="w-8 h-8 text-category-restaurant" />
+                )}
+              </div>
+              <div>
+                <h1 className="text-lg font-bold font-bangla">
+                  {language === 'bn' ? restaurant.name_bn : restaurant.name_en}
+                </h1>
+                <p className="text-sm text-muted-foreground font-bangla">
+                  {language === 'bn' ? 'রেস্টুরেন্ট মালিক ড্যাশবোর্ড' : 'Restaurant Owner Dashboard'}
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg font-bold font-bangla">
-                {language === 'bn' ? restaurant.name_bn : restaurant.name_en}
-              </h1>
-              <p className="text-sm text-muted-foreground font-bangla">
-                {language === 'bn' ? 'রেস্টুরেন্ট মালিক ড্যাশবোর্ড' : 'Restaurant Owner Dashboard'}
-              </p>
-            </div>
+            <button
+              onClick={() => setIsEditRestaurantOpen(true)}
+              className="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
           </div>
         </div>
+
+        {/* Edit Restaurant Dialog */}
+        {restaurant && (
+          <EditRestaurantForm
+            restaurant={restaurant}
+            isOpen={isEditRestaurantOpen}
+            onClose={() => setIsEditRestaurantOpen(false)}
+            onUpdated={fetchRestaurantAndFood}
+          />
+        )}
 
         {/* Filter + Add */}
         <div className="flex gap-2 mb-4">

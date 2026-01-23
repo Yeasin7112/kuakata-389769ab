@@ -2,16 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Premium Bengali Fonts - Self-hosted for mobile compatibility */
+/* Premium Bengali Fonts - Self-hosted for reliable mobile rendering */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
 
-/* Local font fallbacks for Bengali */
+/* Self-hosted Bengali font - guaranteed mobile compatibility */
 @font-face {
   font-family: 'SolaimanLipi';
-  src: url('https://cdn.jsdelivr.net/gh/nicothin/web-fonts@master/solaiman-lipi/SolaimanLipi.woff2') format('woff2'),
-       url('https://cdn.jsdelivr.net/gh/nicothin/web-fonts@master/solaiman-lipi/SolaimanLipi.woff') format('woff');
+  src: url('/fonts/SolaimanLipiNormal.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Kalpurush Bengali font fallback */
+@font-face {
+  font-family: 'Kalpurush';
+  src: url('https://fonts.cdnfonts.com/s/14903/Kalpurush.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;

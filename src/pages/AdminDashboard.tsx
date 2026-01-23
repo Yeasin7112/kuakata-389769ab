@@ -21,6 +21,8 @@ import WarningZonesManager from '@/components/admin/WarningZonesManager';
 import BeachSafetyManager from '@/components/admin/BeachSafetyManager';
 import TideAlertsManager from '@/components/admin/TideAlertsManager';
 import RestaurantsManager from '@/components/admin/RestaurantsManager';
+import AboutKuakataManager from '@/components/admin/AboutKuakataManager';
+import ComplaintsManager from '@/components/admin/ComplaintsManager';
 import { Loader2 } from 'lucide-react';
 
 type AdminSection = 
@@ -40,7 +42,9 @@ type AdminSection =
   | 'sun-times'
   | 'warning-zones'
   | 'beach-safety'
-  | 'tide-alerts';
+  | 'tide-alerts'
+  | 'about-kuakata'
+  | 'complaints';
 
 const AdminDashboard: React.FC = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -121,6 +125,10 @@ const AdminDashboard: React.FC = () => {
         return <TideAlertsManager />;
       case 'restaurants':
         return <RestaurantsManager />;
+      case 'about-kuakata':
+        return <AboutKuakataManager />;
+      case 'complaints':
+        return <ComplaintsManager />;
       default:
         return <DashboardOverview onNavigate={(section) => setActiveSection(section as AdminSection)} />;
     }
