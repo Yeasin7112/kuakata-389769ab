@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
+import ReviewSection from '@/components/ReviewSection';
 import { Button } from '@/components/ui/button';
 import { 
   ArrowLeft, 
@@ -200,6 +201,9 @@ const RestaurantDetail: React.FC = () => {
             {language === 'bn' ? 'সময়সূচী' : 'Hours'}
           </Button>
         </div>
+
+        {/* Reviews Section */}
+        <ReviewSection entityType="restaurant" entityId={id!} />
       </main>
 
       <BottomNav />

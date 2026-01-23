@@ -21,6 +21,7 @@ import {
   Utensils,
   History,
   MessageSquare,
+  Star,
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -58,6 +59,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'notices', icon: Bell, labelBn: 'নোটিশ', labelEn: 'Notices' },
     { id: 'about-kuakata', icon: History, labelBn: 'কুয়াকাটা সম্পর্কে', labelEn: 'About Kuakata' },
     { id: 'complaints', icon: MessageSquare, labelBn: 'অভিযোগ', labelEn: 'Complaints' },
+    { id: 'reviews', icon: Star, labelBn: 'রিভিউ', labelEn: 'Reviews' },
     { id: 'translations', icon: Languages, labelBn: 'অনুবাদ', labelEn: 'Translations' },
     { id: 'settings', icon: Settings, labelBn: 'সেটিংস', labelEn: 'Settings' },
   ];

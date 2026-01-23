@@ -94,6 +94,20 @@ const FeatureGrid: React.FC = () => {
       bgColor: '#FFF3E0',
       route: '/notices'
     },
+    { 
+      icon: '🏝️', 
+      titleBn: 'কুয়াকাটা সম্পর্কে', 
+      titleEn: 'About Kuakata', 
+      bgColor: '#E8F5E9',
+      route: '/about-kuakata'
+    },
+    { 
+      icon: '📝', 
+      titleBn: 'অভিযোগ ও পরামর্শ', 
+      titleEn: 'Complaints', 
+      bgColor: '#FFEBEE',
+      route: '/complaints'
+    },
   ];
 
   const handleFeatureClick = (route: string) => {
