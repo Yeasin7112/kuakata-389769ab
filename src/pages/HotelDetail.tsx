@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
+import ReviewSection from '@/components/ReviewSection';
 import { Button } from '@/components/ui/button';
 import { 
   ArrowLeft, 
@@ -17,7 +18,8 @@ import {
   Coffee,
   Share2,
   Heart,
-  Navigation
+  Navigation,
+  BedDouble
 } from 'lucide-react';
 
 interface Hotel {
@@ -235,9 +237,19 @@ const HotelDetail: React.FC = () => {
           </div>
         </div>
 
+        {/* Book Room CTA */}
+        <Button 
+          onClick={() => navigate(`/hotels/${id}/book`)}
+          className="w-full mb-4 gap-2"
+          size="lg"
+        >
+          <BedDouble className="w-5 h-5" />
+          {language === 'bn' ? 'রুম বুক করুন' : 'Book a Room'}
+        </Button>
+
         {/* Actions */}
         <div className="grid grid-cols-2 gap-3">
-          <Button onClick={handleCall} className="gap-2" disabled={!hotel.phone}>
+          <Button onClick={handleCall} variant="outline" className="gap-2" disabled={!hotel.phone}>
             <Phone className="w-4 h-4" />
             {language === 'bn' ? 'কল করুন' : 'Call Now'}
           </Button>
@@ -251,6 +263,9 @@ const HotelDetail: React.FC = () => {
             {language === 'bn' ? 'দিকনির্দেশনা' : 'Directions'}
           </Button>
         </div>
+
+        {/* Reviews Section */}
+        <ReviewSection entityType="hotel" entityId={id!} />
       </main>
 
       <BottomNav />

@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import Footer from '@/components/Footer';
+import ReviewSection from '@/components/ReviewSection';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { 
@@ -223,6 +224,9 @@ const PlaceDetail: React.FC = () => {
             {language === 'bn' ? 'সময়সূচী' : 'Timing'}
           </Button>
         </div>
+
+        {/* Reviews Section */}
+        <ReviewSection entityType="place" entityId={id!} />
       </main>
 
       <Footer />

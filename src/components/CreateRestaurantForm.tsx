@@ -48,12 +48,19 @@ const CreateRestaurantForm: React.FC<CreateRestaurantFormProps> = ({ onRestauran
 
       if (error) throw error;
 
+      // Assign restaurant_owner role to the user
+      await supabase.from('user_roles').upsert([{
+        user_id: user.id,
+        role: 'restaurant_owner',
+      }], { onConflict: 'user_id,role' });
+
       toast({
         title: language === 'bn' ? 'সফল!' : 'Success!',
         description: language === 'bn' ? 'রেস্টুরেন্ট তৈরি হয়েছে' : 'Restaurant created successfully',
       });
 
-      onRestaurantCreated();
+      // Reload the page to refresh auth context with new role
+      window.location.reload();
     } catch (error: any) {
       toast({
         title: language === 'bn' ? 'ত্রুটি' : 'Error',

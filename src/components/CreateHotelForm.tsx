@@ -49,12 +49,19 @@ const CreateHotelForm: React.FC<CreateHotelFormProps> = ({ onHotelCreated }) => 
 
       if (error) throw error;
 
+      // Assign hotel_owner role to the user
+      await supabase.from('user_roles').upsert([{
+        user_id: user.id,
+        role: 'hotel_owner',
+      }], { onConflict: 'user_id,role' });
+
       toast({
         title: language === 'bn' ? 'সফল!' : 'Success!',
         description: language === 'bn' ? 'হোটেল তৈরি হয়েছে' : 'Hotel created successfully',
       });
 
-      onHotelCreated();
+      // Reload the page to refresh auth context with new role
+      window.location.reload();
     } catch (error: any) {
       toast({
         title: language === 'bn' ? 'ত্রুটি' : 'Error',
