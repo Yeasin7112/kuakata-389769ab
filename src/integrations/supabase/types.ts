@@ -209,6 +209,48 @@ export type Database = {
         }
         Relationships: []
       }
+      bus_counters: {
+        Row: {
+          counter_number: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          location_bn: string | null
+          location_en: string | null
+          name_bn: string
+          name_en: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          counter_number?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          location_bn?: string | null
+          location_en?: string | null
+          name_bn: string
+          name_en: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          counter_number?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          location_bn?: string | null
+          location_en?: string | null
+          name_bn?: string
+          name_en?: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       complaints: {
         Row: {
           admin_response: string | null
@@ -216,6 +258,7 @@ export type Database = {
           description_bn: string | null
           description_en: string | null
           id: string
+          image_url: string | null
           status: string | null
           subject_bn: string | null
           subject_en: string | null
@@ -228,6 +271,7 @@ export type Database = {
           description_bn?: string | null
           description_en?: string | null
           id?: string
+          image_url?: string | null
           status?: string | null
           subject_bn?: string | null
           subject_en?: string | null
@@ -240,11 +284,54 @@ export type Database = {
           description_bn?: string | null
           description_en?: string | null
           id?: string
+          image_url?: string | null
           status?: string | null
           subject_bn?: string | null
           subject_en?: string | null
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      dc_initiatives: {
+        Row: {
+          created_at: string
+          description_bn: string | null
+          description_en: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          status: string | null
+          target_date: string | null
+          title_bn: string
+          title_en: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          status?: string | null
+          target_date?: string | null
+          title_bn: string
+          title_en: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          status?: string | null
+          target_date?: string | null
+          title_bn?: string
+          title_en?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -774,6 +861,38 @@ export type Database = {
         }
         Relationships: []
       }
+      place_images: {
+        Row: {
+          created_at: string
+          display_order: number | null
+          id: string
+          image_url: string
+          place_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url: string
+          place_id: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          place_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "place_images_place_id_fkey"
+            columns: ["place_id"]
+            isOneToOne: false
+            referencedRelation: "places"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       places: {
         Row: {
           category: string | null
@@ -1077,6 +1196,35 @@ export type Database = {
             columns: ["room_id"]
             isOneToOne: false
             referencedRelation: "hotel_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_places: {
+        Row: {
+          created_at: string
+          id: string
+          place_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          place_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          place_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_places_place_id_fkey"
+            columns: ["place_id"]
+            isOneToOne: false
+            referencedRelation: "places"
             referencedColumns: ["id"]
           },
         ]
