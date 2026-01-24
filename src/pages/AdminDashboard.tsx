@@ -160,7 +160,10 @@ const AdminDashboard: React.FC = () => {
       />
       
       <div className="flex-1 flex flex-col min-h-screen lg:ml-64">
-        <AdminHeader onMenuClick={() => setSidebarOpen(true)} />
+        <AdminHeader 
+          onMenuClick={() => setSidebarOpen(true)} 
+          onSelectSection={(section) => setActiveSection(section as AdminSection)}
+        />
         <main className="flex-1 p-4 lg:p-6">
           {renderSection()}
         </main>
