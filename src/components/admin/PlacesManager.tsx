@@ -8,7 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import ImageUpload from '@/components/ImageUpload';
-import { Plus, Pencil, Trash2, Loader2, X } from 'lucide-react';
+import PlaceImagesManager from '@/components/admin/PlaceImagesManager';
+import { Plus, Pencil, Trash2, Loader2, X, Images } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -367,6 +368,18 @@ const PlacesManager: React.FC = () => {
                 onCheckedChange={(checked) => setFormData({...formData, is_active: checked})}
               />
             </div>
+
+            {editingPlace && (
+              <div className="border-t pt-4 mt-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Images className="w-4 h-4" />
+                  <span className="font-medium">
+                    {language === 'bn' ? 'অতিরিক্ত ছবি' : 'Additional Images'}
+                  </span>
+                </div>
+                <PlaceImagesManager placeId={editingPlace.id} />
+              </div>
+            )}
 
             <div className="flex gap-3 pt-4">
               <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)} className="flex-1">

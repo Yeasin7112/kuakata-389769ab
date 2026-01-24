@@ -148,10 +148,10 @@ const GlobalSearch: React.FC<GlobalSearchProps> = ({ isOpen, onClose }) => {
           placeholder={language === 'bn' ? 'হোটেল, রেস্টুরেন্ট, স্থান খুঁজুন...' : 'Search hotels, restaurants, places...'}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="flex-1 border-0 focus-visible:ring-0 text-lg"
+          className="flex-1 border-0 focus-visible:ring-0 text-lg text-foreground placeholder:text-muted-foreground"
         />
         <button onClick={onClose} className="p-2 hover:bg-muted rounded-lg">
-          <X className="w-5 h-5" />
+          <X className="w-5 h-5 text-foreground" />
         </button>
       </div>
 
