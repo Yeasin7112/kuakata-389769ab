@@ -25,6 +25,8 @@ import AboutKuakataManager from '@/components/admin/AboutKuakataManager';
 import ComplaintsManager from '@/components/admin/ComplaintsManager';
 import ReviewsManager from '@/components/admin/ReviewsManager';
 import AdminsManager from '@/components/admin/AdminsManager';
+import BusCountersManager from '@/components/admin/BusCountersManager';
+import DcInitiativesManager from '@/components/admin/DcInitiativesManager';
 import { Loader2 } from 'lucide-react';
 
 type AdminSection = 
@@ -48,7 +50,9 @@ type AdminSection =
   | 'about-kuakata'
   | 'complaints'
   | 'reviews'
-  | 'admins';
+  | 'admins'
+  | 'bus-counters'
+  | 'dc-initiatives';
 
 const AdminDashboard: React.FC = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -137,6 +141,10 @@ const AdminDashboard: React.FC = () => {
         return <ReviewsManager />;
       case 'admins':
         return <AdminsManager />;
+      case 'bus-counters':
+        return <BusCountersManager />;
+      case 'dc-initiatives':
+        return <DcInitiativesManager />;
       default:
         return <DashboardOverview onNavigate={(section) => setActiveSection(section as AdminSection)} />;
     }
