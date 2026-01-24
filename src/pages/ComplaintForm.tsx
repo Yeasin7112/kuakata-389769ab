@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import ImageUpload from '@/components/ImageUpload';
 import {
   Select,
   SelectContent,
@@ -35,6 +36,7 @@ const ComplaintForm: React.FC = () => {
     description_bn: '',
     description_en: '',
     contact_phone: '',
+    image_url: '',
   });
 
   const complaintTypes = [
@@ -55,6 +57,7 @@ const ComplaintForm: React.FC = () => {
         subject_en: formData.subject_en || formData.subject_bn,
         description_bn: formData.description_bn || formData.description_en,
         description_en: formData.description_en || formData.description_bn,
+        image_url: formData.image_url || null,
         status: 'pending',
       }]);
 
@@ -196,6 +199,17 @@ const ComplaintForm: React.FC = () => {
                 value={formData.contact_phone}
                 onChange={(e) => setFormData({ ...formData, contact_phone: e.target.value })}
                 placeholder="+880..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-bangla">
+                {language === 'bn' ? 'ছবি সংযুক্ত করুন (ঐচ্ছিক)' : 'Attach Photo (Optional)'}
+              </Label>
+              <ImageUpload
+                onImageUploaded={(url) => setFormData({ ...formData, image_url: url })}
+                currentImage={formData.image_url}
+                folder="complaints"
               />
             </div>
 

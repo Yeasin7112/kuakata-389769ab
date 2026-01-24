@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
 import Footer from '@/components/Footer';
 import ReviewSection from '@/components/ReviewSection';
+import PlaceImageGallery from '@/components/PlaceImageGallery';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { 
   ArrowLeft, 
@@ -35,10 +38,13 @@ interface Place {
 const PlaceDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { language } = useLanguage();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const navigate = useNavigate();
   const [place, setPlace] = useState<Place | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
+  const [savingStatus, setSavingStatus] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -50,8 +56,6 @@ const PlaceDetail: React.FC = () => {
       }
       
       try {
-        console.log('Fetching place with ID:', id);
-        
         const { data, error: fetchError } = await supabase
           .from('places')
           .select('*')
@@ -59,29 +63,64 @@ const PlaceDetail: React.FC = () => {
           .maybeSingle();
         
         if (fetchError) {
-          console.error('Supabase error:', fetchError);
           setError(fetchError.message);
           setLoading(false);
           return;
         }
         
         if (data) {
-          console.log('Place data:', data);
           setPlace(data);
         } else {
-          console.log('No place found with ID:', id);
           setError('Place not found');
         }
       } catch (err) {
-        console.error('Fetch error:', err);
         setError('Failed to load place');
       } finally {
         setLoading(false);
       }
     };
 
+    const checkSavedStatus = async () => {
+      if (!user || !id) return;
+      const { data } = await supabase
+        .from('saved_places')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('place_id', id)
+        .maybeSingle();
+      setIsSaved(!!data);
+    };
+
     fetchPlace();
-  }, [id]);
+    checkSavedStatus();
+  }, [id, user]);
+
+  const toggleSaved = async () => {
+    if (!user) {
+      toast({
+        title: language === 'bn' ? 'লগইন করুন' : 'Login Required',
+        description: language === 'bn' ? 'স্থান সংরক্ষণ করতে লগইন করুন' : 'Please login to save places',
+      });
+      return;
+    }
+
+    setSavingStatus(true);
+    try {
+      if (isSaved) {
+        await supabase.from('saved_places').delete().eq('user_id', user.id).eq('place_id', id!);
+        setIsSaved(false);
+        toast({ title: language === 'bn' ? 'সরানো হয়েছে' : 'Removed from saved' });
+      } else {
+        await supabase.from('saved_places').insert([{ user_id: user.id, place_id: id }]);
+        setIsSaved(true);
+        toast({ title: language === 'bn' ? 'সংরক্ষিত!' : 'Saved!' });
+      }
+    } catch (err) {
+      toast({ title: 'Error', variant: 'destructive' });
+    } finally {
+      setSavingStatus(false);
+    }
+  };
 
   const handleShare = async () => {
     if (navigator.share && place) {
@@ -138,20 +177,12 @@ const PlaceDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20 flex flex-col">
-      {/* Hero Image */}
+      {/* Image Gallery */}
       <div className="relative">
-        {place.image_url ? (
-          <img 
-            src={place.image_url} 
-            alt={language === 'bn' ? place.name_bn : place.name_en}
-            className="w-full h-72 object-cover"
-          />
-        ) : (
-          <div className="w-full h-72 bg-gradient-header" />
-        )}
+        <PlaceImageGallery placeId={id!} mainImage={place.image_url} />
         
         {/* Overlay buttons */}
-        <div className="absolute top-4 left-4 right-4 flex justify-between">
+        <div className="absolute top-4 left-4 right-4 flex justify-between z-10">
           <button 
             onClick={() => navigate(-1)}
             className="p-2 rounded-full bg-black/30 backdrop-blur-sm text-white"
@@ -160,7 +191,8 @@ const PlaceDetail: React.FC = () => {
           </button>
           <div className="flex gap-2">
             <button 
-              onClick={() => setIsSaved(!isSaved)}
+              onClick={toggleSaved}
+              disabled={savingStatus}
               className={`p-2 rounded-full backdrop-blur-sm ${isSaved ? 'bg-red-500 text-white' : 'bg-black/30 text-white'}`}
             >
               <Heart className={`w-5 h-5 ${isSaved ? 'fill-white' : ''}`} />

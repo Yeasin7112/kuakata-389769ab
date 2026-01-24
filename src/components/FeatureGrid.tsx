@@ -102,6 +102,20 @@ const FeatureGrid: React.FC = () => {
       route: '/about-kuakata'
     },
     { 
+      icon: '🚌', 
+      titleBn: 'বাস কাউন্টার', 
+      titleEn: 'Bus Counter', 
+      bgColor: '#E3F2FD',
+      route: '/bus-counters'
+    },
+    { 
+      icon: '🏛️', 
+      titleBn: 'ডিসি উদ্যোগ', 
+      titleEn: 'DC Initiatives', 
+      bgColor: '#F3E5F5',
+      route: '/dc-initiatives'
+    },
+    { 
       icon: '📝', 
       titleBn: 'অভিযোগ ও পরামর্শ', 
       titleEn: 'Complaints', 
