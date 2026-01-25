@@ -116,6 +116,34 @@ const FeatureGrid: React.FC = () => {
       route: '/dc-initiatives'
     },
     { 
+      icon: '🚤', 
+      titleBn: 'ট্যুর অপারেটর', 
+      titleEn: 'Tour Operators', 
+      bgColor: '#E0F7FA',
+      route: '/tour-operators'
+    },
+    { 
+      icon: '🍽️', 
+      titleBn: 'জনপ্রিয় খাবার', 
+      titleEn: 'Popular Foods', 
+      bgColor: '#FFF3E0',
+      route: '/popular-foods'
+    },
+    { 
+      icon: '🎡', 
+      titleBn: 'শিশুদের রাইড', 
+      titleEn: 'Children Rides', 
+      bgColor: '#FCE4EC',
+      route: '/children-rides'
+    },
+    { 
+      icon: '🛍️', 
+      titleBn: 'কেনাকাটা', 
+      titleEn: 'Shopping', 
+      bgColor: '#E8F5E9',
+      route: '/shopping-markets'
+    },
+    { 
       icon: '📝', 
       titleBn: 'অভিযোগ ও পরামর্শ', 
       titleEn: 'Complaints', 

@@ -131,7 +131,7 @@ const TourServicesManager: React.FC = () => {
                 <div><Label>Price (English)</Label><Input value={formData.price_en} onChange={(e) => setFormData({...formData, price_en: e.target.value})} /></div>
               </div>
               <div><Label>ফোন</Label><Input value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} /></div>
-              <div><Label>ছবি</Label><ImageUpload value={formData.image_url} onChange={(url) => setFormData({...formData, image_url: url})} folder="tour-services" /></div>
+              <div><Label>ছবি</Label><ImageUpload currentImage={formData.image_url} onImageUploaded={(url) => setFormData({...formData, image_url: url})} folder="tour-services" /></div>
               <div className="flex items-center gap-2"><Switch checked={formData.is_active} onCheckedChange={(checked) => setFormData({...formData, is_active: checked})} /><Label>{language === 'bn' ? 'সক্রিয়' : 'Active'}</Label></div>
               <Button type="submit" className="w-full">{editingItem ? (language === 'bn' ? 'আপডেট করুন' : 'Update') : (language === 'bn' ? 'যোগ করুন' : 'Add')}</Button>
             </form>

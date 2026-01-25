@@ -87,7 +87,7 @@ const PopularFoodsManager: React.FC = () => {
                 <div><Label>Location (English)</Label><Input value={formData.location_en} onChange={(e) => setFormData({...formData, location_en: e.target.value})} /></div>
               </div>
               <div><Label>মূল্য পরিসীমা</Label><Input value={formData.price_range} onChange={(e) => setFormData({...formData, price_range: e.target.value})} placeholder="৫০-২০০ টাকা" /></div>
-              <div><Label>ছবি</Label><ImageUpload value={formData.image_url} onChange={(url) => setFormData({...formData, image_url: url})} folder="foods" /></div>
+              <div><Label>ছবি</Label><ImageUpload currentImage={formData.image_url} onImageUploaded={(url) => setFormData({...formData, image_url: url})} folder="foods" /></div>
               <div className="flex items-center gap-2"><Switch checked={formData.is_active} onCheckedChange={(checked) => setFormData({...formData, is_active: checked})} /><Label>{language === 'bn' ? 'সক্রিয়' : 'Active'}</Label></div>
               <Button type="submit" className="w-full">{editingItem ? (language === 'bn' ? 'আপডেট করুন' : 'Update') : (language === 'bn' ? 'যোগ করুন' : 'Add')}</Button>
             </form>

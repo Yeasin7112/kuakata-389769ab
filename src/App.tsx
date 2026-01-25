@@ -36,6 +36,10 @@ import AboutKuakata from "./pages/AboutKuakata";
 import ComplaintForm from "./pages/ComplaintForm";
 import BusCounters from "./pages/BusCounters";
 import DcInitiatives from "./pages/DcInitiatives";
+import TourOperators from "./pages/TourOperators";
+import PopularFoods from "./pages/PopularFoods";
+import ChildrenRides from "./pages/ChildrenRides";
+import ShoppingMarkets from "./pages/ShoppingMarkets";
 
 // Owner Dashboards
 import HotelOwnerDashboard from "./pages/HotelOwnerDashboard";
@@ -101,6 +105,10 @@ const App = () => (
               <Route path="/complaints" element={<ComplaintForm />} />
               <Route path="/bus-counters" element={<BusCounters />} />
               <Route path="/dc-initiatives" element={<DcInitiatives />} />
+              <Route path="/tour-operators" element={<TourOperators />} />
+              <Route path="/popular-foods" element={<PopularFoods />} />
+              <Route path="/children-rides" element={<ChildrenRides />} />
+              <Route path="/shopping-markets" element={<ShoppingMarkets />} />
               
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />

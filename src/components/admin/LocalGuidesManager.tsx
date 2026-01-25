@@ -117,7 +117,7 @@ const LocalGuidesManager: React.FC = () => {
               <div><Label>ফোন নম্বর</Label><Input value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} required /></div>
               <div><Label>দৈনিক ফি</Label><Input value={formData.price_per_day} onChange={(e) => setFormData({...formData, price_per_day: e.target.value})} placeholder="৫০০-১০০০ টাকা" /></div>
               <div><Label>ভাষা (কমা দিয়ে)</Label><Input value={formData.languages} onChange={(e) => setFormData({...formData, languages: e.target.value})} placeholder="বাংলা, English" /></div>
-              <div><Label>ছবি</Label><ImageUpload value={formData.image_url} onChange={(url) => setFormData({...formData, image_url: url})} folder="guides" /></div>
+              <div><Label>ছবি</Label><ImageUpload currentImage={formData.image_url} onImageUploaded={(url) => setFormData({...formData, image_url: url})} folder="guides" /></div>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2"><Switch checked={formData.is_active} onCheckedChange={(checked) => setFormData({...formData, is_active: checked})} /><Label>{language === 'bn' ? 'সক্রিয়' : 'Active'}</Label></div>
                 <div className="flex items-center gap-2"><Switch checked={formData.is_verified} onCheckedChange={(checked) => setFormData({...formData, is_verified: checked})} /><Label>{language === 'bn' ? 'যাচাইকৃত' : 'Verified'}</Label></div>
