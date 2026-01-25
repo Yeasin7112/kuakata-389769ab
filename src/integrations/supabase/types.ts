@@ -173,6 +173,63 @@ export type Database = {
         }
         Relationships: []
       }
+      beach_chairs: {
+        Row: {
+          created_at: string
+          features_bn: string[] | null
+          features_en: string[] | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          location_bn: string | null
+          location_en: string | null
+          name_bn: string
+          name_en: string
+          phone: string | null
+          price_bn: string | null
+          price_en: string | null
+          timing_bn: string | null
+          timing_en: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          features_bn?: string[] | null
+          features_en?: string[] | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          location_bn?: string | null
+          location_en?: string | null
+          name_bn: string
+          name_en: string
+          phone?: string | null
+          price_bn?: string | null
+          price_en?: string | null
+          timing_bn?: string | null
+          timing_en?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          features_bn?: string[] | null
+          features_en?: string[] | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          location_bn?: string | null
+          location_en?: string | null
+          name_bn?: string
+          name_en?: string
+          phone?: string | null
+          price_bn?: string | null
+          price_en?: string | null
+          timing_bn?: string | null
+          timing_en?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       beach_safety: {
         Row: {
           created_at: string
@@ -247,6 +304,60 @@ export type Database = {
           name_bn?: string
           name_en?: string
           phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      children_rides: {
+        Row: {
+          created_at: string
+          description_bn: string | null
+          description_en: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          location_bn: string | null
+          location_en: string | null
+          name_bn: string
+          name_en: string
+          price_bn: string | null
+          price_en: string | null
+          timing_bn: string | null
+          timing_en: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          location_bn?: string | null
+          location_en?: string | null
+          name_bn: string
+          name_en: string
+          price_bn?: string | null
+          price_en?: string | null
+          timing_bn?: string | null
+          timing_en?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          location_bn?: string | null
+          location_en?: string | null
+          name_bn?: string
+          name_en?: string
+          price_bn?: string | null
+          price_en?: string | null
+          timing_bn?: string | null
+          timing_en?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -944,6 +1055,51 @@ export type Database = {
         }
         Relationships: []
       }
+      popular_foods: {
+        Row: {
+          created_at: string
+          description_bn: string | null
+          description_en: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          location_bn: string | null
+          location_en: string | null
+          name_bn: string
+          name_en: string
+          price_range: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          location_bn?: string | null
+          location_en?: string | null
+          name_bn: string
+          name_en: string
+          price_range?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          location_bn?: string | null
+          location_en?: string | null
+          name_bn?: string
+          name_en?: string
+          price_range?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       prayer_times: {
         Row: {
           asr: string
@@ -1229,6 +1385,60 @@ export type Database = {
           },
         ]
       }
+      shopping_markets: {
+        Row: {
+          category: string | null
+          created_at: string
+          description_bn: string | null
+          description_en: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          location_bn: string | null
+          location_en: string | null
+          name_bn: string
+          name_en: string
+          phone: string | null
+          timing_bn: string | null
+          timing_en: string | null
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          location_bn?: string | null
+          location_en?: string | null
+          name_bn: string
+          name_en: string
+          phone?: string | null
+          timing_bn?: string | null
+          timing_en?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          location_bn?: string | null
+          location_en?: string | null
+          name_bn?: string
+          name_en?: string
+          phone?: string | null
+          timing_bn?: string | null
+          timing_en?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       sun_times: {
         Row: {
           created_at: string
@@ -1294,6 +1504,54 @@ export type Database = {
           low_tide_time?: string | null
           notes_bn?: string | null
           notes_en?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tour_services: {
+        Row: {
+          created_at: string
+          description_bn: string | null
+          description_en: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          name_bn: string
+          name_en: string
+          phone: string | null
+          price_bn: string | null
+          price_en: string | null
+          service_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name_bn: string
+          name_en: string
+          phone?: string | null
+          price_bn?: string | null
+          price_en?: string | null
+          service_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name_bn?: string
+          name_en?: string
+          phone?: string | null
+          price_bn?: string | null
+          price_en?: string | null
+          service_type?: string
           updated_at?: string
         }
         Relationships: []
