@@ -1,52 +1,28 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { ArrowLeft, Phone, MapPin, Clock, DollarSign, Umbrella } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { ArrowLeft, Phone, Clock, DollarSign, Umbrella, Loader2 } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 
 const BeachChairs: React.FC = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
 
-  // Beach chair rental info (can be made dynamic later)
-  const rentalSpots = [
-    {
-      id: 1,
-      nameBn: 'কুয়াকাটা সেন্ট্রাল বিচ',
-      nameEn: 'Kuakata Central Beach',
-      priceBn: '৫০-১০০ টাকা/ঘন্টা',
-      priceEn: '50-100 BDT/hour',
-      timingBn: 'সকাল ৬টা - সন্ধ্যা ৭টা',
-      timingEn: '6 AM - 7 PM',
-      phone: '+8801712345678',
-      featuresBn: ['ছাতা', 'চেয়ার', 'টেবিল'],
-      featuresEn: ['Umbrella', 'Chair', 'Table'],
-    },
-    {
-      id: 2,
-      nameBn: 'পশ্চিম বিচ পয়েন্ট',
-      nameEn: 'West Beach Point',
-      priceBn: '৪০-৮০ টাকা/ঘন্টা',
-      priceEn: '40-80 BDT/hour',
-      timingBn: 'সকাল ৬টা - রাত ৮টা',
-      timingEn: '6 AM - 8 PM',
-      phone: '+8801812345678',
-      featuresBn: ['ছাতা', 'চেয়ার', 'পানীয়'],
-      featuresEn: ['Umbrella', 'Chair', 'Drinks'],
-    },
-    {
-      id: 3,
-      nameBn: 'সূর্যাস্ত পয়েন্ট',
-      nameEn: 'Sunset Point',
-      priceBn: '৬০-১২০ টাকা/ঘন্টা',
-      priceEn: '60-120 BDT/hour',
-      timingBn: 'বিকাল ৩টা - রাত ৯টা',
-      timingEn: '3 PM - 9 PM',
-      phone: '+8801912345678',
-      featuresBn: ['প্রিমিয়াম চেয়ার', 'ছাতা', 'স্ন্যাকস'],
-      featuresEn: ['Premium Chair', 'Umbrella', 'Snacks'],
-    },
-  ];
+  const { data: beachChairs, isLoading } = useQuery({
+    queryKey: ['beach-chairs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('beach_chairs')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    }
+  });
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -87,44 +63,75 @@ const BeachChairs: React.FC = () => {
           📍 {language === 'bn' ? 'ভাড়ার স্থানসমূহ' : 'Rental Locations'}
         </h3>
         
-        {rentalSpots.map((spot) => (
-          <div key={spot.id} className="card-elevated p-4">
-            <div className="flex items-start justify-between mb-3">
-              <h4 className="font-bold font-bangla">
-                {language === 'bn' ? spot.nameBn : spot.nameEn}
-              </h4>
-              <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
-                🏖️
-              </span>
-            </div>
-            
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <DollarSign className="w-4 h-4 text-green-500" />
-                <span className="font-bangla">{language === 'bn' ? spot.priceBn : spot.priceEn}</span>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Clock className="w-4 h-4 text-blue-500" />
-                <span className="font-bangla">{language === 'bn' ? spot.timingBn : spot.timingEn}</span>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2 mt-3">
-              {(language === 'bn' ? spot.featuresBn : spot.featuresEn).map((feature, idx) => (
-                <span key={idx} className="bg-muted text-muted-foreground text-xs px-2 py-1 rounded-full font-bangla">
-                  {feature}
-                </span>
-              ))}
-            </div>
-
-            <a
-              href={`tel:${spot.phone}`}
-              className="mt-4 w-full bg-primary text-primary-foreground py-2 rounded-lg text-center text-sm font-medium flex items-center justify-center gap-2"
-            >
-              <Phone className="w-4 h-4" /> {language === 'bn' ? 'বুকিং করুন' : 'Book Now'}
-            </a>
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
-        ))}
+        ) : beachChairs && beachChairs.length > 0 ? (
+          beachChairs.map((spot) => (
+            <div key={spot.id} className="card-elevated p-4">
+              {spot.image_url && (
+                <img 
+                  src={spot.image_url} 
+                  alt={language === 'bn' ? spot.name_bn : spot.name_en}
+                  className="w-full h-32 object-cover rounded-lg mb-3"
+                />
+              )}
+              <div className="flex items-start justify-between mb-3">
+                <h4 className="font-bold font-bangla">
+                  {language === 'bn' ? spot.name_bn : spot.name_en}
+                </h4>
+                <span className="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full">
+                  🏖️
+                </span>
+              </div>
+              
+              {(spot.location_bn || spot.location_en) && (
+                <p className="text-sm text-muted-foreground mb-2 font-bangla">
+                  📍 {language === 'bn' ? spot.location_bn : spot.location_en}
+                </p>
+              )}
+              
+              <div className="space-y-2 text-sm">
+                {(spot.price_bn || spot.price_en) && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <DollarSign className="w-4 h-4 text-green-500" />
+                    <span className="font-bangla">{language === 'bn' ? spot.price_bn : spot.price_en}</span>
+                  </div>
+                )}
+                {(spot.timing_bn || spot.timing_en) && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <Clock className="w-4 h-4 text-blue-500" />
+                    <span className="font-bangla">{language === 'bn' ? spot.timing_bn : spot.timing_en}</span>
+                  </div>
+                )}
+              </div>
+
+              {((spot.features_bn && spot.features_bn.length > 0) || (spot.features_en && spot.features_en.length > 0)) && (
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {(language === 'bn' ? spot.features_bn : spot.features_en)?.map((feature: string, idx: number) => (
+                    <span key={idx} className="bg-muted text-muted-foreground text-xs px-2 py-1 rounded-full font-bangla">
+                      {feature}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {spot.phone && (
+                <a
+                  href={`tel:${spot.phone}`}
+                  className="mt-4 w-full bg-primary text-primary-foreground py-2 rounded-lg text-center text-sm font-medium flex items-center justify-center gap-2"
+                >
+                  <Phone className="w-4 h-4" /> {language === 'bn' ? 'বুকিং করুন' : 'Book Now'}
+                </a>
+              )}
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            <p className="font-bangla">{language === 'bn' ? 'কোনো তথ্য পাওয়া যায়নি' : 'No data available'}</p>
+          </div>
+        )}
       </div>
 
       {/* Tips */}
