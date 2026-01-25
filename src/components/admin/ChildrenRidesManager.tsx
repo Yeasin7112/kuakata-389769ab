@@ -94,7 +94,7 @@ const ChildrenRidesManager: React.FC = () => {
                 <div><Label>সময় (বাংলা)</Label><Input value={formData.timing_bn} onChange={(e) => setFormData({...formData, timing_bn: e.target.value})} /></div>
                 <div><Label>Timing (English)</Label><Input value={formData.timing_en} onChange={(e) => setFormData({...formData, timing_en: e.target.value})} /></div>
               </div>
-              <div><Label>ছবি</Label><ImageUpload value={formData.image_url} onChange={(url) => setFormData({...formData, image_url: url})} folder="rides" /></div>
+              <div><Label>ছবি</Label><ImageUpload currentImage={formData.image_url} onImageUploaded={(url) => setFormData({...formData, image_url: url})} folder="rides" /></div>
               <div className="flex items-center gap-2"><Switch checked={formData.is_active} onCheckedChange={(checked) => setFormData({...formData, is_active: checked})} /><Label>{language === 'bn' ? 'সক্রিয়' : 'Active'}</Label></div>
               <Button type="submit" className="w-full">{editingItem ? (language === 'bn' ? 'আপডেট করুন' : 'Update') : (language === 'bn' ? 'যোগ করুন' : 'Add')}</Button>
             </form>

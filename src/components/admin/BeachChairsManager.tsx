@@ -205,7 +205,7 @@ const BeachChairsManager: React.FC = () => {
               </div>
               <div>
                 <Label>ছবি</Label>
-                <ImageUpload value={formData.image_url} onChange={(url) => setFormData({...formData, image_url: url})} folder="beach-chairs" />
+                <ImageUpload currentImage={formData.image_url} onImageUploaded={(url) => setFormData({...formData, image_url: url})} folder="beach-chairs" />
               </div>
               <div className="flex items-center gap-2">
                 <Switch checked={formData.is_active} onCheckedChange={(checked) => setFormData({...formData, is_active: checked})} />

@@ -27,6 +27,12 @@ import ReviewsManager from '@/components/admin/ReviewsManager';
 import AdminsManager from '@/components/admin/AdminsManager';
 import BusCountersManager from '@/components/admin/BusCountersManager';
 import DcInitiativesManager from '@/components/admin/DcInitiativesManager';
+import BeachChairsManager from '@/components/admin/BeachChairsManager';
+import TourServicesManager from '@/components/admin/TourServicesManager';
+import LocalGuidesManager from '@/components/admin/LocalGuidesManager';
+import PopularFoodsManager from '@/components/admin/PopularFoodsManager';
+import ChildrenRidesManager from '@/components/admin/ChildrenRidesManager';
+import ShoppingMarketsManager from '@/components/admin/ShoppingMarketsManager';
 import { Loader2 } from 'lucide-react';
 
 type AdminSection = 
@@ -52,7 +58,13 @@ type AdminSection =
   | 'reviews'
   | 'admins'
   | 'bus-counters'
-  | 'dc-initiatives';
+  | 'dc-initiatives'
+  | 'beach-chairs'
+  | 'tour-services'
+  | 'local-guides'
+  | 'popular-foods'
+  | 'children-rides'
+  | 'shopping-markets';
 
 const AdminDashboard: React.FC = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -145,6 +157,18 @@ const AdminDashboard: React.FC = () => {
         return <BusCountersManager />;
       case 'dc-initiatives':
         return <DcInitiativesManager />;
+      case 'beach-chairs':
+        return <BeachChairsManager />;
+      case 'tour-services':
+        return <TourServicesManager />;
+      case 'local-guides':
+        return <LocalGuidesManager />;
+      case 'popular-foods':
+        return <PopularFoodsManager />;
+      case 'children-rides':
+        return <ChildrenRidesManager />;
+      case 'shopping-markets':
+        return <ShoppingMarketsManager />;
       default:
         return <DashboardOverview onNavigate={(section) => setActiveSection(section as AdminSection)} />;
     }
