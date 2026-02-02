@@ -1,16 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Phone, Loader2, Ship, Bike, Anchor, User, MapPin } from 'lucide-react';
+import { ArrowLeft, Phone, Loader2, Ship, Bike, Anchor, User, MapPin, Star, ChevronDown, ChevronUp } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import EntityImageGallery from '@/components/EntityImageGallery';
+import ReviewSection from '@/components/ReviewSection';
+import { Button } from '@/components/ui/button';
 
 const TourOperators: React.FC = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const [expandedService, setExpandedService] = useState<string | null>(null);
+  const [expandedGuide, setExpandedGuide] = useState<string | null>(null);
 
   const { data: tourServices, isLoading: loadingServices } = useQuery({
     queryKey: ['tour-services'],
@@ -136,6 +140,22 @@ const TourOperators: React.FC = () => {
                       <Phone className="w-4 h-4" /> {language === 'bn' ? 'যোগাযোগ করুন' : 'Contact'}
                     </a>
                   )}
+
+                  {/* Reviews Toggle */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setExpandedService(expandedService === service.id ? null : service.id)}
+                    className="w-full mt-3 gap-2"
+                  >
+                    <Star className="w-4 h-4" />
+                    {language === 'bn' ? 'রিভিউ দেখুন' : 'View Reviews'}
+                    {expandedService === service.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </Button>
+
+                  {expandedService === service.id && (
+                    <ReviewSection entityType="tour_service" entityId={service.id} />
+                  )}
                   </div>
                 </div>
               ))
@@ -216,6 +236,22 @@ const TourOperators: React.FC = () => {
                     >
                       <Phone className="w-4 h-4" /> {language === 'bn' ? 'যোগাযোগ করুন' : 'Contact'}
                     </a>
+                  )}
+
+                  {/* Reviews Toggle */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setExpandedGuide(expandedGuide === guide.id ? null : guide.id)}
+                    className="w-full mt-3 gap-2"
+                  >
+                    <Star className="w-4 h-4" />
+                    {language === 'bn' ? 'রিভিউ দেখুন' : 'View Reviews'}
+                    {expandedGuide === guide.id ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </Button>
+
+                  {expandedGuide === guide.id && (
+                    <ReviewSection entityType="local_guide" entityId={guide.id} />
                   )}
                 </div>
               ))
