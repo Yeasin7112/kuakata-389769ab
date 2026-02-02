@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import FeatureCard from './FeatureCard';
+import VoiceAssistant from './VoiceAssistant';
 
 const FeatureGrid: React.FC = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
+  const [showVoiceAssistant, setShowVoiceAssistant] = useState(false);
 
   // Feature items with emojis matching the reference design
   const features = [
@@ -50,6 +52,30 @@ const FeatureGrid: React.FC = () => {
       titleEn: 'Local Transport', 
       bgColor: '#FFF8E1',
       route: '/transport'
+    },
+    { 
+      icon: '🎤', 
+      titleBn: 'ভয়েস অ্যাসিস্ট্যান্ট', 
+      titleEn: 'Voice Assistant', 
+      bgColor: '#E1F5FE',
+      badge: 'NEW',
+      route: 'voice'
+    },
+    { 
+      icon: '🗺️', 
+      titleBn: 'ট্যুরিস্ট ম্যাপ', 
+      titleEn: 'Tourist Map', 
+      bgColor: '#E8F5E9',
+      badge: 'GPS',
+      route: '/tourist-map'
+    },
+    { 
+      icon: '📷', 
+      titleBn: 'AR ক্যামেরা', 
+      titleEn: 'AR Camera', 
+      bgColor: '#F3E5F5',
+      badge: 'AR',
+      route: '/ar-camera'
     },
     { 
       icon: '🤖', 
@@ -153,26 +179,33 @@ const FeatureGrid: React.FC = () => {
   ];
 
   const handleFeatureClick = (route: string) => {
-    navigate(route);
+    if (route === 'voice') {
+      setShowVoiceAssistant(true);
+    } else {
+      navigate(route);
+    }
   };
 
   return (
-    <div className="px-4 py-4">
-      <div className="card-elevated p-4">
-        <div className="grid grid-cols-4 gap-3">
-          {features.map((feature, index) => (
-            <FeatureCard
-              key={index}
-              icon={feature.icon}
-              title={language === 'bn' ? feature.titleBn : feature.titleEn}
-              bgColor={feature.bgColor}
-              badge={feature.badge}
-              onClick={() => handleFeatureClick(feature.route)}
-            />
-          ))}
+    <>
+      <div className="px-4 py-4">
+        <div className="card-elevated p-4">
+          <div className="grid grid-cols-4 gap-3">
+            {features.map((feature, index) => (
+              <FeatureCard
+                key={index}
+                icon={feature.icon}
+                title={language === 'bn' ? feature.titleBn : feature.titleEn}
+                bgColor={feature.bgColor}
+                badge={feature.badge}
+                onClick={() => handleFeatureClick(feature.route)}
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+      <VoiceAssistant isOpen={showVoiceAssistant} onClose={() => setShowVoiceAssistant(false)} />
+    </>
   );
 };
 
