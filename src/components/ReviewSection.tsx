@@ -20,7 +20,7 @@ interface Review {
 }
 
 interface ReviewSectionProps {
-  entityType: 'hotel' | 'restaurant' | 'place';
+  entityType: 'hotel' | 'restaurant' | 'place' | 'tour_service' | 'local_guide';
   entityId: string;
 }
 
