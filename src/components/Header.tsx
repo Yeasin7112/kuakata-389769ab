@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { User, LogIn, Shield, Building2, UtensilsCrossed } from 'lucide-react';
+import { User, LogIn, Shield, Building2, UtensilsCrossed, Search } from 'lucide-react';
+import GlobalSearch from '@/components/GlobalSearch';
 
 const Header: React.FC = () => {
   const { language, toggleLanguage } = useLanguage();
   const { user, isAdmin, isHotelOwner, isRestaurantOwner } = useAuth();
-
+  const [showSearch, setShowSearch] = useState(false);
   return (
     <header className="bg-gradient-header text-primary-foreground safe-area-top">
       <div className="px-4 py-3">
@@ -28,6 +29,15 @@ const Header: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-2">
+            {/* Search Button */}
+            <button 
+              onClick={() => setShowSearch(true)}
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              title={language === 'bn' ? 'অনুসন্ধান' : 'Search'}
+            >
+              <Search className="w-5 h-5" />
+            </button>
+
             {/* Language Toggle */}
             <button 
               onClick={toggleLanguage}
@@ -90,6 +100,7 @@ const Header: React.FC = () => {
           </div>
         </div>
       </div>
+      <GlobalSearch isOpen={showSearch} onClose={() => setShowSearch(false)} />
     </header>
   );
 };
