@@ -1055,6 +1055,38 @@ export type Database = {
         }
         Relationships: []
       }
+      popular_food_images: {
+        Row: {
+          created_at: string
+          display_order: number | null
+          id: string
+          image_url: string
+          popular_food_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url: string
+          popular_food_id: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          popular_food_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "popular_food_images_popular_food_id_fkey"
+            columns: ["popular_food_id"]
+            isOneToOne: false
+            referencedRelation: "popular_foods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       popular_foods: {
         Row: {
           created_at: string
@@ -1507,6 +1539,38 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      tour_service_images: {
+        Row: {
+          created_at: string
+          display_order: number | null
+          id: string
+          image_url: string
+          tour_service_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url: string
+          tour_service_id: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          image_url?: string
+          tour_service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tour_service_images_tour_service_id_fkey"
+            columns: ["tour_service_id"]
+            isOneToOne: false
+            referencedRelation: "tour_services"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tour_services: {
         Row: {

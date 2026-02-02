@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Edit, Trash2, Loader2 } from 'lucide-react';
 import ImageUpload from '@/components/ImageUpload';
+import EntityImagesManager from '@/components/admin/EntityImagesManager';
 
 const TourServicesManager: React.FC = () => {
   const { language } = useLanguage();
@@ -132,6 +133,11 @@ const TourServicesManager: React.FC = () => {
               </div>
               <div><Label>ফোন</Label><Input value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} /></div>
               <div><Label>ছবি</Label><ImageUpload currentImage={formData.image_url} onImageUploaded={(url) => setFormData({...formData, image_url: url})} folder="tour-services" /></div>
+              {editingItem && (
+                <div className="border-t pt-4 mt-4">
+                  <EntityImagesManager entityId={editingItem.id} entityType="tour_service" folder="tour-services" />
+                </div>
+              )}
               <div className="flex items-center gap-2"><Switch checked={formData.is_active} onCheckedChange={(checked) => setFormData({...formData, is_active: checked})} /><Label>{language === 'bn' ? 'সক্রিয়' : 'Active'}</Label></div>
               <Button type="submit" className="w-full">{editingItem ? (language === 'bn' ? 'আপডেট করুন' : 'Update') : (language === 'bn' ? 'যোগ করুন' : 'Add')}</Button>
             </form>
