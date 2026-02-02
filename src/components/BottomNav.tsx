@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Home, Compass, Heart, User, Search } from 'lucide-react';
+import { Home, Compass, Heart, User, Mic } from 'lucide-react';
 import GlobalSearch from '@/components/GlobalSearch';
+import VoiceAssistant from '@/components/VoiceAssistant';
 
-type Tab = 'home' | 'explore' | 'search' | 'saved' | 'profile';
+type Tab = 'home' | 'explore' | 'voice' | 'saved' | 'profile';
 
 interface TabConfig {
   id: Tab;
@@ -15,15 +16,15 @@ interface TabConfig {
 }
 
 const BottomNav: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  const [showSearch, setShowSearch] = useState(false);
+  const [showVoice, setShowVoice] = useState(false);
 
   const tabs: TabConfig[] = [
     { id: 'home', icon: Home, labelKey: 'home', path: '/' },
     { id: 'explore', icon: Compass, labelKey: 'explore', path: '/explore' },
-    { id: 'search', icon: Search, labelKey: 'search', isAction: true },
+    { id: 'voice', icon: Mic, labelKey: language === 'bn' ? 'ভয়েস' : 'Voice', isAction: true },
     { id: 'saved', icon: Heart, labelKey: 'saved', path: '/saved' },
     { id: 'profile', icon: User, labelKey: 'profile', path: '/profile' },
   ];
@@ -41,7 +42,7 @@ const BottomNav: React.FC = () => {
 
   const handleTabClick = (tab: TabConfig) => {
     if (tab.isAction) {
-      setShowSearch(true);
+      setShowVoice(true);
     } else if (tab.path) {
       navigate(tab.path);
     }
@@ -75,7 +76,7 @@ const BottomNav: React.FC = () => {
                   />
                 </div>
                 <span className={`text-[11px] font-bangla ${isActive || isSearchButton ? 'font-semibold' : 'font-medium'}`}>
-                  {t(tab.labelKey)}
+                  {tab.isAction ? tab.labelKey : t(tab.labelKey)}
                 </span>
                 {isActive && !isSearchButton && (
                   <span className="absolute bottom-1 w-1.5 h-1.5 bg-primary rounded-full" />
@@ -85,7 +86,7 @@ const BottomNav: React.FC = () => {
           })}
         </div>
       </nav>
-      <GlobalSearch isOpen={showSearch} onClose={() => setShowSearch(false)} />
+      <VoiceAssistant isOpen={showVoice} onClose={() => setShowVoice(false)} />
     </>
   );
 };

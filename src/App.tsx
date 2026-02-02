@@ -40,6 +40,8 @@ import TourOperators from "./pages/TourOperators";
 import PopularFoods from "./pages/PopularFoods";
 import ChildrenRides from "./pages/ChildrenRides";
 import ShoppingMarkets from "./pages/ShoppingMarkets";
+import TouristMap from "./pages/TouristMap";
+import ARCamera from "./pages/ARCamera";
 
 // Owner Dashboards
 import HotelOwnerDashboard from "./pages/HotelOwnerDashboard";
@@ -109,6 +111,8 @@ const App = () => (
               <Route path="/popular-foods" element={<PopularFoods />} />
               <Route path="/children-rides" element={<ChildrenRides />} />
               <Route path="/shopping-markets" element={<ShoppingMarkets />} />
+              <Route path="/tourist-map" element={<TouristMap />} />
+              <Route path="/ar-camera" element={<ARCamera />} />
               
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
