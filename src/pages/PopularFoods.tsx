@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, MapPin, Loader2, UtensilsCrossed } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
+import EntityImageGallery from '@/components/EntityImageGallery';
 
 const PopularFoods: React.FC = () => {
   const { language } = useLanguage();
@@ -66,13 +67,11 @@ const PopularFoods: React.FC = () => {
         ) : foods && foods.length > 0 ? (
           foods.map((food) => (
             <div key={food.id} className="card-elevated overflow-hidden">
-              {food.image_url && (
-                <img 
-                  src={food.image_url} 
-                  alt={language === 'bn' ? food.name_bn : food.name_en}
-                  className="w-full h-48 object-cover"
-                />
-              )}
+              <EntityImageGallery 
+                entityId={food.id} 
+                entityType="popular_food" 
+                mainImage={food.image_url} 
+              />
               <div className="p-4">
                 <div className="flex items-start justify-between mb-2">
                   <h4 className="font-bold text-lg font-bangla">

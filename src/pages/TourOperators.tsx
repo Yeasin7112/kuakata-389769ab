@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, Phone, Loader2, Ship, Bike, Anchor, User, MapPin } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import EntityImageGallery from '@/components/EntityImageGallery';
 
 const TourOperators: React.FC = () => {
   const { language } = useLanguage();
@@ -92,14 +93,13 @@ const TourOperators: React.FC = () => {
               </div>
             ) : tourServices && tourServices.length > 0 ? (
               tourServices.map((service) => (
-                <div key={service.id} className="card-elevated p-4">
-                  {service.image_url && (
-                    <img 
-                      src={service.image_url} 
-                      alt={language === 'bn' ? service.name_bn : service.name_en}
-                      className="w-full h-40 object-cover rounded-lg mb-3"
-                    />
-                  )}
+                <div key={service.id} className="card-elevated overflow-hidden">
+                  <EntityImageGallery 
+                    entityId={service.id} 
+                    entityType="tour_service" 
+                    mainImage={service.image_url} 
+                  />
+                  <div className="p-4">
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <span className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-1 rounded-full mb-2">
@@ -136,6 +136,7 @@ const TourOperators: React.FC = () => {
                       <Phone className="w-4 h-4" /> {language === 'bn' ? 'যোগাযোগ করুন' : 'Contact'}
                     </a>
                   )}
+                  </div>
                 </div>
               ))
             ) : (
