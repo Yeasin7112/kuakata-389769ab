@@ -1,71 +1,42 @@
+// TouristMap component - Interactive GPS tourist map for Kuakata
+// Using OpenStreetMap iframe as a reliable cross-platform solution
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { MapContainer, TileLayer, Marker, Popup, useMap, Circle } from 'react-leaflet';
-import L from 'leaflet';
-import { ArrowLeft, Navigation, Loader2, MapPin, Hotel, UtensilsCrossed, Building2, Phone, AlertTriangle, Locate } from 'lucide-react';
+import { ArrowLeft, Navigation, Loader2, MapPin, Hotel, UtensilsCrossed, Building2, Phone, AlertTriangle, Locate, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import BottomNav from '@/components/BottomNav';
-import 'leaflet/dist/leaflet.css';
-
-// Custom marker icons
-const createIcon = (color: string, emoji: string) => {
-  return L.divIcon({
-    className: 'custom-marker',
-    html: `<div style="
-      background: ${color};
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      border: 2px solid white;
-    ">${emoji}</div>`,
-    iconSize: [36, 36],
-    iconAnchor: [18, 18],
-    popupAnchor: [0, -18]
-  });
-};
-
-const icons = {
-  hotel: createIcon('#3b82f6', '🏨'),
-  restaurant: createIcon('#f97316', '🍽️'),
-  bank: createIcon('#22c55e', '🏦'),
-  emergency: createIcon('#ef4444', '🚨'),
-  place: createIcon('#8b5cf6', '📍'),
-  user: createIcon('#06b6d4', '📍')
-};
 
 // Kuakata coordinates
-const KUAKATA_CENTER: [number, number] = [21.8167, 90.1167];
+const KUAKATA_CENTER = { lat: 21.8167, lng: 90.1167 };
 
-// Location tracker component
-const LocationTracker: React.FC<{ onLocationFound: (pos: [number, number]) => void }> = ({ onLocationFound }) => {
-  const map = useMap();
-  
-  useEffect(() => {
-    map.locate({ setView: false, enableHighAccuracy: true });
-    
-    map.on('locationfound', (e) => {
-      onLocationFound([e.latlng.lat, e.latlng.lng]);
-    });
-  }, [map, onLocationFound]);
-  
-  return null;
-};
+interface LocationItem {
+  id: string;
+  name_bn: string;
+  name_en: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  phone?: string | null;
+  address_bn?: string | null;
+  address_en?: string | null;
+  has_atm?: boolean | null;
+  type?: string | null;
+  category?: string | null;
+  description_bn?: string | null;
+  description_en?: string | null;
+}
 
 const TouristMap: React.FC = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
-  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [isLocating, setIsLocating] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<LocationItem | null>(null);
 
   // Fetch all location data
   const { data: hotels } = useQuery({
@@ -87,12 +58,7 @@ const TouristMap: React.FC = () => {
         .from('restaurants')
         .select('id, name_bn, name_en, phone, address_en, address_bn')
         .eq('is_active', true);
-      // Restaurants don't have lat/lng yet, we'll simulate near center
-      return (data || []).map((r, i) => ({
-        ...r,
-        latitude: KUAKATA_CENTER[0] + (Math.random() - 0.5) * 0.02,
-        longitude: KUAKATA_CENTER[1] + (Math.random() - 0.5) * 0.02
-      }));
+      return data || [];
     }
   });
 
@@ -136,7 +102,7 @@ const TouristMap: React.FC = () => {
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setUserLocation([position.coords.latitude, position.coords.longitude]);
+        setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
         setIsLocating(false);
       },
       (error) => {
@@ -152,13 +118,70 @@ const TouristMap: React.FC = () => {
     window.open(url, '_blank');
   };
 
+  const openInMaps = () => {
+    const lat = userLocation?.lat || KUAKATA_CENTER.lat;
+    const lng = userLocation?.lng || KUAKATA_CENTER.lng;
+    window.open(`https://www.google.com/maps/@${lat},${lng},15z`, '_blank');
+  };
+
   const filterOptions = [
-    { id: 'all', label: language === 'bn' ? 'সব' : 'All', icon: MapPin },
-    { id: 'hotel', label: language === 'bn' ? 'হোটেল' : 'Hotels', icon: Hotel },
-    { id: 'restaurant', label: language === 'bn' ? 'রেস্তোরাঁ' : 'Food', icon: UtensilsCrossed },
-    { id: 'bank', label: language === 'bn' ? 'ব্যাংক' : 'Bank', icon: Building2 },
-    { id: 'emergency', label: language === 'bn' ? 'জরুরি' : 'Emergency', icon: AlertTriangle }
+    { id: 'all', label: language === 'bn' ? 'সব' : 'All', icon: MapPin, color: 'bg-primary' },
+    { id: 'hotel', label: language === 'bn' ? 'হোটেল' : 'Hotels', icon: Hotel, color: 'bg-blue-500' },
+    { id: 'restaurant', label: language === 'bn' ? 'রেস্তোরাঁ' : 'Food', icon: UtensilsCrossed, color: 'bg-orange-500' },
+    { id: 'bank', label: language === 'bn' ? 'ব্যাংক' : 'Bank', icon: Building2, color: 'bg-green-500' },
+    { id: 'emergency', label: language === 'bn' ? 'জরুরি' : 'Emergency', icon: AlertTriangle, color: 'bg-red-500' }
   ];
+
+  // Combine all items based on filter
+  const getAllItems = () => {
+    const items: (LocationItem & { itemType: string })[] = [];
+    
+    if (activeFilter === 'all' || activeFilter === 'hotel') {
+      hotels?.forEach(h => items.push({ ...h, itemType: 'hotel' }));
+    }
+    if (activeFilter === 'all' || activeFilter === 'restaurant') {
+      restaurants?.forEach(r => items.push({ ...r, itemType: 'restaurant' }));
+    }
+    if (activeFilter === 'all' || activeFilter === 'bank') {
+      banks?.forEach(b => items.push({ ...b, itemType: 'bank' }));
+    }
+    if (activeFilter === 'all' || activeFilter === 'emergency') {
+      emergencyServices?.forEach(e => items.push({ ...e, itemType: 'emergency' }));
+    }
+    if (activeFilter === 'all' || activeFilter === 'place') {
+      places?.forEach(p => items.push({ ...p, itemType: 'place' }));
+    }
+    
+    return items;
+  };
+
+  const getItemIcon = (type: string) => {
+    switch (type) {
+      case 'hotel': return '🏨';
+      case 'restaurant': return '🍽️';
+      case 'bank': return '🏦';
+      case 'emergency': return '🚨';
+      case 'place': return '📍';
+      default: return '📍';
+    }
+  };
+
+  const getItemColor = (type: string) => {
+    switch (type) {
+      case 'hotel': return 'bg-blue-100 border-blue-300';
+      case 'restaurant': return 'bg-orange-100 border-orange-300';
+      case 'bank': return 'bg-green-100 border-green-300';
+      case 'emergency': return 'bg-red-100 border-red-300';
+      case 'place': return 'bg-purple-100 border-purple-300';
+      default: return 'bg-gray-100 border-gray-300';
+    }
+  };
+
+  const allItems = getAllItems();
+
+  // Generate OpenStreetMap iframe URL
+  const mapCenter = userLocation || KUAKATA_CENTER;
+  const osmIframeUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${mapCenter.lng - 0.05}%2C${mapCenter.lat - 0.03}%2C${mapCenter.lng + 0.05}%2C${mapCenter.lat + 0.03}&layer=mapnik&marker=${mapCenter.lat}%2C${mapCenter.lng}`;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -167,7 +190,7 @@ const TouristMap: React.FC = () => {
         <button onClick={() => navigate(-1)} className="p-2 hover:bg-white/10 rounded-full">
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-lg font-bold">
             {language === 'bn' ? '🗺️ ট্যুরিস্ট ম্যাপ' : '🗺️ Tourist Map'}
           </h1>
@@ -175,6 +198,15 @@ const TouristMap: React.FC = () => {
             {language === 'bn' ? 'কুয়াকাটার সব কিছু এক জায়গায়' : 'Everything in Kuakata'}
           </p>
         </div>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={openInMaps}
+          className="gap-1"
+        >
+          <ExternalLink className="w-4 h-4" />
+          {language === 'bn' ? 'ম্যাপস' : 'Maps'}
+        </Button>
       </header>
 
       {/* Filter Tabs */}
@@ -195,195 +227,104 @@ const TouristMap: React.FC = () => {
         </div>
       </div>
 
-      {/* Map */}
-      <div className="flex-1 relative">
-        <MapContainer
-          center={KUAKATA_CENTER}
-          zoom={14}
-          className="h-full w-full"
-          zoomControl={false}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      {/* Map and List Section */}
+      <div className="flex-1 flex flex-col">
+        {/* Map Embed */}
+        <div className="relative h-48 bg-muted">
+          <iframe
+            src={osmIframeUrl}
+            className="w-full h-full border-0"
+            title="Kuakata Map"
+            loading="lazy"
           />
           
-          <LocationTracker onLocationFound={setUserLocation} />
+          {/* Locate Me Button */}
+          <Button
+            onClick={handleLocateMe}
+            disabled={isLocating}
+            size="sm"
+            className="absolute bottom-2 right-2 shadow-lg rounded-full"
+          >
+            {isLocating ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Locate className="w-4 h-4" />
+            )}
+          </Button>
 
-          {/* User location marker */}
           {userLocation && (
-            <>
-              <Circle
-                center={userLocation}
-                radius={100}
-                pathOptions={{ color: '#06b6d4', fillColor: '#06b6d4', fillOpacity: 0.2 }}
-              />
-              <Marker position={userLocation} icon={icons.user}>
-                <Popup>{language === 'bn' ? 'আপনি এখানে' : 'You are here'}</Popup>
-              </Marker>
-            </>
+            <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm rounded-lg px-3 py-1.5 text-xs shadow">
+              📍 {language === 'bn' ? 'আপনার অবস্থান পাওয়া গেছে' : 'Your location found'}
+            </div>
           )}
+        </div>
 
-          {/* Hotels */}
-          {(activeFilter === 'all' || activeFilter === 'hotel') && hotels?.map((hotel) => (
-            hotel.latitude && hotel.longitude && (
-              <Marker
-                key={`hotel-${hotel.id}`}
-                position={[Number(hotel.latitude), Number(hotel.longitude)]}
-                icon={icons.hotel}
-              >
-                <Popup>
-                  <div className="min-w-[200px]">
-                    <h3 className="font-bold mb-1">{language === 'bn' ? hotel.name_bn : hotel.name_en}</h3>
-                    <p className="text-xs text-gray-600 mb-2">
-                      {language === 'bn' ? hotel.address_bn : hotel.address_en}
-                    </p>
-                    <div className="flex gap-2">
-                      {hotel.phone && (
-                        <a href={`tel:${hotel.phone}`} className="flex-1 bg-green-500 text-white text-xs px-2 py-1 rounded flex items-center justify-center gap-1">
-                          <Phone className="w-3 h-3" /> {language === 'bn' ? 'কল' : 'Call'}
-                        </a>
-                      )}
-                      <button
-                        onClick={() => openNavigation(Number(hotel.latitude), Number(hotel.longitude))}
-                        className="flex-1 bg-blue-500 text-white text-xs px-2 py-1 rounded flex items-center justify-center gap-1"
-                      >
-                        <Navigation className="w-3 h-3" /> {language === 'bn' ? 'নেভিগেট' : 'Navigate'}
-                      </button>
-                    </div>
-                  </div>
-                </Popup>
-              </Marker>
-            )
-          ))}
+        {/* Location List */}
+        <div className="flex-1 p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold">
+              {language === 'bn' ? 'কাছের জায়গা' : 'Nearby Places'}
+              <span className="text-muted-foreground text-sm ml-2">({allItems.length})</span>
+            </h2>
+          </div>
 
-          {/* Restaurants */}
-          {(activeFilter === 'all' || activeFilter === 'restaurant') && restaurants?.map((restaurant) => (
-            <Marker
-              key={`restaurant-${restaurant.id}`}
-              position={[restaurant.latitude, restaurant.longitude]}
-              icon={icons.restaurant}
-            >
-              <Popup>
-                <div className="min-w-[200px]">
-                  <h3 className="font-bold mb-1">{language === 'bn' ? restaurant.name_bn : restaurant.name_en}</h3>
-                  <div className="flex gap-2 mt-2">
-                    {restaurant.phone && (
-                      <a href={`tel:${restaurant.phone}`} className="flex-1 bg-green-500 text-white text-xs px-2 py-1 rounded flex items-center justify-center gap-1">
-                        <Phone className="w-3 h-3" /> {language === 'bn' ? 'কল' : 'Call'}
-                      </a>
-                    )}
-                    <button
-                      onClick={() => openNavigation(restaurant.latitude, restaurant.longitude)}
-                      className="flex-1 bg-blue-500 text-white text-xs px-2 py-1 rounded flex items-center justify-center gap-1"
-                    >
-                      <Navigation className="w-3 h-3" /> {language === 'bn' ? 'নেভিগেট' : 'Navigate'}
-                    </button>
-                  </div>
+          <ScrollArea className="h-[calc(100vh-400px)]">
+            <div className="space-y-3 pb-24">
+              {allItems.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <MapPin className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                  <p>{language === 'bn' ? 'কোন স্থান পাওয়া যায়নি' : 'No places found'}</p>
                 </div>
-              </Popup>
-            </Marker>
-          ))}
-
-          {/* Banks */}
-          {(activeFilter === 'all' || activeFilter === 'bank') && banks?.map((bank) => (
-            bank.latitude && bank.longitude && (
-              <Marker
-                key={`bank-${bank.id}`}
-                position={[Number(bank.latitude), Number(bank.longitude)]}
-                icon={icons.bank}
-              >
-                <Popup>
-                  <div className="min-w-[200px]">
-                    <h3 className="font-bold mb-1">{language === 'bn' ? bank.name_bn : bank.name_en}</h3>
-                    {bank.has_atm && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">ATM</span>}
-                    <div className="flex gap-2 mt-2">
-                      {bank.phone && (
-                        <a href={`tel:${bank.phone}`} className="flex-1 bg-green-500 text-white text-xs px-2 py-1 rounded flex items-center justify-center gap-1">
-                          <Phone className="w-3 h-3" /> {language === 'bn' ? 'কল' : 'Call'}
-                        </a>
-                      )}
-                      <button
-                        onClick={() => openNavigation(Number(bank.latitude), Number(bank.longitude))}
-                        className="flex-1 bg-blue-500 text-white text-xs px-2 py-1 rounded flex items-center justify-center gap-1"
-                      >
-                        <Navigation className="w-3 h-3" /> {language === 'bn' ? 'নেভিগেট' : 'Navigate'}
-                      </button>
+              ) : (
+                allItems.map((item) => (
+                  <Card
+                    key={`${item.itemType}-${item.id}`}
+                    className={`p-3 border-2 ${getItemColor(item.itemType)} cursor-pointer hover:shadow-md transition-all`}
+                    onClick={() => setSelectedItem(item)}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">{getItemIcon(item.itemType)}</span>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold truncate">
+                          {language === 'bn' ? item.name_bn : item.name_en}
+                        </h3>
+                        {(item.address_bn || item.address_en) && (
+                          <p className="text-xs text-muted-foreground truncate">
+                            {language === 'bn' ? item.address_bn : item.address_en}
+                          </p>
+                        )}
+                        <div className="flex gap-2 mt-2">
+                          {item.phone && (
+                            <a
+                              href={`tel:${item.phone}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex items-center gap-1 text-xs bg-green-500 text-white px-2 py-1 rounded"
+                            >
+                              <Phone className="w-3 h-3" />
+                              {language === 'bn' ? 'কল' : 'Call'}
+                            </a>
+                          )}
+                          {item.latitude && item.longitude && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openNavigation(Number(item.latitude), Number(item.longitude));
+                              }}
+                              className="flex items-center gap-1 text-xs bg-blue-500 text-white px-2 py-1 rounded"
+                            >
+                              <Navigation className="w-3 h-3" />
+                              {language === 'bn' ? 'নেভিগেট' : 'Navigate'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </Popup>
-              </Marker>
-            )
-          ))}
-
-          {/* Emergency Services */}
-          {(activeFilter === 'all' || activeFilter === 'emergency') && emergencyServices?.map((service) => (
-            service.latitude && service.longitude && (
-              <Marker
-                key={`emergency-${service.id}`}
-                position={[Number(service.latitude), Number(service.longitude)]}
-                icon={icons.emergency}
-              >
-                <Popup>
-                  <div className="min-w-[200px]">
-                    <h3 className="font-bold mb-1 text-red-600">{language === 'bn' ? service.name_bn : service.name_en}</h3>
-                    <p className="text-xs text-gray-600 mb-2">{service.type}</p>
-                    <div className="flex gap-2">
-                      <a href={`tel:${service.phone}`} className="flex-1 bg-red-500 text-white text-xs px-2 py-1 rounded flex items-center justify-center gap-1">
-                        <Phone className="w-3 h-3" /> {service.phone}
-                      </a>
-                      <button
-                        onClick={() => openNavigation(Number(service.latitude), Number(service.longitude))}
-                        className="flex-1 bg-blue-500 text-white text-xs px-2 py-1 rounded flex items-center justify-center gap-1"
-                      >
-                        <Navigation className="w-3 h-3" />
-                      </button>
-                    </div>
-                  </div>
-                </Popup>
-              </Marker>
-            )
-          ))}
-
-          {/* Tourist Places */}
-          {(activeFilter === 'all' || activeFilter === 'place') && places?.map((place) => (
-            place.latitude && place.longitude && (
-              <Marker
-                key={`place-${place.id}`}
-                position={[Number(place.latitude), Number(place.longitude)]}
-                icon={icons.place}
-              >
-                <Popup>
-                  <div className="min-w-[200px]">
-                    <h3 className="font-bold mb-1">{language === 'bn' ? place.name_bn : place.name_en}</h3>
-                    <p className="text-xs text-gray-600 mb-2">
-                      {(language === 'bn' ? place.description_bn : place.description_en)?.slice(0, 100)}...
-                    </p>
-                    <button
-                      onClick={() => openNavigation(Number(place.latitude), Number(place.longitude))}
-                      className="w-full bg-blue-500 text-white text-xs px-2 py-1 rounded flex items-center justify-center gap-1"
-                    >
-                      <Navigation className="w-3 h-3" /> {language === 'bn' ? 'নেভিগেট করুন' : 'Navigate'}
-                    </button>
-                  </div>
-                </Popup>
-              </Marker>
-            )
-          ))}
-        </MapContainer>
-
-        {/* Locate Me Button */}
-        <Button
-          onClick={handleLocateMe}
-          disabled={isLocating}
-          className="absolute bottom-24 right-4 z-[1000] shadow-lg rounded-full w-12 h-12"
-        >
-          {isLocating ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <Locate className="w-5 h-5" />
-          )}
-        </Button>
+                  </Card>
+                ))
+              )}
+            </div>
+          </ScrollArea>
+        </div>
       </div>
 
       <BottomNav />
