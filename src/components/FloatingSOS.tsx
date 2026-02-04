@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Phone, X, Shield } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-const TOURIST_POLICE_NUMBER = '01769-690844'; // Kuakata Tourist Police
+const TOURIST_POLICE_NUMBER = '01320-160283'; // Kuakata Tourist Police
 
 const FloatingSOS: React.FC = () => {
   const { language } = useLanguage();
