@@ -41,6 +41,7 @@ const Index: React.FC = () => {
         <FeatureGrid />
       </main>
       <Footer />
+      <FloatingSOS />
       <BottomNav />
     </div>
   );
