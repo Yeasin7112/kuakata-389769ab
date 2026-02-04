@@ -56,6 +56,35 @@ export type Database = {
         }
         Relationships: []
       }
+      answer_upvotes: {
+        Row: {
+          answer_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          answer_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          answer_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "answer_upvotes_answer_id_fkey"
+            columns: ["answer_id"]
+            isOneToOne: false
+            referencedRelation: "community_answers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       app_settings: {
         Row: {
           category: string | null
@@ -80,6 +109,54 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: string | null
+        }
+        Relationships: []
+      }
+      badges: {
+        Row: {
+          badge_type: string
+          created_at: string | null
+          description_bn: string | null
+          description_en: string | null
+          icon_url: string | null
+          id: string
+          is_active: boolean | null
+          name_bn: string
+          name_en: string
+          points: number | null
+          requirement_type: string
+          requirement_value: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          badge_type?: string
+          created_at?: string | null
+          description_bn?: string | null
+          description_en?: string | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          name_bn: string
+          name_en: string
+          points?: number | null
+          requirement_type: string
+          requirement_value?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          badge_type?: string
+          created_at?: string | null
+          description_bn?: string | null
+          description_en?: string | null
+          icon_url?: string | null
+          id?: string
+          is_active?: boolean | null
+          name_bn?: string
+          name_en?: string
+          points?: number | null
+          requirement_type?: string
+          requirement_value?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -362,6 +439,92 @@ export type Database = {
         }
         Relationships: []
       }
+      community_answers: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          is_accepted: boolean | null
+          is_approved: boolean | null
+          is_from_local: boolean | null
+          question_id: string
+          updated_at: string | null
+          upvotes: number | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          is_accepted?: boolean | null
+          is_approved?: boolean | null
+          is_from_local?: boolean | null
+          question_id: string
+          updated_at?: string | null
+          upvotes?: number | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          is_accepted?: boolean | null
+          is_approved?: boolean | null
+          is_from_local?: boolean | null
+          question_id?: string
+          updated_at?: string | null
+          upvotes?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "community_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_questions: {
+        Row: {
+          category: string | null
+          content: string | null
+          created_at: string | null
+          id: string
+          is_answered: boolean | null
+          is_approved: boolean | null
+          title: string
+          updated_at: string | null
+          user_id: string
+          view_count: number | null
+        }
+        Insert: {
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_answered?: boolean | null
+          is_approved?: boolean | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+          view_count?: number | null
+        }
+        Update: {
+          category?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_answered?: boolean | null
+          is_approved?: boolean | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
       complaints: {
         Row: {
           admin_response: string | null
@@ -404,6 +567,56 @@ export type Database = {
         }
         Relationships: []
       }
+      contest_photos: {
+        Row: {
+          caption_bn: string | null
+          caption_en: string | null
+          contest_id: string
+          created_at: string | null
+          id: string
+          image_url: string
+          is_approved: boolean | null
+          is_winner: boolean | null
+          location_name: string | null
+          user_id: string
+          vote_count: number | null
+        }
+        Insert: {
+          caption_bn?: string | null
+          caption_en?: string | null
+          contest_id: string
+          created_at?: string | null
+          id?: string
+          image_url: string
+          is_approved?: boolean | null
+          is_winner?: boolean | null
+          location_name?: string | null
+          user_id: string
+          vote_count?: number | null
+        }
+        Update: {
+          caption_bn?: string | null
+          caption_en?: string | null
+          contest_id?: string
+          created_at?: string | null
+          id?: string
+          image_url?: string
+          is_approved?: boolean | null
+          is_winner?: boolean | null
+          location_name?: string | null
+          user_id?: string
+          vote_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contest_photos_contest_id_fkey"
+            columns: ["contest_id"]
+            isOneToOne: false
+            referencedRelation: "photo_contests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       dc_initiatives: {
         Row: {
           created_at: string
@@ -445,6 +658,89 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      diary_entries: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          is_public: boolean | null
+          latitude: number | null
+          location_name: string | null
+          longitude: number | null
+          mood: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string
+          visit_date: string | null
+          weather: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          latitude?: number | null
+          location_name?: string | null
+          longitude?: number | null
+          mood?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+          visit_date?: string | null
+          weather?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_public?: boolean | null
+          latitude?: number | null
+          location_name?: string | null
+          longitude?: number | null
+          mood?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+          visit_date?: string | null
+          weather?: string | null
+        }
+        Relationships: []
+      }
+      diary_photos: {
+        Row: {
+          caption: string | null
+          created_at: string | null
+          diary_entry_id: string
+          display_order: number | null
+          id: string
+          image_url: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string | null
+          diary_entry_id: string
+          display_order?: number | null
+          id?: string
+          image_url: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string | null
+          diary_entry_id?: string
+          display_order?: number | null
+          id?: string
+          image_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diary_photos_diary_entry_id_fkey"
+            columns: ["diary_entry_id"]
+            isOneToOne: false
+            referencedRelation: "diary_entries"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       emergency_services: {
         Row: {
@@ -924,6 +1220,60 @@ export type Database = {
         }
         Relationships: []
       }
+      photo_contests: {
+        Row: {
+          created_at: string | null
+          description_bn: string | null
+          description_en: string | null
+          end_date: string
+          id: string
+          is_active: boolean | null
+          prize_bn: string | null
+          prize_en: string | null
+          start_date: string
+          status: string | null
+          title_bn: string
+          title_en: string
+          updated_at: string | null
+          voting_end_date: string | null
+          winner_photo_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description_bn?: string | null
+          description_en?: string | null
+          end_date: string
+          id?: string
+          is_active?: boolean | null
+          prize_bn?: string | null
+          prize_en?: string | null
+          start_date: string
+          status?: string | null
+          title_bn: string
+          title_en: string
+          updated_at?: string | null
+          voting_end_date?: string | null
+          winner_photo_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description_bn?: string | null
+          description_en?: string | null
+          end_date?: string
+          id?: string
+          is_active?: boolean | null
+          prize_bn?: string | null
+          prize_en?: string | null
+          start_date?: string
+          status?: string | null
+          title_bn?: string
+          title_en?: string
+          updated_at?: string | null
+          voting_end_date?: string | null
+          winner_photo_id?: string | null
+        }
+        Relationships: []
+      }
       photo_spots: {
         Row: {
           best_time_bn: string | null
@@ -971,6 +1321,35 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      photo_votes: {
+        Row: {
+          created_at: string | null
+          id: string
+          photo_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          photo_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          photo_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photo_votes_photo_id_fkey"
+            columns: ["photo_id"]
+            isOneToOne: false
+            referencedRelation: "contest_photos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       place_images: {
         Row: {
@@ -1691,6 +2070,86 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      travel_stories: {
+        Row: {
+          content_bn: string | null
+          content_en: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          end_date: string | null
+          id: string
+          is_public: boolean | null
+          start_date: string | null
+          title_bn: string | null
+          title_en: string | null
+          updated_at: string | null
+          user_id: string
+          view_count: number | null
+        }
+        Insert: {
+          content_bn?: string | null
+          content_en?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          is_public?: boolean | null
+          start_date?: string | null
+          title_bn?: string | null
+          title_en?: string | null
+          updated_at?: string | null
+          user_id: string
+          view_count?: number | null
+        }
+        Update: {
+          content_bn?: string | null
+          content_en?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          is_public?: boolean | null
+          start_date?: string | null
+          title_bn?: string | null
+          title_en?: string | null
+          updated_at?: string | null
+          user_id?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string | null
+          id: string
+          shared_on_facebook: boolean | null
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string | null
+          id?: string
+          shared_on_facebook?: boolean | null
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string | null
+          id?: string
+          shared_on_facebook?: boolean | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

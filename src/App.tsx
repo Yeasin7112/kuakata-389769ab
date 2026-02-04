@@ -42,6 +42,10 @@ import ChildrenRides from "./pages/ChildrenRides";
 import ShoppingMarkets from "./pages/ShoppingMarkets";
 import TouristMap from "./pages/TouristMap";
 import ARCamera from "./pages/ARCamera";
+import Badges from "./pages/Badges";
+import PhotoContest from "./pages/PhotoContest";
+import TravelDiary from "./pages/TravelDiary";
+import CommunityQA from "./pages/CommunityQA";
 
 // Owner Dashboards
 import HotelOwnerDashboard from "./pages/HotelOwnerDashboard";
@@ -113,6 +117,12 @@ const App = () => (
               <Route path="/shopping-markets" element={<ShoppingMarkets />} />
               <Route path="/tourist-map" element={<TouristMap />} />
               <Route path="/ar-camera" element={<ARCamera />} />
+              
+              {/* Engagement & Community */}
+              <Route path="/badges" element={<Badges />} />
+              <Route path="/photo-contest" element={<PhotoContest />} />
+              <Route path="/travel-diary" element={<TravelDiary />} />
+              <Route path="/community-qa" element={<CommunityQA />} />
               
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />

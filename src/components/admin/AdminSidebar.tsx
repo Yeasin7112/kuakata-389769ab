@@ -24,7 +24,9 @@ import {
   Star,
   Users,
   Landmark,
-  Search,
+  Award,
+  Camera,
+  MessageCircle,
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -69,6 +71,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'popular-foods', icon: Utensils, labelBn: 'জনপ্রিয় খাবার', labelEn: 'Popular Foods' },
     { id: 'children-rides', icon: MapPin, labelBn: 'শিশুদের রাইড', labelEn: 'Children Rides' },
     { id: 'shopping-markets', icon: Building2, labelBn: 'কেনাকাটা', labelEn: 'Shopping Markets' },
+    { id: 'badges', icon: Award, labelBn: 'ব্যাজ', labelEn: 'Badges' },
+    { id: 'photo-contests', icon: Camera, labelBn: 'ফটো প্রতিযোগিতা', labelEn: 'Photo Contests' },
+    { id: 'community-qa', icon: MessageCircle, labelBn: 'প্রশ্নোত্তর', labelEn: 'Community Q&A' },
     { id: 'complaints', icon: MessageSquare, labelBn: 'অভিযোগ', labelEn: 'Complaints' },
     { id: 'reviews', icon: Star, labelBn: 'রিভিউ', labelEn: 'Reviews' },
     { id: 'admins', icon: Users, labelBn: 'অ্যাডমিন', labelEn: 'Admins' },
