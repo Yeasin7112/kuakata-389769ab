@@ -33,6 +33,9 @@ import LocalGuidesManager from '@/components/admin/LocalGuidesManager';
 import PopularFoodsManager from '@/components/admin/PopularFoodsManager';
 import ChildrenRidesManager from '@/components/admin/ChildrenRidesManager';
 import ShoppingMarketsManager from '@/components/admin/ShoppingMarketsManager';
+import BadgesManager from '@/components/admin/BadgesManager';
+import PhotoContestsManager from '@/components/admin/PhotoContestsManager';
+import CommunityQAManager from '@/components/admin/CommunityQAManager';
 import { Loader2 } from 'lucide-react';
 
 type AdminSection = 
@@ -64,7 +67,10 @@ type AdminSection =
   | 'local-guides'
   | 'popular-foods'
   | 'children-rides'
-  | 'shopping-markets';
+  | 'shopping-markets'
+  | 'badges'
+  | 'photo-contests'
+  | 'community-qa';
 
 const AdminDashboard: React.FC = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -169,6 +175,12 @@ const AdminDashboard: React.FC = () => {
         return <ChildrenRidesManager />;
       case 'shopping-markets':
         return <ShoppingMarketsManager />;
+      case 'badges':
+        return <BadgesManager />;
+      case 'photo-contests':
+        return <PhotoContestsManager />;
+      case 'community-qa':
+        return <CommunityQAManager />;
       default:
         return <DashboardOverview onNavigate={(section) => setActiveSection(section as AdminSection)} />;
     }
