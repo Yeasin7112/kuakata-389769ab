@@ -6,6 +6,7 @@ import FeatureGrid from '@/components/FeatureGrid';
 import BottomNav from '@/components/BottomNav';
 import Footer from '@/components/Footer';
 import NotificationBanner from '@/components/NotificationBanner';
+import FloatingSOS from '@/components/FloatingSOS';
 import { useNotificationSubscription } from '@/hooks/useNotifications';
 
 const Index: React.FC = () => {
@@ -40,6 +41,7 @@ const Index: React.FC = () => {
         <FeatureGrid />
       </main>
       <Footer />
+      <FloatingSOS />
       <BottomNav />
     </div>
   );
