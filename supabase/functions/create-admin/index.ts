@@ -6,6 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const SUPER_ADMIN_EMAIL = 'helloyeasin00@gmail.com';
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -19,8 +21,57 @@ serve(async (req) => {
       auth: { autoRefreshToken: false, persistSession: false }
     });
 
-    const { email, password, makeAdmin } = await req.json();
+    // Get the authorization header to verify the requester
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authorization required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
+    // Verify the requester is the super admin
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user: requester }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !requester) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid authorization' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (requester.email !== SUPER_ADMIN_EMAIL) {
+      return new Response(
+        JSON.stringify({ error: 'Only super admin can manage admins' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { email, password, makeAdmin, action, userId } = await req.json();
+
+    // Handle remove admin action
+    if (action === 'remove' && userId) {
+      const { error: removeError } = await supabase
+        .from('user_roles')
+        .delete()
+        .eq('user_id', userId)
+        .eq('role', 'admin');
+      
+      if (removeError) {
+        return new Response(
+          JSON.stringify({ error: removeError.message }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      return new Response(
+        JSON.stringify({ success: true, message: 'Admin removed successfully' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Handle create admin action
     if (!email || !password) {
       return new Response(
         JSON.stringify({ error: 'Email and password required' }),
@@ -28,14 +79,22 @@ serve(async (req) => {
       );
     }
 
+    // Prevent creating admin with super admin email
+    if (email === SUPER_ADMIN_EMAIL) {
+      return new Response(
+        JSON.stringify({ error: 'Cannot modify super admin account' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Create user with admin privileges
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    const { data: authData, error: createAuthError } = await supabase.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
     });
 
-    if (authError) {
+    if (createAuthError) {
       // User might already exist, try to get their ID
       const { data: existingUsers } = await supabase.auth.admin.listUsers();
       const existingUser = existingUsers?.users?.find(u => u.email === email);
@@ -60,7 +119,7 @@ serve(async (req) => {
       }
       
       return new Response(
-        JSON.stringify({ error: authError.message }),
+        JSON.stringify({ error: createAuthError.message }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }

@@ -2,13 +2,16 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-type AppRole = 'admin' | 'moderator' | 'user' | 'hotel_owner' | 'restaurant_owner';
+type AppRole = 'admin' | 'moderator' | 'user' | 'hotel_owner' | 'restaurant_owner' | 'super_admin';
+
+const SUPER_ADMIN_EMAIL = 'helloyeasin00@gmail.com';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
   isHotelOwner: boolean;
   isRestaurantOwner: boolean;
   userRoles: AppRole[];
@@ -24,11 +27,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [isHotelOwner, setIsHotelOwner] = useState(false);
   const [isRestaurantOwner, setIsRestaurantOwner] = useState(false);
   const [userRoles, setUserRoles] = useState<AppRole[]>([]);
 
-  const checkUserRoles = async (userId: string) => {
+  const checkUserRoles = async (userId: string, userEmail: string | undefined) => {
     try {
       const { data, error } = await supabase
         .from('user_roles')
@@ -42,12 +46,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
       const roles = data?.map(r => r.role as AppRole) || [];
       setUserRoles(roles);
-      setIsAdmin(roles.includes('admin'));
+      
+      // Check if user is super admin by email
+      const superAdmin = userEmail === SUPER_ADMIN_EMAIL;
+      setIsSuperAdmin(superAdmin);
+      
+      // Super admin is also considered admin
+      setIsAdmin(roles.includes('admin') || superAdmin);
       setIsHotelOwner(roles.includes('hotel_owner'));
       setIsRestaurantOwner(roles.includes('restaurant_owner'));
     } catch (error) {
       console.error('Error checking user roles:', error);
       setIsAdmin(false);
+      setIsSuperAdmin(false);
       setIsHotelOwner(false);
       setIsRestaurantOwner(false);
       setUserRoles([]);
@@ -64,10 +75,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (session?.user) {
           // Use setTimeout to avoid race conditions
           setTimeout(() => {
-            checkUserRoles(session.user.id);
+            checkUserRoles(session.user.id, session.user.email);
           }, 0);
         } else {
           setIsAdmin(false);
+          setIsSuperAdmin(false);
           setIsHotelOwner(false);
           setIsRestaurantOwner(false);
           setUserRoles([]);
@@ -83,7 +95,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        checkUserRoles(session.user.id);
+        checkUserRoles(session.user.id, session.user.email);
       }
       
       setLoading(false);
@@ -117,6 +129,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signOut = async () => {
     await supabase.auth.signOut();
     setIsAdmin(false);
+    setIsSuperAdmin(false);
     setIsHotelOwner(false);
     setIsRestaurantOwner(false);
     setUserRoles([]);
@@ -127,7 +140,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       user, 
       session, 
       loading, 
-      isAdmin, 
+      isAdmin,
+      isSuperAdmin, 
       isHotelOwner, 
       isRestaurantOwner, 
       userRoles,
