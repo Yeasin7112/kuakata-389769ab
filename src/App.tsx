@@ -46,6 +46,7 @@ import Badges from "./pages/Badges";
 import PhotoContest from "./pages/PhotoContest";
 import TravelDiary from "./pages/TravelDiary";
 import CommunityQA from "./pages/CommunityQA";
+ import Install from "./pages/Install";
 
 // Owner Dashboards
 import HotelOwnerDashboard from "./pages/HotelOwnerDashboard";
@@ -123,6 +124,7 @@ const App = () => (
               <Route path="/photo-contest" element={<PhotoContest />} />
               <Route path="/travel-diary" element={<TravelDiary />} />
               <Route path="/community-qa" element={<CommunityQA />} />
+               <Route path="/install" element={<Install />} />
               
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
