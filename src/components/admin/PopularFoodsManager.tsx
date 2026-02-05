@@ -26,10 +26,19 @@ const PopularFoodsManager: React.FC = () => {
   const { data: items, isLoading } = useQuery({
     queryKey: ['admin-popular-foods'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('popular_foods').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
+      const { data, error } = await supabase
+        .from('popular_foods')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching popular foods:', error);
+        throw error;
+      }
       return data;
-    }
+    },
+    refetchOnWindowFocus: true,
+    staleTime: 0,
   });
 
   const createMutation = useMutation({

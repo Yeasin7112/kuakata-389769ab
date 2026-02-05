@@ -72,11 +72,20 @@ const TravelDiary: React.FC = () => {
   const fetchEntries = async () => {
     if (!user) return;
     
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('diary_entries')
       .select('*')
       .eq('user_id', user.id)
       .order('visit_date', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching diary entries:', error);
+      toast({
+        title: language === 'bn' ? 'ত্রুটি' : 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
     
     setEntries(data || []);
     setLoading(false);
