@@ -81,14 +81,18 @@ const CommunityQA: React.FC = () => {
     let query = supabase
       .from('community_questions')
       .select('*')
-      .eq('is_approved', true)
       .order('created_at', { ascending: false });
     
     if (filterCategory !== 'all') {
       query = query.eq('category', filterCategory);
     }
     
-    const { data } = await query;
+    const { data, error } = await query;
+    
+    if (error) {
+      console.error('Error fetching questions:', error);
+    }
+    
     setQuestions(data || []);
     setLoading(false);
   };
