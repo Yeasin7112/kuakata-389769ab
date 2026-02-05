@@ -88,15 +88,15 @@
  
          {/* Installation Status */}
          {isInstalled ? (
-           <Card className="border-green-500 bg-green-50 dark:bg-green-950">
+               <Card className="border-primary bg-primary/10">
              <CardContent className="p-6 text-center">
-               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500 flex items-center justify-center">
+               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary flex items-center justify-center">
                  <Check className="w-8 h-8 text-white" />
                </div>
-               <h3 className="text-lg font-bold text-green-700 dark:text-green-300 mb-2">
+               <h3 className="text-lg font-bold text-primary mb-2">
                  {language === 'bn' ? 'ইনস্টল সম্পন্ন!' : 'Already Installed!'}
                </h3>
-               <p className="text-sm text-green-600 dark:text-green-400">
+               <p className="text-sm text-muted-foreground">
                  {language === 'bn' 
                    ? 'অ্যাপটি আপনার হোম স্ক্রিনে আছে' 
                    : 'The app is on your home screen'}
@@ -201,19 +201,19 @@
              </h3>
              <ul className="space-y-3 text-sm">
                <li className="flex items-center gap-3">
-                 <Check className="w-5 h-5 text-green-500" />
+                 <Check className="w-5 h-5 text-primary" />
                  {language === 'bn' ? 'অফলাইনে কাজ করে' : 'Works offline'}
                </li>
                <li className="flex items-center gap-3">
-                 <Check className="w-5 h-5 text-green-500" />
+                 <Check className="w-5 h-5 text-primary" />
                  {language === 'bn' ? 'দ্রুত লোড হয়' : 'Loads faster'}
                </li>
                <li className="flex items-center gap-3">
-                 <Check className="w-5 h-5 text-green-500" />
+                 <Check className="w-5 h-5 text-primary" />
                  {language === 'bn' ? 'হোম স্ক্রিনে শর্টকাট' : 'Home screen shortcut'}
                </li>
                <li className="flex items-center gap-3">
-                 <Check className="w-5 h-5 text-green-500" />
+                 <Check className="w-5 h-5 text-primary" />
                  {language === 'bn' ? 'ফুল স্ক্রিন এক্সপেরিয়েন্স' : 'Full screen experience'}
                </li>
              </ul>
