@@ -8,6 +8,7 @@ import BottomNav from '@/components/BottomNav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import CommunityChat from '@/components/CommunityChat';
 import {
   ArrowLeft,
   MessageCircle,
@@ -19,6 +20,7 @@ import {
   Star,
   ChevronLeft,
   Clock,
+  Users,
 } from 'lucide-react';
 import { format, formatDistanceToNow, parseISO } from 'date-fns';
 
@@ -57,7 +59,7 @@ interface ChatMessage {
   created_at: string;
 }
 
-type View = 'list' | 'guides' | 'chat';
+type View = 'list' | 'guides' | 'chat' | 'community';
 
 const LiveChat: React.FC = () => {
   const { language } = useLanguage();
@@ -559,6 +561,33 @@ const LiveChat: React.FC = () => {
     );
   }
 
+  // Community chat view
+  if (view === 'community') {
+    return (
+      <div className="min-h-screen bg-background flex flex-col h-screen">
+        <header className="bg-card border-b border-border p-3 sticky top-0 z-10">
+          <div className="flex items-center gap-3 max-w-lg mx-auto">
+            <button
+              onClick={() => setView('list')}
+              className="p-2 rounded-full hover:bg-muted"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div className="flex-1">
+              <p className="font-semibold text-sm font-bangla">
+                {language === 'bn' ? 'কমিউনিটি চ্যাট' : 'Community Chat'}
+              </p>
+              <p className="text-xs text-muted-foreground font-bangla">
+                {language === 'bn' ? 'কুয়াকাটা সম্পর্কে আলোচনা করুন' : 'Discuss about Kuakata'}
+              </p>
+            </div>
+          </div>
+        </header>
+        <CommunityChat />
+      </div>
+    );
+  }
+
   // Chat rooms list (default view)
   return (
     <div className="min-h-screen bg-background pb-20 flex flex-col">
@@ -572,7 +601,7 @@ const LiveChat: React.FC = () => {
               {language === 'bn' ? 'লাইভ চ্যাট' : 'Live Chat'}
             </h1>
             <p className="text-xs opacity-80 font-bangla">
-              {language === 'bn' ? 'স্থানীয় গাইডদের সাথে কথা বলুন' : 'Chat with local guides'}
+              {language === 'bn' ? 'গাইড ও কমিউনিটির সাথে কথা বলুন' : 'Chat with guides & community'}
             </p>
           </div>
           <Button
@@ -582,24 +611,59 @@ const LiveChat: React.FC = () => {
             className="rounded-full"
           >
             <MessageCircle className="w-4 h-4 mr-1" />
-            {language === 'bn' ? 'নতুন চ্যাট' : 'New Chat'}
+            {language === 'bn' ? 'নতুন' : 'New'}
           </Button>
         </div>
       </header>
 
       <main className="flex-1 max-w-lg mx-auto px-4 py-4 w-full">
+        {/* Community Chat Card */}
+        <button
+          onClick={() => setView('community')}
+          className="w-full card-elevated p-4 flex items-center gap-3 text-left hover:shadow-md transition-shadow mb-4 border-2 border-primary/20"
+        >
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <Users className="w-6 h-6 text-primary" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="font-semibold text-sm font-bangla">
+                {language === 'bn' ? 'কমিউনিটি চ্যাট' : 'Community Chat'}
+              </p>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary text-primary-foreground font-bold">
+                {language === 'bn' ? 'লাইভ' : 'LIVE'}
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground font-bangla mt-0.5">
+              {language === 'bn'
+                ? 'কুয়াকাটা সম্পর্কে আলোচনা ও পরামর্শ দিন'
+                : 'Discuss about Kuakata & share suggestions'}
+            </p>
+          </div>
+          <ChevronLeft className="w-5 h-5 text-muted-foreground rotate-180" />
+        </button>
+
+        {/* Divider */}
+        <div className="flex items-center gap-2 mb-4">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-xs text-muted-foreground font-bangla">
+            {language === 'bn' ? 'গাইড চ্যাট' : 'Guide Chats'}
+          </span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+
         {chatRooms.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-              <MessageCircle className="w-10 h-10 text-primary" />
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+              <MessageCircle className="w-8 h-8 text-primary" />
             </div>
             <h3 className="font-semibold text-lg font-bangla mb-2">
-              {language === 'bn' ? 'কোনো চ্যাট নেই' : 'No Chats Yet'}
+              {language === 'bn' ? 'কোনো গাইড চ্যাট নেই' : 'No Guide Chats Yet'}
             </h3>
             <p className="text-sm text-muted-foreground font-bangla mb-6 max-w-xs">
               {language === 'bn'
-                ? 'একজন স্থানীয় গাইডের সাথে কথা বলুন এবং আপনার ভ্রমণ পরিকল্পনা করুন!'
-                : 'Start chatting with a local guide to plan your trip!'}
+                ? 'একজন স্থানীয় গাইডের সাথে কথা বলুন!'
+                : 'Start chatting with a local guide!'}
             </p>
             <Button onClick={() => setView('guides')} className="rounded-full">
               <MessageCircle className="w-4 h-4 mr-2" />

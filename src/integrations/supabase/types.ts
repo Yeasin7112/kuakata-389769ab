@@ -211,6 +211,36 @@ export type Database = {
         }
         Relationships: []
       }
+      banned_users: {
+        Row: {
+          banned_at: string
+          banned_by: string
+          expires_at: string | null
+          id: string
+          is_permanent: boolean | null
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          banned_at?: string
+          banned_by: string
+          expires_at?: string | null
+          id?: string
+          is_permanent?: boolean | null
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          banned_at?: string
+          banned_by?: string
+          expires_at?: string | null
+          id?: string
+          is_permanent?: boolean | null
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       banners: {
         Row: {
           created_at: string
@@ -564,6 +594,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      community_chat_messages: {
+        Row: {
+          avatar_url: string | null
+          content: string
+          created_at: string
+          deleted_by: string | null
+          id: string
+          is_deleted: boolean | null
+          user_id: string
+          user_name: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          content: string
+          created_at?: string
+          deleted_by?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          user_id: string
+          user_name?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          content?: string
+          created_at?: string
+          deleted_by?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          user_id?: string
+          user_name?: string | null
+        }
+        Relationships: []
       }
       community_questions: {
         Row: {
