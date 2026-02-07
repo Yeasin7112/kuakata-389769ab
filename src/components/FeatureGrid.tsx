@@ -206,6 +206,14 @@ const FeatureGrid: React.FC = () => {
       bgColor: '#E8F5E9',
       route: '/community-qa'
     },
+    { 
+      icon: '💭', 
+      titleBn: 'লাইভ চ্যাট', 
+      titleEn: 'Live Chat', 
+      bgColor: '#E1F5FE',
+      badge: 'LIVE',
+      route: '/live-chat'
+    },
   ];
 
   const handleFeatureClick = (route: string) => {

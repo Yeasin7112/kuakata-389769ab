@@ -385,6 +385,85 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_read: boolean | null
+          room_id: string
+          sender_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          room_id: string
+          sender_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          room_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_rooms: {
+        Row: {
+          created_at: string
+          guide_id: string
+          guide_profile_id: string | null
+          id: string
+          is_active: boolean | null
+          last_message: string | null
+          last_message_at: string | null
+          tourist_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          guide_id: string
+          guide_profile_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_message?: string | null
+          last_message_at?: string | null
+          tourist_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          guide_id?: string
+          guide_profile_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_message?: string | null
+          last_message_at?: string | null
+          tourist_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_rooms_guide_profile_id_fkey"
+            columns: ["guide_profile_id"]
+            isOneToOne: false
+            referencedRelation: "local_guides"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       children_rides: {
         Row: {
           created_at: string
@@ -1043,8 +1122,10 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean | null
+          is_online: boolean | null
           is_verified: boolean | null
           languages: string[] | null
+          last_seen: string | null
           name_bn: string
           name_en: string
           phone: string
@@ -1053,14 +1134,17 @@ export type Database = {
           specialization_bn: string | null
           specialization_en: string | null
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_online?: boolean | null
           is_verified?: boolean | null
           languages?: string[] | null
+          last_seen?: string | null
           name_bn: string
           name_en: string
           phone: string
@@ -1069,14 +1153,17 @@ export type Database = {
           specialization_bn?: string | null
           specialization_en?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_online?: boolean | null
           is_verified?: boolean | null
           languages?: string[] | null
+          last_seen?: string | null
           name_bn?: string
           name_en?: string
           phone?: string
@@ -1085,6 +1172,7 @@ export type Database = {
           specialization_bn?: string | null
           specialization_en?: string | null
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
