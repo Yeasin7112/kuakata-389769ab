@@ -12,7 +12,7 @@ const FeatureGrid: React.FC = () => {
   // Feature items with emojis matching the reference design
   const features = [
     { 
-      icon: '🏛️', 
+      icon: '🌊', 
       titleBn: 'দর্শনীয় স্থান', 
       titleEn: 'Tourist Spots', 
       bgColor: '#E3F2FD',
