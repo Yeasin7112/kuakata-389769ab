@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, Loader2, Utensils } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Utensils, UserPlus } from 'lucide-react';
 import ImageUpload from '@/components/ImageUpload';
 
 interface Restaurant {
@@ -25,6 +25,7 @@ interface Restaurant {
   rating: number | null;
   image_url: string | null;
   is_active: boolean | null;
+  owner_id: string | null;
 }
 
 const initialFormData = {
@@ -42,6 +43,9 @@ const RestaurantsManager: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Restaurant | null>(null);
   const [formData, setFormData] = useState(initialFormData);
+  const [ownerEmail, setOwnerEmail] = useState('');
+  const [ownerPassword, setOwnerPassword] = useState('');
+  const [createOwnerAccount, setCreateOwnerAccount] = useState(false);
 
   useEffect(() => { fetchItems(); }, []);
 
@@ -54,6 +58,9 @@ const RestaurantsManager: React.FC = () => {
   const resetForm = () => {
     setFormData(initialFormData);
     setEditing(null);
+    setOwnerEmail('');
+    setOwnerPassword('');
+    setCreateOwnerAccount(false);
   };
 
   const handleEdit = (item: Restaurant) => {
@@ -66,6 +73,9 @@ const RestaurantsManager: React.FC = () => {
       price_range: item.price_range || '', rating: item.rating || 0,
       image_url: item.image_url || '', is_active: item.is_active ?? true,
     });
+    setCreateOwnerAccount(false);
+    setOwnerEmail('');
+    setOwnerPassword('');
     setIsDialogOpen(true);
   };
 
@@ -73,13 +83,43 @@ const RestaurantsManager: React.FC = () => {
     e.preventDefault();
     setSaving(true);
     try {
+      let ownerId: string | null = editing?.owner_id || null;
+
+      // Create owner account if requested
+      if (createOwnerAccount && ownerEmail && ownerPassword) {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const response = await supabase.functions.invoke('create-owner-account', {
+          body: {
+            email: ownerEmail,
+            password: ownerPassword,
+            role: 'restaurant_owner',
+            full_name: formData.name_en + ' Owner',
+          },
+          headers: {
+            Authorization: `Bearer ${sessionData.session?.access_token}`,
+          },
+        });
+
+        if (response.error) throw new Error(response.error.message);
+        if (response.data?.error) throw new Error(response.data.error);
+        ownerId = response.data.userId;
+
+        toast({
+          title: language === 'bn' ? 'মালিক অ্যাকাউন্ট তৈরি হয়েছে' : 'Owner account created',
+          description: `Email: ${ownerEmail}`,
+        });
+      }
+
+      const submitData = { ...formData, owner_id: ownerId };
+
       if (editing) {
-        const { error } = await supabase.from('restaurants').update(formData).eq('id', editing.id);
+        const { error } = await supabase.from('restaurants').update(submitData).eq('id', editing.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from('restaurants').insert([formData]);
+        const { error } = await supabase.from('restaurants').insert([submitData]);
         if (error) throw error;
       }
+
       toast({ title: language === 'bn' ? 'সফল!' : 'Success!' });
       setIsDialogOpen(false);
       resetForm();
@@ -115,11 +155,14 @@ const RestaurantsManager: React.FC = () => {
               {item.image_url ? (
                 <img src={item.image_url} alt="" className="w-12 h-12 rounded-lg object-cover" />
               ) : (
-                <Utensils className="w-5 h-5 text-pink-500" />
+                <Utensils className="w-5 h-5 text-accent-foreground" />
               )}
               <div>
                 <h3 className="font-semibold font-bangla">{language === 'bn' ? item.name_bn : item.name_en}</h3>
-                <p className="text-sm text-muted-foreground">{item.cuisine_type} {item.price_range && `• ${item.price_range}`}</p>
+                <p className="text-sm text-muted-foreground">
+                  {item.cuisine_type} {item.price_range && `• ${item.price_range}`}
+                  {item.owner_id && <span className="ml-2 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">{language === 'bn' ? 'মালিক আছে' : 'Owner linked'}</span>}
+                </p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -204,6 +247,54 @@ const RestaurantsManager: React.FC = () => {
             <div className="flex items-center justify-between">
               <Label className="font-bangla">{language === 'bn' ? 'সক্রিয়' : 'Active'}</Label>
               <Switch checked={formData.is_active} onCheckedChange={(c) => setFormData({ ...formData, is_active: c })} />
+            </div>
+
+            {/* Owner Account Section */}
+            <div className="border border-border rounded-lg p-4 space-y-3 bg-muted/30">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <UserPlus className="w-4 h-4 text-primary" />
+                  <Label className="font-bangla font-semibold">
+                    {language === 'bn' ? 'মালিক অ্যাকাউন্ট তৈরি করুন' : 'Create Owner Account'}
+                  </Label>
+                </div>
+                <Switch checked={createOwnerAccount} onCheckedChange={setCreateOwnerAccount} />
+              </div>
+              {editing?.owner_id && !createOwnerAccount && (
+                <p className="text-xs text-green-600 font-bangla">
+                  {language === 'bn' ? '✓ মালিক অ্যাকাউন্ট ইতিমধ্যে সংযুক্ত আছে' : '✓ Owner account already linked'}
+                </p>
+              )}
+              {createOwnerAccount && (
+                <div className="space-y-3">
+                  <p className="text-xs text-muted-foreground font-bangla">
+                    {language === 'bn'
+                      ? 'মালিক এই ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করে রেস্টুরেন্ট ম্যানেজ করতে পারবেন'
+                      : 'Owner can login with this email & password to manage the restaurant'}
+                  </p>
+                  <div className="space-y-2">
+                    <Label className="font-bangla">{language === 'bn' ? 'মালিকের ইমেইল' : 'Owner Email'} *</Label>
+                    <Input
+                      type="email"
+                      value={ownerEmail}
+                      onChange={(e) => setOwnerEmail(e.target.value)}
+                      placeholder="owner@example.com"
+                      required={createOwnerAccount}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-bangla">{language === 'bn' ? 'মালিকের পাসওয়ার্ড' : 'Owner Password'} *</Label>
+                    <Input
+                      type="password"
+                      value={ownerPassword}
+                      onChange={(e) => setOwnerPassword(e.target.value)}
+                      placeholder="••••••••"
+                      minLength={6}
+                      required={createOwnerAccount}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <Button type="submit" className="w-full" disabled={saving}>

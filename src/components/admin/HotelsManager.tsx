@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Pencil, Trash2, Loader2, Hotel } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, Hotel, UserPlus } from 'lucide-react';
 import ImageUpload from '@/components/ImageUpload';
 import {
   Dialog,
@@ -31,6 +31,7 @@ interface HotelItem {
   price_range: string | null;
   rating: number | null;
   is_active: boolean | null;
+  owner_id: string | null;
 }
 
 const initialFormData = {
@@ -58,6 +59,9 @@ const HotelsManager: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingHotel, setEditingHotel] = useState<HotelItem | null>(null);
   const [formData, setFormData] = useState(initialFormData);
+  const [ownerEmail, setOwnerEmail] = useState('');
+  const [ownerPassword, setOwnerPassword] = useState('');
+  const [createOwnerAccount, setCreateOwnerAccount] = useState(false);
 
   const fetchHotels = async () => {
     try {
@@ -79,6 +83,9 @@ const HotelsManager: React.FC = () => {
   const resetForm = () => {
     setFormData(initialFormData);
     setEditingHotel(null);
+    setOwnerEmail('');
+    setOwnerPassword('');
+    setCreateOwnerAccount(false);
   };
 
   const handleEdit = (hotel: HotelItem) => {
@@ -98,6 +105,9 @@ const HotelsManager: React.FC = () => {
       rating: hotel.rating || 0,
       is_active: hotel.is_active ?? true,
     });
+    setCreateOwnerAccount(false);
+    setOwnerEmail('');
+    setOwnerPassword('');
     setIsDialogOpen(true);
   };
 
@@ -105,13 +115,43 @@ const HotelsManager: React.FC = () => {
     e.preventDefault();
     setSaving(true);
     try {
+      let ownerId: string | null = editingHotel?.owner_id || null;
+
+      // Create owner account if requested
+      if (createOwnerAccount && ownerEmail && ownerPassword) {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const response = await supabase.functions.invoke('create-owner-account', {
+          body: {
+            email: ownerEmail,
+            password: ownerPassword,
+            role: 'hotel_owner',
+            full_name: formData.name_en + ' Owner',
+          },
+          headers: {
+            Authorization: `Bearer ${sessionData.session?.access_token}`,
+          },
+        });
+
+        if (response.error) throw new Error(response.error.message);
+        if (response.data?.error) throw new Error(response.data.error);
+        ownerId = response.data.userId;
+
+        toast({
+          title: language === 'bn' ? 'মালিক অ্যাকাউন্ট তৈরি হয়েছে' : 'Owner account created',
+          description: `Email: ${ownerEmail}`,
+        });
+      }
+
+      const submitData = { ...formData, owner_id: ownerId };
+
       if (editingHotel) {
-        const { error } = await supabase.from('hotels').update(formData).eq('id', editingHotel.id);
+        const { error } = await supabase.from('hotels').update(submitData).eq('id', editingHotel.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from('hotels').insert([formData]);
+        const { error } = await supabase.from('hotels').insert([submitData]);
         if (error) throw error;
       }
+
       toast({ title: language === 'bn' ? 'সফল!' : 'Success!' });
       setIsDialogOpen(false);
       resetForm();
@@ -151,7 +191,10 @@ const HotelsManager: React.FC = () => {
               )}
               <div>
                 <h3 className="font-semibold font-bangla">{language === 'bn' ? hotel.name_bn : hotel.name_en}</h3>
-                <p className="text-sm text-muted-foreground">{hotel.phone} {hotel.price_range && `• ${hotel.price_range}`}</p>
+                <p className="text-sm text-muted-foreground">
+                  {hotel.phone} {hotel.price_range && `• ${hotel.price_range}`}
+                  {hotel.owner_id && <span className="ml-2 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">{language === 'bn' ? 'মালিক আছে' : 'Owner linked'}</span>}
+                </p>
               </div>
             </div>
             <div className="flex gap-2">
@@ -242,6 +285,54 @@ const HotelsManager: React.FC = () => {
                 <Label className="font-bangla">{language === 'bn' ? 'সক্রিয়' : 'Active'}</Label>
                 <Switch checked={formData.is_active} onCheckedChange={(c) => setFormData({ ...formData, is_active: c })} />
               </div>
+            </div>
+
+            {/* Owner Account Section */}
+            <div className="border border-border rounded-lg p-4 space-y-3 bg-muted/30">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <UserPlus className="w-4 h-4 text-primary" />
+                  <Label className="font-bangla font-semibold">
+                    {language === 'bn' ? 'মালিক অ্যাকাউন্ট তৈরি করুন' : 'Create Owner Account'}
+                  </Label>
+                </div>
+                <Switch checked={createOwnerAccount} onCheckedChange={setCreateOwnerAccount} />
+              </div>
+              {editingHotel?.owner_id && !createOwnerAccount && (
+                <p className="text-xs text-green-600 font-bangla">
+                  {language === 'bn' ? '✓ মালিক অ্যাকাউন্ট ইতিমধ্যে সংযুক্ত আছে' : '✓ Owner account already linked'}
+                </p>
+              )}
+              {createOwnerAccount && (
+                <div className="space-y-3">
+                  <p className="text-xs text-muted-foreground font-bangla">
+                    {language === 'bn'
+                      ? 'মালিক এই ইমেইল ও পাসওয়ার্ড দিয়ে লগইন করে হোটেল ম্যানেজ করতে পারবেন'
+                      : 'Owner can login with this email & password to manage the hotel'}
+                  </p>
+                  <div className="space-y-2">
+                    <Label className="font-bangla">{language === 'bn' ? 'মালিকের ইমেইল' : 'Owner Email'} *</Label>
+                    <Input
+                      type="email"
+                      value={ownerEmail}
+                      onChange={(e) => setOwnerEmail(e.target.value)}
+                      placeholder="owner@example.com"
+                      required={createOwnerAccount}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-bangla">{language === 'bn' ? 'মালিকের পাসওয়ার্ড' : 'Owner Password'} *</Label>
+                    <Input
+                      type="password"
+                      value={ownerPassword}
+                      onChange={(e) => setOwnerPassword(e.target.value)}
+                      placeholder="••••••••"
+                      minLength={6}
+                      required={createOwnerAccount}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <Button type="submit" className="w-full" disabled={saving}>
