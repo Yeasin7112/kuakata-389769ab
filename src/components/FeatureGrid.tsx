@@ -26,6 +26,13 @@ const FeatureGrid: React.FC = () => {
       route: '/weather'
     },
     { 
+      icon: '🕌', 
+      titleBn: 'নামাজের সময়', 
+      titleEn: 'Prayer Times', 
+      bgColor: '#E8F5E9',
+      route: '/prayer-times'
+    },
+    { 
       icon: '🏧', 
       titleBn: 'ব্যাংক', 
       titleEn: 'Bank', 
