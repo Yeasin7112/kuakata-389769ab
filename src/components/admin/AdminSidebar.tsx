@@ -63,6 +63,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'tide-alerts', icon: Clock, labelBn: 'জোয়ার-ভাটা', labelEn: 'Tide Alerts' },
     { id: 'events', icon: Calendar, labelBn: 'ইভেন্ট', labelEn: 'Events' },
     { id: 'prayer-times', icon: Clock, labelBn: 'নামাজের সময়', labelEn: 'Prayer Times' },
+    { id: 'mosque-prayer-times', icon: Clock, labelBn: 'মসজিদ নামাজ', labelEn: 'Mosque Prayer' },
     { id: 'sun-times', icon: Sun, labelBn: 'সূর্যোদয়/সূর্যাস্ত', labelEn: 'Sun Times' },
     { id: 'notices', icon: Bell, labelBn: 'নোটিশ', labelEn: 'Notices' },
     { id: 'about-kuakata', icon: History, labelBn: 'কুয়াকাটা সম্পর্কে', labelEn: 'About Kuakata' },

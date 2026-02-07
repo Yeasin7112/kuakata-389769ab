@@ -172,6 +172,7 @@ export type Database = {
           is_active: boolean | null
           latitude: number | null
           longitude: number | null
+          map_url: string | null
           name_bn: string
           name_en: string
           phone: string | null
@@ -188,6 +189,7 @@ export type Database = {
           is_active?: boolean | null
           latitude?: number | null
           longitude?: number | null
+          map_url?: string | null
           name_bn: string
           name_en: string
           phone?: string | null
@@ -204,6 +206,7 @@ export type Database = {
           is_active?: boolean | null
           latitude?: number | null
           longitude?: number | null
+          map_url?: string | null
           name_bn?: string
           name_en?: string
           phone?: string | null
@@ -1331,6 +1334,60 @@ export type Database = {
           route?: string | null
           title_bn?: string
           title_en?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      mosque_prayer_times: {
+        Row: {
+          address_bn: string | null
+          address_en: string | null
+          asr: string
+          created_at: string
+          dhuhr: string
+          fajr: string
+          id: string
+          is_active: boolean | null
+          isha: string
+          latitude: number | null
+          longitude: number | null
+          maghrib: string
+          name_bn: string
+          name_en: string
+          updated_at: string
+        }
+        Insert: {
+          address_bn?: string | null
+          address_en?: string | null
+          asr?: string
+          created_at?: string
+          dhuhr?: string
+          fajr?: string
+          id?: string
+          is_active?: boolean | null
+          isha?: string
+          latitude?: number | null
+          longitude?: number | null
+          maghrib?: string
+          name_bn: string
+          name_en: string
+          updated_at?: string
+        }
+        Update: {
+          address_bn?: string | null
+          address_en?: string | null
+          asr?: string
+          created_at?: string
+          dhuhr?: string
+          fajr?: string
+          id?: string
+          is_active?: boolean | null
+          isha?: string
+          latitude?: number | null
+          longitude?: number | null
+          maghrib?: string
+          name_bn?: string
+          name_en?: string
           updated_at?: string
         }
         Relationships: []

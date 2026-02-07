@@ -17,6 +17,7 @@ interface Bank {
   has_atm: boolean | null;
   latitude: number | null;
   longitude: number | null;
+  map_url: string | null;
 }
 
 const BanksList: React.FC = () => {
@@ -39,8 +40,12 @@ const BanksList: React.FC = () => {
     setLoading(false);
   };
 
-  const openMap = (lat: number, lng: number, name: string) => {
-    window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}&query_place_id=${encodeURIComponent(name)}`, '_blank');
+  const openMap = (bank: Bank) => {
+    if (bank.map_url) {
+      window.open(bank.map_url, '_blank');
+    } else if (bank.latitude && bank.longitude) {
+      window.open(`https://www.google.com/maps/search/?api=1&query=${bank.latitude},${bank.longitude}`, '_blank');
+    }
   };
 
   if (loading) {
@@ -102,9 +107,9 @@ const BanksList: React.FC = () => {
                   <Phone className="w-4 h-4" /> {language === 'bn' ? 'কল করুন' : 'Call'}
                 </a>
               )}
-              {bank.latitude && bank.longitude && (
+              {(bank.map_url || (bank.latitude && bank.longitude)) && (
                 <button
-                  onClick={() => openMap(bank.latitude!, bank.longitude!, language === 'bn' ? bank.name_bn : bank.name_en)}
+                  onClick={() => openMap(bank)}
                   className="flex-1 bg-muted text-foreground py-2 rounded-lg text-center text-sm font-medium flex items-center justify-center gap-2"
                 >
                   <MapPin className="w-4 h-4" /> {language === 'bn' ? 'ম্যাপ' : 'Map'}
