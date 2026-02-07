@@ -48,6 +48,7 @@ import TravelDiary from "./pages/TravelDiary";
 import CommunityQA from "./pages/CommunityQA";
 import LiveChat from "./pages/LiveChat";
 import Install from "./pages/Install";
+import PrayerTimes from "./pages/PrayerTimes";
 
 // Owner Dashboards
 import HotelOwnerDashboard from "./pages/HotelOwnerDashboard";
@@ -119,6 +120,7 @@ const App = () => (
               <Route path="/shopping-markets" element={<ShoppingMarkets />} />
               <Route path="/tourist-map" element={<TouristMap />} />
               <Route path="/ar-camera" element={<ARCamera />} />
+              <Route path="/prayer-times" element={<PrayerTimes />} />
               
               {/* Engagement & Community */}
               <Route path="/badges" element={<Badges />} />
