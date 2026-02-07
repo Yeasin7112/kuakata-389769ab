@@ -173,7 +173,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ onNavigate }) => 
       labelBn: 'রিপোর্ট দেখুন', 
       labelEn: 'View Reports', 
       color: 'text-success',
-      action: () => navigate('/')
+      action: () => onNavigate('reports')
     },
   ];
 

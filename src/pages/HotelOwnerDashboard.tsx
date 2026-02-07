@@ -31,8 +31,10 @@ import {
   Calendar,
   Eye,
   EyeOff,
-  Images
+  Images,
+  BarChart3
 } from 'lucide-react';
+import OwnerReports from '@/components/hotel/OwnerReports';
 
 interface Room {
   id: string;
@@ -77,7 +79,7 @@ const HotelOwnerDashboard: React.FC = () => {
   const [selectedRoomForImages, setSelectedRoomForImages] = useState<Room | null>(null);
   const [editingRoom, setEditingRoom] = useState<Room | null>(null);
   const [isEditHotelOpen, setIsEditHotelOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'rooms' | 'bookings'>('rooms');
+  const [activeTab, setActiveTab] = useState<'rooms' | 'bookings' | 'reports'>('rooms');
 
   const [formData, setFormData] = useState({
     name_bn: '',
@@ -338,25 +340,36 @@ const HotelOwnerDashboard: React.FC = () => {
         <div className="flex gap-2 mb-4">
           <button
             onClick={() => setActiveTab('rooms')}
-            className={`flex-1 py-2.5 px-4 rounded-xl font-medium text-sm font-bangla transition-colors ${
+            className={`flex-1 py-2.5 px-3 rounded-xl font-medium text-xs font-bangla transition-colors ${
               activeTab === 'rooms'
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground'
             }`}
           >
-            <Bed className="w-4 h-4 inline-block mr-2" />
+            <Bed className="w-4 h-4 inline-block mr-1" />
             {language === 'bn' ? 'রুম' : 'Rooms'} ({rooms.length})
           </button>
           <button
             onClick={() => setActiveTab('bookings')}
-            className={`flex-1 py-2.5 px-4 rounded-xl font-medium text-sm font-bangla transition-colors ${
+            className={`flex-1 py-2.5 px-3 rounded-xl font-medium text-xs font-bangla transition-colors ${
               activeTab === 'bookings'
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground'
             }`}
           >
-            <Calendar className="w-4 h-4 inline-block mr-2" />
+            <Calendar className="w-4 h-4 inline-block mr-1" />
             {language === 'bn' ? 'বুকিং' : 'Bookings'} ({bookings.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('reports')}
+            className={`flex-1 py-2.5 px-3 rounded-xl font-medium text-xs font-bangla transition-colors ${
+              activeTab === 'reports'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground'
+            }`}
+          >
+            <BarChart3 className="w-4 h-4 inline-block mr-1" />
+            {language === 'bn' ? 'রিপোর্ট' : 'Reports'}
           </button>
         </div>
 
@@ -498,6 +511,10 @@ const HotelOwnerDashboard: React.FC = () => {
               ))
             )}
           </div>
+        )}
+
+        {activeTab === 'reports' && (
+          <OwnerReports hotelId={hotel.id} rooms={rooms} bookings={bookings} />
         )}
       </main>
 
