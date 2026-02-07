@@ -18,7 +18,7 @@ const EmergencyManager: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Emergency | null>(null);
-  const [formData, setFormData] = useState({ name_bn: '', name_en: '', type: 'police', phone: '', address_bn: '', address_en: '', is_active: true });
+  const [formData, setFormData] = useState({ name_bn: '', name_en: '', type: '', phone: '', address_bn: '', address_en: '', is_active: true });
 
   const fetch = async () => { const { data } = await supabase.from('emergency_services').select('*').order('type'); setItems(data || []); setLoading(false); };
   useEffect(() => { fetch(); }, []);
@@ -42,7 +42,7 @@ const EmergencyManager: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold font-bangla">{language === 'bn' ? 'জরুরি সেবা' : 'Emergency Services'}</h1>
-        <Button onClick={() => { setEditing(null); setFormData({ name_bn: '', name_en: '', type: 'police', phone: '', address_bn: '', address_en: '', is_active: true }); setIsDialogOpen(true); }}><Plus className="w-4 h-4 mr-2" />Add</Button>
+        <Button onClick={() => { setEditing(null); setFormData({ name_bn: '', name_en: '', type: '', phone: '', address_bn: '', address_en: '', is_active: true }); setIsDialogOpen(true); }}><Plus className="w-4 h-4 mr-2" />Add</Button>
       </div>
       <div className="grid gap-4">
         {items.map((item) => (
@@ -59,7 +59,7 @@ const EmergencyManager: React.FC = () => {
         <DialogContent><DialogHeader><DialogTitle>{editing ? 'Edit' : 'Add'} Emergency Service</DialogTitle></DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4"><div><Label>Name (BN)</Label><Input value={formData.name_bn} onChange={(e) => setFormData({...formData, name_bn: e.target.value})} required /></div><div><Label>Name (EN)</Label><Input value={formData.name_en} onChange={(e) => setFormData({...formData, name_en: e.target.value})} required /></div></div>
-            <div><Label>Type</Label><select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})} className="w-full p-2 border rounded"><option value="police">Police</option><option value="hospital">Hospital</option><option value="fire">Fire</option><option value="ambulance">Ambulance</option></select></div>
+            <div><Label>Type</Label><Input value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})} placeholder="e.g. police, hospital, fire, ambulance, tourist police, beach committee" required /></div>
             <div><Label>Phone</Label><Input value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} required /></div>
             <div className="flex items-center justify-between"><Label>Active</Label><Switch checked={formData.is_active} onCheckedChange={(c) => setFormData({...formData, is_active: c})} /></div>
             <Button type="submit" className="w-full">{editing ? 'Update' : 'Add'}</Button>

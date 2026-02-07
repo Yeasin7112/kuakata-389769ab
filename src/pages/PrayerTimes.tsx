@@ -137,20 +137,7 @@ const PrayerTimes: React.FC = () => {
           <p className="text-sm font-bangla text-muted-foreground">
             📍 {language === 'bn' ? 'কুয়াকাটা, বাংলাদেশ' : 'Kuakata, Bangladesh'}
           </p>
-          <p className="text-xs text-muted-foreground mt-1 font-bangla">
-            {language === 'bn'
-              ? 'ক্যালকুলেশন মেথড: কারাচি ইউনিভার্সিটি'
-              : 'Calculation Method: University of Karachi'}
-          </p>
         </div>
-
-        {/* Data Source */}
-        <p className="text-center text-xs text-muted-foreground">
-          📡{' '}
-          {language === 'bn'
-            ? 'তথ্যসূত্র: Aladhan API • প্রতি ৬ ঘন্টায় আপডেট হয়'
-            : 'Source: Aladhan API • Updates every 6 hours'}
-        </p>
       </div>
 
       <BottomNav />
