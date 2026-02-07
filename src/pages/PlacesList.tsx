@@ -45,6 +45,7 @@ const PlacesList: React.FC = () => {
           <button onClick={() => navigate('/')} className="p-2 rounded-full bg-white/10 hover:bg-white/20">
             <ArrowLeft className="w-5 h-5" />
           </button>
+          <span className="text-2xl">🌊</span>
           <h1 className="text-lg font-bold font-bangla">
             {language === 'bn' ? 'দর্শনীয় স্থান' : 'Tourist Spots'}
           </h1>
