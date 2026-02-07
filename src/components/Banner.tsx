@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { supabase } from '@/integrations/supabase/client';
 import { Wifi, WifiOff, Sunrise, Sunset } from 'lucide-react';
+import { useWeather } from '@/hooks/useWeather';
 import heroBanner from '@/assets/hero-banner.jpg';
-
-interface SunTime {
-  sunrise: string;
-  sunset: string;
-}
 
 const Banner: React.FC = () => {
   const { language } = useLanguage();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [sunTime, setSunTime] = useState<SunTime | null>(null);
+  const { weather } = useWeather();
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -25,28 +20,6 @@ const Banner: React.FC = () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
-
-  useEffect(() => {
-    const fetchSunTime = async () => {
-      const today = new Date().toISOString().split('T')[0];
-      const { data } = await supabase
-        .from('sun_times')
-        .select('sunrise, sunset')
-        .eq('date', today)
-        .single();
-      
-      if (data) {
-        setSunTime({
-          sunrise: data.sunrise.substring(0, 5),
-          sunset: data.sunset.substring(0, 5),
-        });
-      } else {
-        setSunTime({ sunrise: '06:12', sunset: '05:48' });
-      }
-    };
-    
-    fetchSunTime();
   }, []);
 
   const formatTime = (time: string) => {
@@ -110,7 +83,7 @@ const Banner: React.FC = () => {
             <p className="text-xs text-white/80 font-bangla">
               {language === 'bn' ? 'সূর্যোদয়' : 'Sunrise'}
             </p>
-            <p className="text-xl font-bold">{sunTime ? formatTime(sunTime.sunrise) : '--:--'}</p>
+            <p className="text-xl font-bold">{weather ? formatTime(weather.sunrise) : '--:--'}</p>
           </div>
         </div>
         
@@ -123,7 +96,7 @@ const Banner: React.FC = () => {
             <p className="text-xs text-white/80 font-bangla">
               {language === 'bn' ? 'সূর্যাস্ত' : 'Sunset'}
             </p>
-            <p className="text-xl font-bold">{sunTime ? formatTime(sunTime.sunset) : '--:--'}</p>
+            <p className="text-xl font-bold">{weather ? formatTime(weather.sunset) : '--:--'}</p>
           </div>
         </div>
       </div>
