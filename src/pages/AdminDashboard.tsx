@@ -16,6 +16,7 @@ import TransportManager from '@/components/admin/TransportManager';
 import EmergencyManager from '@/components/admin/EmergencyManager';
 import EventsManager from '@/components/admin/EventsManager';
 import PrayerTimesManager from '@/components/admin/PrayerTimesManager';
+import MosquePrayerTimesManager from '@/components/admin/MosquePrayerTimesManager';
 import SunTimesManager from '@/components/admin/SunTimesManager';
 import WarningZonesManager from '@/components/admin/WarningZonesManager';
 import BeachSafetyManager from '@/components/admin/BeachSafetyManager';
@@ -54,6 +55,7 @@ type AdminSection =
   | 'emergency'
   | 'events'
   | 'prayer-times'
+  | 'mosque-prayer-times'
   | 'sun-times'
   | 'warning-zones'
   | 'beach-safety'
@@ -145,6 +147,8 @@ const AdminDashboard: React.FC = () => {
         return <EventsManager />;
       case 'prayer-times':
         return <PrayerTimesManager />;
+      case 'mosque-prayer-times':
+        return <MosquePrayerTimesManager />;
       case 'sun-times':
         return <SunTimesManager />;
       case 'warning-zones':

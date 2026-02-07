@@ -4,7 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
-import { ArrowLeft, MapPin, Star, Compass } from 'lucide-react';
+import { ArrowLeft, MapPin, Star, Palmtree } from 'lucide-react';
 
 interface Place {
   id: string;
@@ -46,7 +46,7 @@ const PlacesList: React.FC = () => {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
-            <Compass className="w-5 h-5" />
+            <Palmtree className="w-5 h-5" />
           </div>
           <h1 className="text-lg font-bold font-bangla">
             {language === 'bn' ? 'দর্শনীয় স্থান' : 'Tourist Spots'}
