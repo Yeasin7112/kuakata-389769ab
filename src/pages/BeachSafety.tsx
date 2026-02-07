@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Loader2, Flag, Info, Waves, Wind, Clock } from 'lucide-react';
+import { ArrowLeft, Loader2, Flag, Info, Waves, Wind, Clock, RefreshCw } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { format } from 'date-fns';
+import { useTideData } from '@/hooks/useTideData';
+import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 
 interface BeachSafetyData {
   id: string;
@@ -15,23 +17,12 @@ interface BeachSafetyData {
   notes_en: string | null;
 }
 
-interface TideAlert {
-  id: string;
-  date: string;
-  high_tide_time: string | null;
-  high_tide_level: string | null;
-  low_tide_time: string | null;
-  low_tide_level: string | null;
-  notes_bn: string | null;
-  notes_en: string | null;
-}
-
 const BeachSafety: React.FC = () => {
   const { language } = useLanguage();
   const navigate = useNavigate();
   const [safetyData, setSafetyData] = useState<BeachSafetyData | null>(null);
-  const [tideData, setTideData] = useState<TideAlert | null>(null);
   const [loading, setLoading] = useState(true);
+  const { tideData: liveTide, loading: tideLoading } = useTideData();
 
   useEffect(() => {
     fetchData();
@@ -40,13 +31,9 @@ const BeachSafety: React.FC = () => {
   const fetchData = async () => {
     const today = format(new Date(), 'yyyy-MM-dd');
     
-    const [safetyRes, tideRes] = await Promise.all([
-      supabase.from('beach_safety').select('*').eq('date', today).maybeSingle(),
-      supabase.from('tide_alerts').select('*').eq('date', today).eq('is_active', true).maybeSingle()
-    ]);
+    const safetyRes = await supabase.from('beach_safety').select('*').eq('date', today).maybeSingle();
 
     if (safetyRes.data) setSafetyData(safetyRes.data);
-    if (tideRes.data) setTideData(tideRes.data);
     setLoading(false);
   };
 
@@ -103,37 +90,41 @@ const BeachSafety: React.FC = () => {
           )}
         </div>
 
-        {/* Tide Information */}
-        {tideData && (
-          <div className="card-elevated p-4">
-            <h3 className="font-bold font-bangla flex items-center gap-2 mb-4">
-              <Waves className="w-5 h-5 text-primary" />
-              {language === 'bn' ? 'জোয়ার-ভাটার তথ্য' : 'Tide Information'}
-            </h3>
+        {/* Live Tide Information from Open-Meteo Marine API */}
+        <div className="card-elevated p-4">
+          <h3 className="font-bold font-bangla flex items-center gap-2 mb-4">
+            <Waves className="w-5 h-5 text-primary" />
+            {language === 'bn' ? 'জোয়ার-ভাটার তথ্য (লাইভ)' : 'Tide Information (Live)'}
+            {tideLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+          </h3>
+          {liveTide ? (
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-blue-50 p-4 rounded-xl text-center">
+              <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-xl text-center">
                 <div className="text-2xl mb-2">🌊</div>
                 <p className="text-xs text-muted-foreground font-bangla">
                   {language === 'bn' ? 'জোয়ার' : 'High Tide'}
                 </p>
-                <p className="text-lg font-bold">{tideData.high_tide_time || '--:--'}</p>
-                {tideData.high_tide_level && (
-                  <p className="text-xs text-muted-foreground">{tideData.high_tide_level}</p>
-                )}
+                <p className="text-lg font-bold">{liveTide.highTideTime}</p>
+                <p className="text-xs text-muted-foreground">{liveTide.highTideLevel}</p>
               </div>
-              <div className="bg-cyan-50 p-4 rounded-xl text-center">
+              <div className="bg-cyan-50 dark:bg-cyan-950/30 p-4 rounded-xl text-center">
                 <div className="text-2xl mb-2">🏖️</div>
                 <p className="text-xs text-muted-foreground font-bangla">
                   {language === 'bn' ? 'ভাটা' : 'Low Tide'}
                 </p>
-                <p className="text-lg font-bold">{tideData.low_tide_time || '--:--'}</p>
-                {tideData.low_tide_level && (
-                  <p className="text-xs text-muted-foreground">{tideData.low_tide_level}</p>
-                )}
+                <p className="text-lg font-bold">{liveTide.lowTideTime}</p>
+                <p className="text-xs text-muted-foreground">{liveTide.lowTideLevel}</p>
               </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <p className="text-sm text-muted-foreground text-center">
+              {language === 'bn' ? 'তথ্য লোড হচ্ছে...' : 'Loading data...'}
+            </p>
+          )}
+          <p className="text-xs text-muted-foreground text-center mt-3">
+            📡 {language === 'bn' ? 'Open-Meteo Marine API থেকে স্বয়ংক্রিয় আপডেট' : 'Auto-updated from Open-Meteo Marine API'}
+          </p>
+        </div>
 
         {/* Safety Guidelines */}
         <div className="card-elevated p-4">

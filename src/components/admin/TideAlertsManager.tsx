@@ -8,8 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, Loader2, Waves } from 'lucide-react';
-import { format } from 'date-fns';
+import { Plus, Pencil, Trash2, Loader2, Waves, Wifi, RefreshCw } from 'lucide-react';
+import { format, addDays } from 'date-fns';
 
 interface TideAlert {
   id: string;
@@ -23,11 +23,15 @@ interface TideAlert {
   is_active: boolean | null;
 }
 
+const KUAKATA_LAT = 21.8167;
+const KUAKATA_LON = 90.1167;
+
 const TideAlertsManager: React.FC = () => {
   const { language } = useLanguage();
   const { toast } = useToast();
   const [items, setItems] = useState<TideAlert[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editing, setEditing] = useState<TideAlert | null>(null);
   const [formData, setFormData] = useState({
@@ -81,22 +85,115 @@ const TideAlertsManager: React.FC = () => {
     fetchItems();
   };
 
+  const syncFromAPI = async (days: number = 7) => {
+    setSyncing(true);
+    try {
+      const today = new Date();
+      const startDate = format(today, 'yyyy-MM-dd');
+      const endDate = format(addDays(today, days - 1), 'yyyy-MM-dd');
+
+      const response = await fetch(
+        `https://marine-api.open-meteo.com/v1/marine?latitude=${KUAKATA_LAT}&longitude=${KUAKATA_LON}&hourly=sea_level_height_msl&timezone=Asia/Dhaka&start_date=${startDate}&end_date=${endDate}`
+      );
+
+      if (!response.ok) throw new Error('Failed to fetch marine data');
+
+      const data = await response.json();
+      const times: string[] = data.hourly.time;
+      const levels: number[] = data.hourly.sea_level_height_msl;
+
+      // Group by date
+      const dayMap: Record<string, { time: string; level: number }[]> = {};
+      for (let i = 0; i < times.length; i++) {
+        const dateStr = times[i].split('T')[0];
+        if (!dayMap[dateStr]) dayMap[dateStr] = [];
+        dayMap[dateStr].push({ time: times[i].split('T')[1]?.substring(0, 5) || '', level: levels[i] });
+      }
+
+      let syncedCount = 0;
+      for (const [dateStr, hourlyData] of Object.entries(dayMap)) {
+        let maxLevel = -Infinity, minLevel = Infinity;
+        let highTime = '', lowTime = '';
+
+        for (const entry of hourlyData) {
+          if (entry.level > maxLevel) { maxLevel = entry.level; highTime = entry.time; }
+          if (entry.level < minLevel) { minLevel = entry.level; lowTime = entry.time; }
+        }
+
+        const tideRecord = {
+          date: dateStr,
+          high_tide_time: highTime,
+          high_tide_level: `${maxLevel.toFixed(2)}m`,
+          low_tide_time: lowTime,
+          low_tide_level: `${minLevel.toFixed(2)}m`,
+          notes_en: 'Auto-synced from Open-Meteo Marine API',
+          notes_bn: 'Open-Meteo Marine API থেকে স্বয়ংক্রিয়',
+          is_active: true,
+        };
+
+        const { data: existing } = await supabase
+          .from('tide_alerts')
+          .select('id')
+          .eq('date', dateStr)
+          .maybeSingle();
+
+        if (existing) {
+          await supabase.from('tide_alerts').update(tideRecord).eq('id', existing.id);
+        } else {
+          await supabase.from('tide_alerts').insert([tideRecord]);
+        }
+        syncedCount++;
+      }
+
+      toast({ title: language === 'bn' ? 'সিঙ্ক সম্পন্ন!' : 'Sync Complete!', description: `${syncedCount} ${language === 'bn' ? 'দিনের টাইড ডেটা আপডেট' : 'days tide data synced'}` });
+      fetchItems();
+    } catch (error: any) {
+      toast({ title: 'Sync Error', description: error.message, variant: 'destructive' });
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   if (loading) return <div className="flex items-center justify-center p-8"><Loader2 className="w-8 h-8 animate-spin" /></div>;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h1 className="text-2xl font-bold font-bangla">{language === 'bn' ? 'জোয়ার-ভাটা' : 'Tide Alerts'}</h1>
-        <Button onClick={() => { resetForm(); setIsDialogOpen(true); }}><Plus className="w-4 h-4 mr-2" />{language === 'bn' ? 'নতুন যোগ' : 'Add'}</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => syncFromAPI(7)} disabled={syncing}>
+            {syncing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Wifi className="w-4 h-4 mr-2" />}
+            {language === 'bn' ? '৭ দিন সিঙ্ক' : 'Sync 7 Days'}
+          </Button>
+          <Button variant="outline" onClick={() => syncFromAPI(14)} disabled={syncing}>
+            {syncing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
+            {language === 'bn' ? '১৪ দিন সিঙ্ক' : 'Sync 14 Days'}
+          </Button>
+          <Button onClick={() => { resetForm(); setIsDialogOpen(true); }}>
+            <Plus className="w-4 h-4 mr-2" />{language === 'bn' ? 'ম্যানুয়াল' : 'Manual'}
+          </Button>
+        </div>
       </div>
+
+      <div className="bg-muted/50 border rounded-lg p-3 text-sm flex items-center gap-2">
+        <Wifi className="w-4 h-4 text-primary" />
+        <span className="font-bangla">
+          {language === 'bn' 
+            ? '📡 Open-Meteo Marine API থেকে স্বয়ংক্রিয় সিঙ্ক — কোনো API কী লাগবে না' 
+            : '📡 Auto-sync from Open-Meteo Marine API — No API key needed'}
+        </span>
+      </div>
+
       <div className="grid gap-4">
         {items.map((item) => (
           <div key={item.id} className="card-elevated p-4 flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <Waves className="w-5 h-5 text-blue-500" />
+              <Waves className="w-5 h-5 text-primary" />
               <div>
                 <h3 className="font-semibold">{item.date}</h3>
-                <p className="text-sm text-muted-foreground">High: {item.high_tide_time} | Low: {item.low_tide_time}</p>
+                <p className="text-sm text-muted-foreground">
+                  🌊 High: {item.high_tide_time} ({item.high_tide_level}) | 🏖️ Low: {item.low_tide_time} ({item.low_tide_level})
+                </p>
               </div>
             </div>
             <div className="flex gap-2">
