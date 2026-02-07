@@ -28,6 +28,7 @@ import {
   Camera,
   MessageCircle,
   BarChart3,
+  MessagesSquare,
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -76,6 +77,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'badges', icon: Award, labelBn: 'ব্যাজ', labelEn: 'Badges' },
     { id: 'photo-contests', icon: Camera, labelBn: 'ফটো প্রতিযোগিতা', labelEn: 'Photo Contests' },
     { id: 'community-qa', icon: MessageCircle, labelBn: 'প্রশ্নোত্তর', labelEn: 'Community Q&A' },
+    { id: 'community-chat', icon: MessagesSquare, labelBn: 'কমিউনিটি চ্যাট', labelEn: 'Community Chat' },
     { id: 'complaints', icon: MessageSquare, labelBn: 'অভিযোগ', labelEn: 'Complaints' },
     { id: 'reviews', icon: Star, labelBn: 'রিভিউ', labelEn: 'Reviews' },
     { id: 'admins', icon: Users, labelBn: 'অ্যাডমিন', labelEn: 'Admins' },
