@@ -27,6 +27,7 @@ import {
   Award,
   Camera,
   MessageCircle,
+  BarChart3,
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -48,6 +49,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, labelBn: 'ড্যাশবোর্ড', labelEn: 'Dashboard' },
+    { id: 'reports', icon: BarChart3, labelBn: 'রিপোর্ট', labelEn: 'Reports' },
     { id: 'banners', icon: Image, labelBn: 'ব্যানার', labelEn: 'Banners' },
     { id: 'places', icon: MapPin, labelBn: 'দর্শনীয় স্থান', labelEn: 'Places' },
     { id: 'hotels', icon: Hotel, labelBn: 'হোটেল', labelEn: 'Hotels' },
