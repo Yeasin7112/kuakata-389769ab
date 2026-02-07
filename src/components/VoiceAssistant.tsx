@@ -11,7 +11,7 @@ interface VoiceAssistantProps {
   onClose: () => void;
 }
 
-const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ isOpen, onClose }) => {
+const VoiceAssistant: React.FC<VoiceAssistantProps> = ({ isOpen, onClose }) => { // v2
   const { language } = useLanguage();
   const navigate = useNavigate();
   const {
