@@ -76,22 +76,15 @@ const RestaurantOwnerDashboard: React.FC = () => {
     description_en: '',
     image_url: '',
     price: 0,
-    category: 'main_course',
+    category: '',
     is_available: true,
     is_vegetarian: false,
     is_popular: false,
     is_active: true,
   });
 
-  const categories = [
-    { value: 'appetizer', labelBn: 'এপিটাইজার', labelEn: 'Appetizer' },
-    { value: 'main_course', labelBn: 'মেইন কোর্স', labelEn: 'Main Course' },
-    { value: 'seafood', labelBn: 'সামুদ্রিক খাবার', labelEn: 'Seafood' },
-    { value: 'rice', labelBn: 'ভাত', labelEn: 'Rice' },
-    { value: 'biryani', labelBn: 'বিরিয়ানি', labelEn: 'Biryani' },
-    { value: 'drinks', labelBn: 'পানীয়', labelEn: 'Drinks' },
-    { value: 'dessert', labelBn: 'ডেজার্ট', labelEn: 'Dessert' },
-  ];
+  // Derive unique categories from existing food items for suggestions
+  const existingCategories = Array.from(new Set(foodItems.map(f => f.category).filter(Boolean)));
 
   useEffect(() => {
     if (!user) {
@@ -233,7 +226,7 @@ const RestaurantOwnerDashboard: React.FC = () => {
       description_en: '',
       image_url: '',
       price: 0,
-      category: 'main_course',
+      category: '',
       is_available: true,
       is_vegetarian: false,
       is_popular: false,
@@ -453,18 +446,17 @@ const RestaurantOwnerDashboard: React.FC = () => {
               </div>
               <div className="space-y-2">
                 <Label className="font-bangla">{language === 'bn' ? 'ক্যাটাগরি' : 'Category'}</Label>
-                <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map(cat => (
-                      <SelectItem key={cat.value} value={cat.value}>
-                        {language === 'bn' ? cat.labelBn : cat.labelEn}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Input
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  placeholder={language === 'bn' ? 'যেমন: Seafood, Bengali, Drinks' : 'e.g. Seafood, Bengali, Drinks'}
+                  list="food-categories"
+                />
+                <datalist id="food-categories">
+                  {existingCategories.map(cat => (
+                    <option key={cat} value={cat!} />
+                  ))}
+                </datalist>
               </div>
             </div>
 
