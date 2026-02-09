@@ -40,6 +40,7 @@ const FeatureGrid: React.FC = () => {
     { icon: '📸', titleBn: 'ফটো প্রতিযোগিতা', titleEn: 'Photo Contest', bgColor: '#E1F5FE', badge: 'WIN', route: '/photo-contest' },
     { icon: '📔', titleBn: 'ভ্রমণ ডায়েরি', titleEn: 'Travel Diary', bgColor: '#F3E5F5', route: '/travel-diary' },
     { icon: '🏆', titleBn: 'ব্যাজ সংগ্রহ', titleEn: 'Badges', bgColor: '#FFF8E1', badge: 'NEW', route: '/badges' },
+    { icon: '❤️', titleBn: 'ডোনেট করুন', titleEn: 'Donate', bgColor: '#FFEBEE', badge: '🙏', route: '/donate' },
   ];
 
   const handleFeatureClick = (route: string) => {
