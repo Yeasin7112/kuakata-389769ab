@@ -81,6 +81,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'community-chat', icon: MessagesSquare, labelBn: 'কমিউনিটি চ্যাট', labelEn: 'Community Chat' },
     { id: 'complaints', icon: MessageSquare, labelBn: 'অভিযোগ', labelEn: 'Complaints' },
     { id: 'reviews', icon: Star, labelBn: 'রিভিউ', labelEn: 'Reviews' },
+    { id: 'registered-users', icon: Users, labelBn: 'নিবন্ধিত ব্যবহারকারী', labelEn: 'Registered Users' },
     { id: 'admins', icon: Users, labelBn: 'অ্যাডমিন', labelEn: 'Admins' },
     { id: 'translations', icon: Languages, labelBn: 'অনুবাদ', labelEn: 'Translations' },
     { id: 'settings', icon: Settings, labelBn: 'সেটিংস', labelEn: 'Settings' },

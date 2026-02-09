@@ -39,6 +39,7 @@ import PhotoContestsManager from '@/components/admin/PhotoContestsManager';
 import CommunityQAManager from '@/components/admin/CommunityQAManager';
 import ReportsManager from '@/components/admin/ReportsManager';
 import CommunityChatManager from '@/components/admin/CommunityChatManager';
+import UsersManager from '@/components/admin/UsersManager';
 import { Loader2 } from 'lucide-react';
 
 type AdminSection = 
@@ -76,6 +77,7 @@ type AdminSection =
   | 'photo-contests'
   | 'community-qa'
   | 'community-chat'
+  | 'registered-users'
   | 'reports';
 
 const AdminDashboard: React.FC = () => {
@@ -191,6 +193,8 @@ const AdminDashboard: React.FC = () => {
         return <CommunityQAManager />;
       case 'community-chat':
         return <CommunityChatManager />;
+      case 'registered-users':
+        return <UsersManager />;
       case 'reports':
         return <ReportsManager />;
       default:
