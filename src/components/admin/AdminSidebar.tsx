@@ -82,6 +82,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'complaints', icon: MessageSquare, labelBn: 'অভিযোগ', labelEn: 'Complaints' },
     { id: 'reviews', icon: Star, labelBn: 'রিভিউ', labelEn: 'Reviews' },
     { id: 'registered-users', icon: Users, labelBn: 'নিবন্ধিত ব্যবহারকারী', labelEn: 'Registered Users' },
+    { id: 'visitor-analytics', icon: BarChart3, labelBn: 'ভিজিটর ট্র্যাকিং', labelEn: 'Visitor Tracking' },
     { id: 'admins', icon: Users, labelBn: 'অ্যাডমিন', labelEn: 'Admins' },
     { id: 'translations', icon: Languages, labelBn: 'অনুবাদ', labelEn: 'Translations' },
     { id: 'settings', icon: Settings, labelBn: 'সেটিংস', labelEn: 'Settings' },

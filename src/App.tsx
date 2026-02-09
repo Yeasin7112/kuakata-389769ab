@@ -57,6 +57,7 @@ import RoomBooking from "./pages/RoomBooking";
 import MyBookings from "./pages/MyBookings";
 import Settings from "./pages/Settings";
 import Notifications from "./pages/Notifications";
+import VisitorTracker from "./components/VisitorTracker";
 
 const queryClient = new QueryClient();
 
@@ -68,8 +69,14 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <VisitorTracker />
             <Routes>
               {/* Main Routes */}
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/explore" element={<Explore />} />
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />

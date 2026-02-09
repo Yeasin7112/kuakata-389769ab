@@ -2380,6 +2380,101 @@ export type Database = {
         }
         Relationships: []
       }
+      visitor_events: {
+        Row: {
+          created_at: string
+          element_text: string | null
+          element_type: string | null
+          event_type: string
+          id: string
+          page_path: string | null
+          page_title: string | null
+          session_id: string
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          element_text?: string | null
+          element_type?: string | null
+          event_type?: string
+          id?: string
+          page_path?: string | null
+          page_title?: string | null
+          session_id: string
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          element_text?: string | null
+          element_type?: string | null
+          event_type?: string
+          id?: string
+          page_path?: string | null
+          page_title?: string | null
+          session_id?: string
+          visitor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visitor_events_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "visitor_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      visitor_sessions: {
+        Row: {
+          browser: string | null
+          device_type: string | null
+          id: string
+          is_logged_in: boolean | null
+          language: string | null
+          last_active_at: string
+          os: string | null
+          referrer: string | null
+          screen_height: number | null
+          screen_width: number | null
+          started_at: string
+          user_agent: string | null
+          user_id: string | null
+          visitor_id: string
+        }
+        Insert: {
+          browser?: string | null
+          device_type?: string | null
+          id?: string
+          is_logged_in?: boolean | null
+          language?: string | null
+          last_active_at?: string
+          os?: string | null
+          referrer?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          started_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+          visitor_id: string
+        }
+        Update: {
+          browser?: string | null
+          device_type?: string | null
+          id?: string
+          is_logged_in?: boolean | null
+          language?: string | null
+          last_active_at?: string
+          os?: string | null
+          referrer?: string | null
+          screen_height?: number | null
+          screen_width?: number | null
+          started_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+          visitor_id?: string
+        }
+        Relationships: []
+      }
       warning_zones: {
         Row: {
           created_at: string
