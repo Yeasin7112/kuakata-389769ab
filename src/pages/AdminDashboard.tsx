@@ -41,6 +41,7 @@ import ReportsManager from '@/components/admin/ReportsManager';
 import CommunityChatManager from '@/components/admin/CommunityChatManager';
 import UsersManager from '@/components/admin/UsersManager';
 import VisitorAnalyticsManager from '@/components/admin/VisitorAnalyticsManager';
+import DonationsManager from '@/components/admin/DonationsManager';
 import { Loader2 } from 'lucide-react';
 
 type AdminSection = 
@@ -80,6 +81,7 @@ type AdminSection =
   | 'community-chat'
   | 'registered-users'
   | 'visitor-analytics'
+  | 'donations'
   | 'reports';
 
 const AdminDashboard: React.FC = () => {
@@ -199,6 +201,8 @@ const AdminDashboard: React.FC = () => {
         return <UsersManager />;
       case 'visitor-analytics':
         return <VisitorAnalyticsManager />;
+      case 'donations':
+        return <DonationsManager />;
       case 'reports':
         return <ReportsManager />;
       default:

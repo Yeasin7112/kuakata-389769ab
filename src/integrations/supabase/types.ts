@@ -887,6 +887,114 @@ export type Database = {
           },
         ]
       }
+      donation_settings: {
+        Row: {
+          account_name: string | null
+          account_number: string | null
+          bank_name: string | null
+          branch_name: string | null
+          created_at: string
+          display_order: number | null
+          id: string
+          instructions_bn: string | null
+          instructions_en: string | null
+          is_active: boolean | null
+          method_type: string
+          routing_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          account_name?: string | null
+          account_number?: string | null
+          bank_name?: string | null
+          branch_name?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          instructions_bn?: string | null
+          instructions_en?: string | null
+          is_active?: boolean | null
+          method_type: string
+          routing_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          account_name?: string | null
+          account_number?: string | null
+          bank_name?: string | null
+          branch_name?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          instructions_bn?: string | null
+          instructions_en?: string | null
+          is_active?: boolean | null
+          method_type?: string
+          routing_number?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      donations: {
+        Row: {
+          admin_note: string | null
+          amount: number
+          created_at: string
+          donor_email: string | null
+          donor_name: string
+          donor_phone: string | null
+          id: string
+          message: string | null
+          payment_method: string
+          sender_number: string | null
+          status: string
+          thank_method: string | null
+          thanked: boolean | null
+          transaction_id: string | null
+          updated_at: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          admin_note?: string | null
+          amount: number
+          created_at?: string
+          donor_email?: string | null
+          donor_name: string
+          donor_phone?: string | null
+          id?: string
+          message?: string | null
+          payment_method: string
+          sender_number?: string | null
+          status?: string
+          thank_method?: string | null
+          thanked?: boolean | null
+          transaction_id?: string | null
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          admin_note?: string | null
+          amount?: number
+          created_at?: string
+          donor_email?: string | null
+          donor_name?: string
+          donor_phone?: string | null
+          id?: string
+          message?: string | null
+          payment_method?: string
+          sender_number?: string | null
+          status?: string
+          thank_method?: string | null
+          thanked?: boolean | null
+          transaction_id?: string | null
+          updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
       emergency_services: {
         Row: {
           address_bn: string | null

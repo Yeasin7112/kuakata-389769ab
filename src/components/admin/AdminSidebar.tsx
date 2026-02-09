@@ -29,6 +29,7 @@ import {
   MessageCircle,
   BarChart3,
   MessagesSquare,
+  Heart,
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -84,6 +85,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'registered-users', icon: Users, labelBn: 'নিবন্ধিত ব্যবহারকারী', labelEn: 'Registered Users' },
     { id: 'visitor-analytics', icon: BarChart3, labelBn: 'ভিজিটর ট্র্যাকিং', labelEn: 'Visitor Tracking' },
     { id: 'admins', icon: Users, labelBn: 'অ্যাডমিন', labelEn: 'Admins' },
+    { id: 'donations', icon: Heart, labelBn: 'ডোনেশন', labelEn: 'Donations' },
     { id: 'translations', icon: Languages, labelBn: 'অনুবাদ', labelEn: 'Translations' },
     { id: 'settings', icon: Settings, labelBn: 'সেটিংস', labelEn: 'Settings' },
   ];

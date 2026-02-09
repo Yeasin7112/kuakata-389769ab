@@ -49,6 +49,7 @@ import CommunityQA from "./pages/CommunityQA";
 import LiveChat from "./pages/LiveChat";
 import Install from "./pages/Install";
 import PrayerTimes from "./pages/PrayerTimes";
+import Donate from "./pages/Donate";
 
 // Owner Dashboards
 import HotelOwnerDashboard from "./pages/HotelOwnerDashboard";
@@ -136,6 +137,7 @@ const App = () => (
               <Route path="/community-qa" element={<CommunityQA />} />
               <Route path="/live-chat" element={<LiveChat />} />
               <Route path="/install" element={<Install />} />
+              <Route path="/donate" element={<Donate />} />
               
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
