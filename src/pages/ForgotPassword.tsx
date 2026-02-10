@@ -21,8 +21,12 @@ const ForgotPassword: React.FC = () => {
     if (!email.trim()) return;
     setLoading(true);
 
+    const redirectUrl = window.location.hostname.includes('lovableproject.com') || window.location.hostname.includes('lovable.app')
+      ? 'https://kuakata.lovable.app/reset-password'
+      : `${window.location.origin}/reset-password`;
+
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: redirectUrl,
     });
 
     if (error) {
