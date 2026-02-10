@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Heart, Phone, Copy, CheckCircle2, Send, Smartphone, Building2, Wallet } from 'lucide-react';
+import { ArrowLeft, Heart, Copy, CheckCircle2, Send, Smartphone, Building2, Wallet, Shield, Server, Bell, Globe } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -58,16 +58,10 @@ const Donate: React.FC = () => {
     message: '',
   });
 
-  useEffect(() => {
-    fetchSettings();
-  }, []);
+  useEffect(() => { fetchSettings(); }, []);
 
   const fetchSettings = async () => {
-    const { data } = await supabase
-      .from('donation_settings')
-      .select('*')
-      .eq('is_active', true)
-      .order('display_order');
+    const { data } = await supabase.from('donation_settings').select('*').eq('is_active', true).order('display_order');
     if (data) {
       setSettings(data as DonationSetting[]);
       if (data.length > 0) setSelectedMethod(data[0].method_type);
@@ -109,6 +103,20 @@ const Donate: React.FC = () => {
 
   const activeSetting = settings.find(s => s.method_type === selectedMethod);
 
+  const impactItems = language === 'bn'
+    ? [
+        { icon: <Server className="w-4 h-4" />, text: 'সার্ভার ও ডাটা খরচ' },
+        { icon: <Shield className="w-4 h-4" />, text: 'নিরাপত্তা সতর্কতা সিস্টেম' },
+        { icon: <Bell className="w-4 h-4" />, text: 'স্থানীয় তথ্য আপডেট' },
+        { icon: <Globe className="w-4 h-4" />, text: 'ফ্রি সার্ভিস চালু রাখা' },
+      ]
+    : [
+        { icon: <Server className="w-4 h-4" />, text: 'Server & data costs' },
+        { icon: <Shield className="w-4 h-4" />, text: 'Safety alert system' },
+        { icon: <Bell className="w-4 h-4" />, text: 'Local info updates' },
+        { icon: <Globe className="w-4 h-4" />, text: 'Keeping services free' },
+      ];
+
   if (submitted) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -122,13 +130,8 @@ const Donate: React.FC = () => {
             </h2>
             <p className="text-muted-foreground font-bangla">
               {language === 'bn'
-                ? 'আপনার ডোনেশন সফলভাবে জমা হয়েছে। অ্যাডমিন যাচাই করার পর আপনাকে ধন্যবাদ জানানো হবে।'
-                : 'Your donation has been submitted successfully. You will receive a thank you after admin verification.'}
-            </p>
-            <p className="text-sm text-muted-foreground font-bangla">
-              {language === 'bn'
-                ? '📞 যাচাইয়ের পর অ্যাডমিন আপনাকে ধন্যবাদ কল/চিঠি পাঠাবে'
-                : '📞 Admin will send you a thanks call/letter after verification'}
+                ? 'আপনার সাপোর্ট কুয়াকাটাকে আরও স্মার্ট ও নিরাপদ করতে সাহায্য করবে। অ্যাডমিন যাচাই করার পর আপনাকে ধন্যবাদ জানানো হবে।'
+                : 'Your support helps keep Kuakata smart & safe. You will receive a thank you after admin verification.'}
             </p>
             <Button onClick={() => navigate('/')} className="mt-4">
               {language === 'bn' ? 'হোমে ফিরুন' : 'Back to Home'}
@@ -143,32 +146,38 @@ const Donate: React.FC = () => {
   return (
     <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <div className="bg-gradient-primary text-white p-4 safe-area-top">
-        <div className="flex items-center gap-3">
+      <div className="bg-gradient-to-br from-rose-500 to-amber-500 text-white p-4 pb-6 safe-area-top">
+        <div className="flex items-center gap-3 mb-3">
           <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-white/20">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
             <h1 className="text-xl font-bold font-bangla">
-              {language === 'bn' ? '❤️ ডোনেট করুন' : '❤️ Donate'}
+              {language === 'bn' ? '🤝 কুয়াকাটাকে সাপোর্ট করুন' : '🤝 Support Kuakata'}
             </h1>
             <p className="text-sm opacity-90 font-bangla">
-              {language === 'bn' ? 'OurKuakata প্রজেক্টে সহায়তা করুন' : 'Support the OurKuakata Project'}
+              {language === 'bn' ? 'এই ফ্রি সার্ভিস চালু রাখতে সাহায্য করুন' : 'Help keep this free service running'}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-lg mx-auto p-4 space-y-4">
-        {/* Why Donate */}
-        <Card>
-          <CardContent className="pt-4 pb-4">
-            <p className="text-sm text-muted-foreground font-bangla leading-relaxed">
-              {language === 'bn'
-                ? '🌊 OurKuakata হলো কুয়াকাটার পর্যটকদের জন্য তৈরি একটি ফ্রি প্রজেক্ট। আপনার ডোনেশন এই প্রজেক্ট চালু রাখতে ও উন্নয়নে সাহায্য করবে। প্রতিটি ডোনেশন স্থানীয় সরকারকে উপহার হিসেবে দেওয়া এই প্রজেক্টকে আরও শক্তিশালী করবে।'
-                : '🌊 OurKuakata is a free project for Kuakata tourists. Your donation helps keep this project running and improving. Every donation strengthens this project which will be gifted to the local government.'}
-            </p>
-          </CardContent>
+      <div className="max-w-lg mx-auto p-4 space-y-4 -mt-3">
+        {/* Donation Impact Section */}
+        <Card className="border-rose-200 dark:border-rose-800 overflow-hidden">
+          <div className="bg-gradient-to-r from-rose-50 to-amber-50 dark:from-rose-950/20 dark:to-amber-950/20 p-4">
+            <h3 className="font-bold font-bangla text-sm mb-3 text-foreground">
+              {language === 'bn' ? '💡 আপনার অনুদানে যা করা হচ্ছে:' : '💡 Your donation impact:'}
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {impactItems.map((item, i) => (
+                <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span className="text-rose-500">{item.icon}</span>
+                  <span className="font-bangla">{item.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </Card>
 
         {/* Payment Methods */}
@@ -206,35 +215,20 @@ const Donate: React.FC = () => {
               {activeSetting.account_number && (
                 <div className="flex items-center justify-between bg-muted rounded-lg p-3">
                   <div>
-                    <p className="text-xs text-muted-foreground font-bangla">
-                      {language === 'bn' ? 'নম্বর/অ্যাকাউন্ট' : 'Number/Account'}
-                    </p>
+                    <p className="text-xs text-muted-foreground font-bangla">{language === 'bn' ? 'নম্বর/অ্যাকাউন্ট' : 'Number/Account'}</p>
                     <p className="text-lg font-bold text-foreground tracking-wide">{activeSetting.account_number}</p>
                   </div>
-                  <button
-                    onClick={() => copyToClipboard(activeSetting.account_number!, 'number')}
-                    className="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20"
-                  >
+                  <button onClick={() => copyToClipboard(activeSetting.account_number!, 'number')} className="p-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20">
                     {copied === 'number' ? <CheckCircle2 className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                   </button>
                 </div>
               )}
-              {activeSetting.account_name && (
-                <p className="text-sm"><span className="text-muted-foreground">{language === 'bn' ? 'নাম:' : 'Name:'}</span> <strong>{activeSetting.account_name}</strong></p>
-              )}
-              {activeSetting.bank_name && (
-                <p className="text-sm"><span className="text-muted-foreground">{language === 'bn' ? 'ব্যাংক:' : 'Bank:'}</span> <strong>{activeSetting.bank_name}</strong></p>
-              )}
-              {activeSetting.branch_name && (
-                <p className="text-sm"><span className="text-muted-foreground">{language === 'bn' ? 'শাখা:' : 'Branch:'}</span> <strong>{activeSetting.branch_name}</strong></p>
-              )}
-              {activeSetting.routing_number && (
-                <p className="text-sm"><span className="text-muted-foreground">{language === 'bn' ? 'রাউটিং নম্বর:' : 'Routing:'}</span> <strong>{activeSetting.routing_number}</strong></p>
-              )}
+              {activeSetting.account_name && <p className="text-sm"><span className="text-muted-foreground">{language === 'bn' ? 'নাম:' : 'Name:'}</span> <strong>{activeSetting.account_name}</strong></p>}
+              {activeSetting.bank_name && <p className="text-sm"><span className="text-muted-foreground">{language === 'bn' ? 'ব্যাংক:' : 'Bank:'}</span> <strong>{activeSetting.bank_name}</strong></p>}
+              {activeSetting.branch_name && <p className="text-sm"><span className="text-muted-foreground">{language === 'bn' ? 'শাখা:' : 'Branch:'}</span> <strong>{activeSetting.branch_name}</strong></p>}
+              {activeSetting.routing_number && <p className="text-sm"><span className="text-muted-foreground">{language === 'bn' ? 'রাউটিং নম্বর:' : 'Routing:'}</span> <strong>{activeSetting.routing_number}</strong></p>}
               {(language === 'bn' ? activeSetting.instructions_bn : activeSetting.instructions_en) && (
-                <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-2 font-bangla">
-                  💡 {language === 'bn' ? activeSetting.instructions_bn : activeSetting.instructions_en}
-                </p>
+                <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-2 font-bangla">💡 {language === 'bn' ? activeSetting.instructions_bn : activeSetting.instructions_en}</p>
               )}
             </CardContent>
           </Card>
@@ -243,9 +237,7 @@ const Donate: React.FC = () => {
         {settings.length === 0 && !loading && (
           <Card>
             <CardContent className="py-8 text-center">
-              <p className="text-muted-foreground font-bangla">
-                {language === 'bn' ? 'ডোনেশন পেমেন্ট মেথড এখনো সেট করা হয়নি।' : 'Donation payment methods not configured yet.'}
-              </p>
+              <p className="text-muted-foreground font-bangla">{language === 'bn' ? 'পেমেন্ট মেথড এখনো সেট করা হয়নি।' : 'Payment methods not configured yet.'}</p>
             </CardContent>
           </Card>
         )}
@@ -255,7 +247,7 @@ const Donate: React.FC = () => {
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-bangla">
-                {language === 'bn' ? '📝 ডোনেশন তথ্য জমা দিন' : '📝 Submit Donation Info'}
+                {language === 'bn' ? '📝 সাপোর্ট তথ্য জমা দিন' : '📝 Submit Support Info'}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -292,11 +284,11 @@ const Donate: React.FC = () => {
                   <Label className="font-bangla text-xs">{language === 'bn' ? 'বার্তা (ঐচ্ছিক)' : 'Message (optional)'}</Label>
                   <Textarea value={form.message} onChange={e => setForm({ ...form, message: e.target.value })} rows={2} />
                 </div>
-                <Button type="submit" className="w-full" disabled={submitting}>
-                  <Send className="w-4 h-4 mr-2" />
+                <Button type="submit" className="w-full bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-600 hover:to-amber-600 text-white" disabled={submitting}>
+                  <Heart className="w-4 h-4 mr-2" />
                   {submitting
                     ? (language === 'bn' ? 'জমা হচ্ছে...' : 'Submitting...')
-                    : (language === 'bn' ? 'ডোনেশন জমা দিন' : 'Submit Donation')}
+                    : (language === 'bn' ? 'কুয়াকাটাকে সাপোর্ট করুন' : 'Support Kuakata')}
                 </Button>
               </form>
             </CardContent>

@@ -42,6 +42,9 @@ import CommunityChatManager from '@/components/admin/CommunityChatManager';
 import UsersManager from '@/components/admin/UsersManager';
 import VisitorAnalyticsManager from '@/components/admin/VisitorAnalyticsManager';
 import DonationsManager from '@/components/admin/DonationsManager';
+import CouponsManager from '@/components/admin/CouponsManager';
+import CommissionManager from '@/components/admin/CommissionManager';
+import FeaturedListingsManager from '@/components/admin/FeaturedListingsManager';
 import { Loader2 } from 'lucide-react';
 
 type AdminSection = 
@@ -82,6 +85,9 @@ type AdminSection =
   | 'registered-users'
   | 'visitor-analytics'
   | 'donations'
+  | 'coupons'
+  | 'commission'
+  | 'featured-listings'
   | 'reports';
 
 const AdminDashboard: React.FC = () => {
@@ -203,6 +209,12 @@ const AdminDashboard: React.FC = () => {
         return <VisitorAnalyticsManager />;
       case 'donations':
         return <DonationsManager />;
+      case 'coupons':
+        return <CouponsManager />;
+      case 'commission':
+        return <CommissionManager />;
+      case 'featured-listings':
+        return <FeaturedListingsManager />;
       case 'reports':
         return <ReportsManager />;
       default:
