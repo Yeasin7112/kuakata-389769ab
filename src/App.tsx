@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 // Pages
 import Index from "./pages/Index";
@@ -73,6 +74,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <VisitorTracker />
+            <SpeedInsights />
             <Routes>
               {/* Main Routes */}
               <Route path="/" element={<Index />} />
