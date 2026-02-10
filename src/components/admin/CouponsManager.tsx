@@ -102,7 +102,7 @@ const CouponsManager: React.FC = () => {
         code: form.code.toUpperCase(),
         discount_type: form.discount_type,
         discount_value: form.discount_value,
-        hotel_id: form.hotel_id || null,
+        hotel_id: form.hotel_id && form.hotel_id !== 'all' ? form.hotel_id : null,
         min_booking_amount: form.min_booking_amount,
         max_discount: form.max_discount ? parseFloat(form.max_discount) : null,
         usage_limit: form.usage_limit ? parseInt(form.usage_limit) : null,
@@ -218,7 +218,7 @@ const CouponsManager: React.FC = () => {
               <Select value={form.hotel_id} onValueChange={v => setForm({ ...form, hotel_id: v })}>
                 <SelectTrigger><SelectValue placeholder="All Hotels" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Hotels</SelectItem>
+                  <SelectItem value="all">All Hotels</SelectItem>
                   {hotels.map(h => <SelectItem key={h.id} value={h.id}>{h.name_en}</SelectItem>)}
                 </SelectContent>
               </Select>
