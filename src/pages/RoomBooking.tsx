@@ -28,8 +28,10 @@ import {
   Loader2,
   Check,
   Calendar,
-  Images
+  Images,
+  Ticket
 } from 'lucide-react';
+import SupportKuakataBanner from '@/components/SupportKuakataBanner';
 
 interface Room {
   id: string;
@@ -81,6 +83,10 @@ const RoomBooking: React.FC = () => {
   const [guestName, setGuestName] = useState('');
   const [phone, setPhone] = useState('');
   const [notes, setNotes] = useState('');
+  const [couponCode, setCouponCode] = useState('');
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [couponId, setCouponId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchHotelAndRooms();
@@ -136,7 +142,66 @@ const RoomBooking: React.FC = () => {
   const calculateTotal = () => {
     if (!selectedRoom || !checkIn || !checkOut) return 0;
     const nights = differenceInDays(checkOut, checkIn);
+    const base = nights > 0 ? nights * selectedRoom.price_per_night : 0;
+    return Math.max(0, base - couponDiscount);
+  };
+
+  const calculateOriginalTotal = () => {
+    if (!selectedRoom || !checkIn || !checkOut) return 0;
+    const nights = differenceInDays(checkOut, checkIn);
     return nights > 0 ? nights * selectedRoom.price_per_night : 0;
+  };
+
+  const applyCoupon = async () => {
+    if (!couponCode || !selectedRoom) return;
+    const { data, error } = await supabase
+      .from('coupons')
+      .select('*')
+      .eq('code', couponCode.toUpperCase())
+      .eq('is_active', true)
+      .single();
+
+    if (error || !data) {
+      toast({ title: language === 'bn' ? 'অবৈধ কুপন' : 'Invalid Coupon', variant: 'destructive' });
+      return;
+    }
+
+    // Check hotel-specific coupon
+    if (data.hotel_id && data.hotel_id !== hotelId) {
+      toast({ title: language === 'bn' ? 'এই হোটেলের জন্য নয়' : 'Not valid for this hotel', variant: 'destructive' });
+      return;
+    }
+
+    // Check usage limit
+    if (data.usage_limit && data.used_count >= data.usage_limit) {
+      toast({ title: language === 'bn' ? 'কুপন সীমা শেষ' : 'Coupon limit reached', variant: 'destructive' });
+      return;
+    }
+
+    // Check expiry
+    if (data.expires_at && new Date(data.expires_at) < new Date()) {
+      toast({ title: language === 'bn' ? 'কুপন মেয়াদোত্তীর্ণ' : 'Coupon expired', variant: 'destructive' });
+      return;
+    }
+
+    const originalTotal = calculateOriginalTotal();
+    if (data.min_booking_amount && originalTotal < data.min_booking_amount) {
+      toast({ title: language === 'bn' ? `ন্যূনতম ৳${data.min_booking_amount} প্রয়োজন` : `Min ৳${data.min_booking_amount} required`, variant: 'destructive' });
+      return;
+    }
+
+    let discount = 0;
+    if (data.discount_type === 'flat') {
+      discount = data.discount_value;
+    } else {
+      discount = (originalTotal * data.discount_value) / 100;
+      if (data.max_discount && discount > data.max_discount) discount = data.max_discount;
+    }
+
+    setCouponDiscount(discount);
+    setCouponApplied(true);
+    setCouponId(data.id);
+    toast({ title: language === 'bn' ? `৳${discount} ছাড় পেয়েছেন!` : `৳${discount} discount applied!` });
   };
 
   const handleDateSelect = (start: Date, end: Date) => {
@@ -159,18 +224,48 @@ const RoomBooking: React.FC = () => {
     }
 
     try {
+      const totalPrice = calculateTotal();
+      const originalPrice = calculateOriginalTotal();
+      
       const { error } = await supabase.from('room_bookings').insert([{
         room_id: selectedRoom.id,
         user_id: user.id,
         check_in_date: format(checkIn, 'yyyy-MM-dd'),
         check_out_date: format(checkOut, 'yyyy-MM-dd'),
         guests,
-        total_price: calculateTotal(),
+        total_price: totalPrice,
+        original_price: originalPrice,
+        discount_amount: couponDiscount,
+        coupon_id: couponId,
         guest_name: guestName || user.email,
         phone,
         notes,
         status: 'pending'
       }]);
+
+      if (error) throw error;
+
+      // Update coupon usage
+      if (couponId) {
+        const { data: couponData } = await supabase.from('coupons').select('used_count').eq('id', couponId).single();
+        if (couponData) {
+          await supabase.from('coupons').update({ used_count: (couponData.used_count || 0) + 1 }).eq('id', couponId);
+        }
+      }
+
+      // Track commission
+      if (hotelId) {
+        const { data: hotelData } = await supabase.from('hotels').select('commission_rate').eq('id', hotelId).single();
+        if (hotelData?.commission_rate && hotelData.commission_rate > 0) {
+          await supabase.from('commission_earnings').insert({
+            booking_id: undefined, // will be linked later if needed
+            hotel_id: hotelId,
+            booking_amount: totalPrice,
+            commission_rate: hotelData.commission_rate,
+            commission_amount: (totalPrice * hotelData.commission_rate) / 100,
+          });
+        }
+      }
 
       if (error) throw error;
 
@@ -311,7 +406,7 @@ const RoomBooking: React.FC = () => {
       <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           {bookingSuccess ? (
-            <div className="py-8 text-center">
+            <div className="py-8 text-center space-y-4">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-success/10 flex items-center justify-center">
                 <Check className="w-8 h-8 text-success" />
               </div>
@@ -323,6 +418,7 @@ const RoomBooking: React.FC = () => {
                   ? 'আপনার বুকিং অনুরোধ পাঠানো হয়েছে। হোটেল মালিক শীঘ্রই নিশ্চিত করবেন।'
                   : 'Your booking request has been sent. The hotel will confirm soon.'}
               </p>
+              <SupportKuakataBanner variant="prominent" />
               <Button onClick={() => setIsBookingOpen(false)}>
                 {language === 'bn' ? 'বন্ধ করুন' : 'Close'}
               </Button>
@@ -403,12 +499,50 @@ const RoomBooking: React.FC = () => {
                     />
                   </div>
 
-                  {calculateTotal() > 0 && (
+                  {/* Coupon Code */}
+                  <div className="space-y-2">
+                    <Label className="font-bangla flex items-center gap-1">
+                      <Ticket className="w-3.5 h-3.5" />
+                      {language === 'bn' ? 'কুপন কোড' : 'Coupon Code'}
+                    </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                        placeholder="e.g. KUA20OFF"
+                        className="font-mono"
+                        disabled={couponApplied}
+                      />
+                      <Button
+                        type="button"
+                        variant={couponApplied ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={applyCoupon}
+                        disabled={couponApplied || !couponCode}
+                      >
+                        {couponApplied ? (language === 'bn' ? '✓ প্রয়োগ হয়েছে' : '✓ Applied') : (language === 'bn' ? 'প্রয়োগ' : 'Apply')}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {calculateOriginalTotal() > 0 && (
                     <div className="p-4 bg-primary/10 rounded-xl">
                       <div className="flex justify-between text-sm mb-1">
                         <span className="font-bangla">{language === 'bn' ? 'মোট রাত' : 'Total Nights'}</span>
                         <span>{differenceInDays(checkOut!, checkIn!)}</span>
                       </div>
+                      {couponDiscount > 0 && (
+                        <>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span className="font-bangla">{language === 'bn' ? 'সাবটোটাল' : 'Subtotal'}</span>
+                            <span>৳{calculateOriginalTotal()}</span>
+                          </div>
+                          <div className="flex justify-between text-sm mb-1 text-green-600">
+                            <span className="font-bangla">{language === 'bn' ? 'কুপন ছাড়' : 'Coupon Discount'}</span>
+                            <span>-৳{couponDiscount}</span>
+                          </div>
+                        </>
+                      )}
                       <div className="flex justify-between font-bold text-lg">
                         <span className="font-bangla">{language === 'bn' ? 'মোট মূল্য' : 'Total Price'}</span>
                         <span className="text-primary">৳{calculateTotal()}</span>

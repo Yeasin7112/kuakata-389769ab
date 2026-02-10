@@ -7,6 +7,7 @@ import BottomNav from '@/components/BottomNav';
 import Footer from '@/components/Footer';
 import NotificationBanner from '@/components/NotificationBanner';
 import FloatingSOS from '@/components/FloatingSOS';
+import SupportKuakataBanner from '@/components/SupportKuakataBanner';
 import { useNotificationSubscription } from '@/hooks/useNotifications';
 
 const Index: React.FC = () => {
@@ -38,6 +39,9 @@ const Index: React.FC = () => {
           <NotificationBanner onDismiss={handleDismissNotification} />
         )}
         <NoticeBar />
+        <div className="px-4 pb-2">
+          <SupportKuakataBanner variant="soft" />
+        </div>
         <FeatureGrid />
       </main>
       <Footer />

@@ -551,6 +551,54 @@ export type Database = {
         }
         Relationships: []
       }
+      commission_earnings: {
+        Row: {
+          booking_amount: number
+          booking_id: string | null
+          commission_amount: number
+          commission_rate: number
+          created_at: string
+          hotel_id: string | null
+          id: string
+          status: string | null
+        }
+        Insert: {
+          booking_amount: number
+          booking_id?: string | null
+          commission_amount: number
+          commission_rate: number
+          created_at?: string
+          hotel_id?: string | null
+          id?: string
+          status?: string | null
+        }
+        Update: {
+          booking_amount?: number
+          booking_id?: string | null
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string
+          hotel_id?: string | null
+          id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commission_earnings_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "room_bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commission_earnings_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "hotels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       community_answers: {
         Row: {
           content: string
@@ -758,6 +806,65 @@ export type Database = {
             columns: ["contest_id"]
             isOneToOne: false
             referencedRelation: "photo_contests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string
+          discount_type: string
+          discount_value: number
+          expires_at: string | null
+          hotel_id: string | null
+          id: string
+          is_active: boolean | null
+          max_discount: number | null
+          min_booking_amount: number | null
+          updated_at: string
+          usage_limit: number | null
+          used_count: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by: string
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          hotel_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_discount?: number | null
+          min_booking_amount?: number | null
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          hotel_id?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_discount?: number | null
+          min_booking_amount?: number | null
+          updated_at?: string
+          usage_limit?: number | null
+          used_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupons_hotel_id_fkey"
+            columns: ["hotel_id"]
+            isOneToOne: false
+            referencedRelation: "hotels"
             referencedColumns: ["id"]
           },
         ]
@@ -1226,13 +1333,16 @@ export type Database = {
           address_bn: string | null
           address_en: string | null
           amenities: string[] | null
+          commission_rate: number | null
           created_at: string
           description_bn: string | null
           description_en: string | null
           email: string | null
+          featured_until: string | null
           id: string
           image_url: string | null
           is_active: boolean | null
+          is_featured: boolean | null
           latitude: number | null
           longitude: number | null
           name_bn: string
@@ -1248,13 +1358,16 @@ export type Database = {
           address_bn?: string | null
           address_en?: string | null
           amenities?: string[] | null
+          commission_rate?: number | null
           created_at?: string
           description_bn?: string | null
           description_en?: string | null
           email?: string | null
+          featured_until?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_featured?: boolean | null
           latitude?: number | null
           longitude?: number | null
           name_bn: string
@@ -1270,13 +1383,16 @@ export type Database = {
           address_bn?: string | null
           address_en?: string | null
           amenities?: string[] | null
+          commission_rate?: number | null
           created_at?: string
           description_bn?: string | null
           description_en?: string | null
           email?: string | null
+          featured_until?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_featured?: boolean | null
           latitude?: number | null
           longitude?: number | null
           name_bn?: string
@@ -1910,9 +2026,11 @@ export type Database = {
           cuisine_type: string | null
           description_bn: string | null
           description_en: string | null
+          featured_until: string | null
           id: string
           image_url: string | null
           is_active: boolean | null
+          is_featured: boolean | null
           name_bn: string
           name_en: string
           owner_id: string | null
@@ -1928,9 +2046,11 @@ export type Database = {
           cuisine_type?: string | null
           description_bn?: string | null
           description_en?: string | null
+          featured_until?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_featured?: boolean | null
           name_bn: string
           name_en: string
           owner_id?: string | null
@@ -1946,9 +2066,11 @@ export type Database = {
           cuisine_type?: string | null
           description_bn?: string | null
           description_en?: string | null
+          featured_until?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean | null
+          is_featured?: boolean | null
           name_bn?: string
           name_en?: string
           owner_id?: string | null
@@ -1999,11 +2121,14 @@ export type Database = {
         Row: {
           check_in_date: string
           check_out_date: string
+          coupon_id: string | null
           created_at: string
+          discount_amount: number | null
           guest_name: string | null
           guests: number | null
           id: string
           notes: string | null
+          original_price: number | null
           phone: string | null
           room_id: string
           status: string | null
@@ -2014,11 +2139,14 @@ export type Database = {
         Insert: {
           check_in_date: string
           check_out_date: string
+          coupon_id?: string | null
           created_at?: string
+          discount_amount?: number | null
           guest_name?: string | null
           guests?: number | null
           id?: string
           notes?: string | null
+          original_price?: number | null
           phone?: string | null
           room_id: string
           status?: string | null
@@ -2029,11 +2157,14 @@ export type Database = {
         Update: {
           check_in_date?: string
           check_out_date?: string
+          coupon_id?: string | null
           created_at?: string
+          discount_amount?: number | null
           guest_name?: string | null
           guests?: number | null
           id?: string
           notes?: string | null
+          original_price?: number | null
           phone?: string | null
           room_id?: string
           status?: string | null
@@ -2042,6 +2173,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "room_bookings_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "room_bookings_room_id_fkey"
             columns: ["room_id"]

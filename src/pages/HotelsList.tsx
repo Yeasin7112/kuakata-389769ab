@@ -4,7 +4,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import BottomNav from '@/components/BottomNav';
-import { ArrowLeft, Hotel, Star } from 'lucide-react';
+import { ArrowLeft, Hotel, Star, Crown } from 'lucide-react';
+import SupportKuakataBanner from '@/components/SupportKuakataBanner';
 
 interface HotelItem {
   id: string;
@@ -15,6 +16,8 @@ interface HotelItem {
   image_url: string | null;
   rating: number | null;
   price_range: string | null;
+  is_featured: boolean | null;
+  featured_until: string | null;
 }
 
 const HotelsList: React.FC = () => {
@@ -31,7 +34,17 @@ const HotelsList: React.FC = () => {
         .eq('is_active', true)
         .order('rating', { ascending: false });
       
-      if (data) setHotels(data);
+      if (data) {
+        // Sort: featured first, then by rating
+        const sorted = [...data].sort((a: any, b: any) => {
+          const aFeatured = a.is_featured && (!a.featured_until || new Date(a.featured_until) > new Date());
+          const bFeatured = b.is_featured && (!b.featured_until || new Date(b.featured_until) > new Date());
+          if (aFeatured && !bFeatured) return -1;
+          if (!aFeatured && bFeatured) return 1;
+          return 0;
+        });
+        setHotels(sorted);
+      }
       setLoading(false);
     };
 
@@ -64,13 +77,20 @@ const HotelsList: React.FC = () => {
           </div>
         ) : hotels.length > 0 ? (
           <div className="space-y-4">
-            {hotels.map((hotel) => (
+            {hotels.map((hotel) => {
+              const isFeatured = hotel.is_featured && (!hotel.featured_until || new Date(hotel.featured_until) > new Date());
+              return (
               <button
                 key={hotel.id}
                 onClick={() => navigate(`/hotels/${hotel.id}`)}
-                className="card-elevated overflow-hidden w-full text-left"
+                className={`card-elevated overflow-hidden w-full text-left ${isFeatured ? 'ring-2 ring-amber-400' : ''}`}
               >
                 <div className="relative">
+                  {isFeatured && (
+                    <span className="absolute top-2 left-2 z-10 bg-amber-500 text-white px-2 py-0.5 rounded-full text-xs font-medium flex items-center gap-1">
+                      <Crown className="w-3 h-3" /> Sponsored
+                    </span>
+                  )}
                   {hotel.image_url ? (
                     <img 
                       src={hotel.image_url} 
@@ -107,7 +127,9 @@ const HotelsList: React.FC = () => {
                   </div>
                 </div>
               </button>
-            ))}
+              );
+            })}
+            <SupportKuakataBanner variant="soft" className="mt-2" />
           </div>
         ) : (
           <div className="card-elevated p-8 text-center">
