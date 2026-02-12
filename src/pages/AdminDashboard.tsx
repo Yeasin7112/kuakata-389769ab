@@ -45,6 +45,7 @@ import DonationsManager from '@/components/admin/DonationsManager';
 import CouponsManager from '@/components/admin/CouponsManager';
 import CommissionManager from '@/components/admin/CommissionManager';
 import FeaturedListingsManager from '@/components/admin/FeaturedListingsManager';
+import PhotographersManager from '@/components/admin/PhotographersManager';
 import { Loader2 } from 'lucide-react';
 
 type AdminSection = 
@@ -88,7 +89,8 @@ type AdminSection =
   | 'coupons'
   | 'commission'
   | 'featured-listings'
-  | 'reports';
+  | 'reports'
+  | 'photographers';
 
 const AdminDashboard: React.FC = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -217,6 +219,8 @@ const AdminDashboard: React.FC = () => {
         return <FeaturedListingsManager />;
       case 'reports':
         return <ReportsManager />;
+      case 'photographers':
+        return <PhotographersManager />;
       default:
         return <DashboardOverview onNavigate={(section) => setActiveSection(section as AdminSection)} />;
     }

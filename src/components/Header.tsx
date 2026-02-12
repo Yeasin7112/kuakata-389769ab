@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { User, LogIn, Shield, Building2, UtensilsCrossed, Search } from 'lucide-react';
+import { User, LogIn, Shield, Building2, UtensilsCrossed, Search, Camera } from 'lucide-react';
 import GlobalSearch from '@/components/GlobalSearch';
 
 const Header: React.FC = () => {
   const { language, toggleLanguage } = useLanguage();
-  const { user, isAdmin, isHotelOwner, isRestaurantOwner } = useAuth();
+  const { user, isAdmin, isHotelOwner, isRestaurantOwner, isPhotographer } = useAuth();
   const [showSearch, setShowSearch] = useState(false);
   return (
     <header className="bg-gradient-header text-primary-foreground safe-area-top">
@@ -78,6 +78,17 @@ const Header: React.FC = () => {
                 title={language === 'bn' ? 'রেস্তোরাঁ ড্যাশবোর্ড' : 'Restaurant Dashboard'}
               >
                 <UtensilsCrossed className="w-5 h-5" />
+              </Link>
+            )}
+
+            {/* Photographer Dashboard */}
+            {isPhotographer && (
+              <Link 
+                to="/photographer-dashboard"
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                title={language === 'bn' ? 'ফটোগ্রাফার ড্যাশবোর্ড' : 'Photographer Dashboard'}
+              >
+                <Camera className="w-5 h-5" />
               </Link>
             )}
             

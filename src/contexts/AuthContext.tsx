@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-type AppRole = 'admin' | 'moderator' | 'user' | 'hotel_owner' | 'restaurant_owner' | 'super_admin';
+type AppRole = 'admin' | 'moderator' | 'user' | 'hotel_owner' | 'restaurant_owner' | 'super_admin' | 'photographer';
 
 const SUPER_ADMIN_EMAIL = 'helloyeasin00@gmail.com';
 
@@ -13,6 +13,7 @@ interface AuthContextType {
   isAdmin: boolean;
   isSuperAdmin: boolean;
   isHotelOwner: boolean;
+  isPhotographer: boolean;
   isRestaurantOwner: boolean;
   userRoles: AppRole[];
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
@@ -30,6 +31,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [isHotelOwner, setIsHotelOwner] = useState(false);
   const [isRestaurantOwner, setIsRestaurantOwner] = useState(false);
+  const [isPhotographer, setIsPhotographer] = useState(false);
   const [userRoles, setUserRoles] = useState<AppRole[]>([]);
 
   const checkUserRoles = async (userId: string, userEmail: string | undefined) => {
@@ -55,12 +57,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsAdmin(roles.includes('admin') || superAdmin);
       setIsHotelOwner(roles.includes('hotel_owner'));
       setIsRestaurantOwner(roles.includes('restaurant_owner'));
+      setIsPhotographer(roles.includes('photographer'));
     } catch (error) {
       console.error('Error checking user roles:', error);
       setIsAdmin(false);
       setIsSuperAdmin(false);
       setIsHotelOwner(false);
       setIsRestaurantOwner(false);
+      setIsPhotographer(false);
       setUserRoles([]);
     }
   };
@@ -82,6 +86,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setIsSuperAdmin(false);
           setIsHotelOwner(false);
           setIsRestaurantOwner(false);
+          setIsPhotographer(false);
           setUserRoles([]);
         }
         
@@ -132,6 +137,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsSuperAdmin(false);
     setIsHotelOwner(false);
     setIsRestaurantOwner(false);
+    setIsPhotographer(false);
     setUserRoles([]);
   };
 
@@ -143,6 +149,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       isAdmin,
       isSuperAdmin, 
       isHotelOwner, 
+      isPhotographer,
       isRestaurantOwner, 
       userRoles,
       signUp, 

@@ -92,6 +92,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     { id: 'coupons', icon: Ticket, labelBn: 'কুপন', labelEn: 'Coupons' },
     { id: 'commission', icon: DollarSign, labelBn: 'কমিশন', labelEn: 'Commission' },
     { id: 'featured-listings', icon: Crown, labelBn: 'ফিচার্ড লিস্টিং', labelEn: 'Featured Listings' },
+    { id: 'photographers', icon: Camera, labelBn: 'ফটোগ্রাফার', labelEn: 'Photographers' },
     { id: 'translations', icon: Languages, labelBn: 'অনুবাদ', labelEn: 'Translations' },
     { id: 'settings', icon: Settings, labelBn: 'সেটিংস', labelEn: 'Settings' },
   ];
