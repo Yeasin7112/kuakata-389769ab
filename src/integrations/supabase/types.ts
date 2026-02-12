@@ -1783,6 +1783,194 @@ export type Database = {
           },
         ]
       }
+      photographer_bookings: {
+        Row: {
+          booking_date: string
+          booking_time: string | null
+          commission_amount: number | null
+          created_at: string
+          guest_name: string | null
+          guest_phone: string | null
+          id: string
+          location: string | null
+          notes: string | null
+          photographer_id: string
+          service_id: string | null
+          status: string
+          total_price: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          booking_date: string
+          booking_time?: string | null
+          commission_amount?: number | null
+          created_at?: string
+          guest_name?: string | null
+          guest_phone?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          photographer_id: string
+          service_id?: string | null
+          status?: string
+          total_price?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          booking_date?: string
+          booking_time?: string | null
+          commission_amount?: number | null
+          created_at?: string
+          guest_name?: string | null
+          guest_phone?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          photographer_id?: string
+          service_id?: string | null
+          status?: string
+          total_price?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photographer_bookings_photographer_id_fkey"
+            columns: ["photographer_id"]
+            isOneToOne: false
+            referencedRelation: "photographers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photographer_bookings_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "photographer_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      photographer_services: {
+        Row: {
+          created_at: string
+          description_bn: string | null
+          description_en: string | null
+          duration_minutes: number | null
+          id: string
+          is_active: boolean | null
+          name_bn: string
+          name_en: string
+          photographer_id: string
+          price: number
+          service_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name_bn: string
+          name_en: string
+          photographer_id: string
+          price?: number
+          service_type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description_bn?: string | null
+          description_en?: string | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          name_bn?: string
+          name_en?: string
+          photographer_id?: string
+          price?: number
+          service_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photographer_services_photographer_id_fkey"
+            columns: ["photographer_id"]
+            isOneToOne: false
+            referencedRelation: "photographers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      photographers: {
+        Row: {
+          bio_bn: string | null
+          bio_en: string | null
+          commission_rate: number | null
+          created_at: string
+          email: string | null
+          experience_years: number | null
+          id: string
+          is_active: boolean | null
+          is_approved: boolean | null
+          name_bn: string
+          name_en: string
+          phone: string | null
+          portfolio_images: string[] | null
+          profile_image_url: string | null
+          rating: number | null
+          specializations: string[] | null
+          updated_at: string
+          user_id: string
+          whatsapp: string | null
+        }
+        Insert: {
+          bio_bn?: string | null
+          bio_en?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          email?: string | null
+          experience_years?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_approved?: boolean | null
+          name_bn: string
+          name_en: string
+          phone?: string | null
+          portfolio_images?: string[] | null
+          profile_image_url?: string | null
+          rating?: number | null
+          specializations?: string[] | null
+          updated_at?: string
+          user_id: string
+          whatsapp?: string | null
+        }
+        Update: {
+          bio_bn?: string | null
+          bio_en?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          email?: string | null
+          experience_years?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_approved?: boolean | null
+          name_bn?: string
+          name_en?: string
+          phone?: string | null
+          portfolio_images?: string[] | null
+          profile_image_url?: string | null
+          rating?: number | null
+          specializations?: string[] | null
+          updated_at?: string
+          user_id?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       place_images: {
         Row: {
           created_at: string
@@ -2787,6 +2975,7 @@ export type Database = {
         | "user"
         | "hotel_owner"
         | "restaurant_owner"
+        | "photographer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2920,6 +3109,7 @@ export const Constants = {
         "user",
         "hotel_owner",
         "restaurant_owner",
+        "photographer",
       ],
     },
   },

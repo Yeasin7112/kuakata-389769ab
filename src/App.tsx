@@ -52,6 +52,10 @@ import LiveChat from "./pages/LiveChat";
 import Install from "./pages/Install";
 import PrayerTimes from "./pages/PrayerTimes";
 import Donate from "./pages/Donate";
+import PhotographersList from "./pages/PhotographersList";
+import PhotographerDetail from "./pages/PhotographerDetail";
+import PhotographerRegister from "./pages/PhotographerRegister";
+import PhotographerDashboard from "./pages/PhotographerDashboard";
 
 // Owner Dashboards
 import HotelOwnerDashboard from "./pages/HotelOwnerDashboard";
@@ -142,6 +146,10 @@ const App = () => (
               <Route path="/live-chat" element={<LiveChat />} />
               <Route path="/install" element={<Install />} />
               <Route path="/donate" element={<Donate />} />
+              <Route path="/photographers" element={<PhotographersList />} />
+              <Route path="/photographers/:id" element={<PhotographerDetail />} />
+              <Route path="/photographer-register" element={<PhotographerRegister />} />
+              <Route path="/photographer-dashboard" element={<PhotographerDashboard />} />
               
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
