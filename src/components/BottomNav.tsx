@@ -50,7 +50,7 @@ const BottomNav: React.FC = () => {
 
   return (
     <>
-      <nav className="bottom-nav safe-area-bottom">
+      <nav className="bottom-nav safe-area-bottom lg:hidden">
         <div className="flex items-center justify-around py-2 max-w-lg mx-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;

@@ -11,7 +11,7 @@ const Header: React.FC = () => {
   const [showSearch, setShowSearch] = useState(false);
   return (
     <header className="bg-gradient-header text-primary-foreground safe-area-top">
-      <div className="px-4 py-3">
+      <div className="px-4 py-3 max-w-6xl mx-auto">
         <div className="flex items-center justify-between">
           {/* Logo and App Name */}
           <div className="flex items-center gap-3">
