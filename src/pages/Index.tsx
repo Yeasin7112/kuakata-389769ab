@@ -31,9 +31,9 @@ const Index: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20 flex flex-col">
+    <div className="min-h-screen bg-background pb-20 lg:pb-6 flex flex-col">
       <Header />
-      <main className="flex-1 max-w-lg mx-auto w-full">
+      <main className="flex-1 max-w-lg lg:max-w-5xl xl:max-w-6xl mx-auto w-full">
         <Banner />
         {showNotificationBanner && (
           <NotificationBanner onDismiss={handleDismissNotification} />

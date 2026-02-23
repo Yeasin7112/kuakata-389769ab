@@ -34,7 +34,7 @@ const Banner: React.FC = () => {
     <div className="px-4 pt-0">
       {/* Hero Banner */}
       <div className="relative -mx-4 -mt-0">
-        <div className="relative h-52">
+        <div className="relative h-52 lg:h-72 xl:h-80">
           <img 
             src={heroBanner} 
             alt="Kuakata Beach"
