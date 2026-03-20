@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
           href="https://facebook.com/helloYeasin007" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="text-primary font-semibold hover:underline"
+          className="text-primary font-bold hover:underline bg-primary/10 px-1.5 py-0.5 rounded-md"
         >
           ইয়াছিন আরাফাত শাওন
         </a>।
