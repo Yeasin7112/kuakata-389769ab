@@ -8,7 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Edit2, Trash2, Camera, Trophy } from 'lucide-react';
+import { Plus, Edit2, Trash2, Camera, Trophy, Image, CheckCircle, XCircle, Eye } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 
 interface Contest {
@@ -26,6 +27,20 @@ interface Contest {
   is_active: boolean;
 }
 
+interface ContestPhoto {
+  id: string;
+  contest_id: string;
+  user_id: string;
+  image_url: string;
+  caption_en: string | null;
+  caption_bn: string | null;
+  location_name: string | null;
+  is_approved: boolean;
+  is_winner: boolean;
+  vote_count: number;
+  created_at: string;
+}
+
 const PhotoContestsManager: React.FC = () => {
   const { language } = useLanguage();
   const { toast } = useToast();
@@ -34,7 +49,10 @@ const PhotoContestsManager: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Contest | null>(null);
-  
+  const [photos, setPhotos] = useState<ContestPhoto[]>([]);
+  const [selectedContestId, setSelectedContestId] = useState<string | null>(null);
+  const [photosDialogOpen, setPhotosDialogOpen] = useState(false);
+
   const [formData, setFormData] = useState({
     title_en: '',
     title_bn: '',
@@ -52,6 +70,55 @@ const PhotoContestsManager: React.FC = () => {
   useEffect(() => {
     fetchContests();
   }, []);
+
+  const fetchPhotos = async (contestId: string) => {
+    const { data } = await supabase
+      .from('contest_photos')
+      .select('*')
+      .eq('contest_id', contestId)
+      .order('created_at', { ascending: false });
+    setPhotos(data || []);
+    setSelectedContestId(contestId);
+    setPhotosDialogOpen(true);
+  };
+
+  const handleApprovePhoto = async (photoId: string, approve: boolean) => {
+    const { error } = await supabase
+      .from('contest_photos')
+      .update({ is_approved: approve })
+      .eq('id', photoId);
+    if (error) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: approve ? 'Photo Approved' : 'Photo Rejected' });
+      if (selectedContestId) fetchPhotos(selectedContestId);
+    }
+  };
+
+  const handleToggleWinner = async (photoId: string, isWinner: boolean) => {
+    const { error } = await supabase
+      .from('contest_photos')
+      .update({ is_winner: isWinner })
+      .eq('id', photoId);
+    if (error) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: isWinner ? 'Marked as Winner!' : 'Winner removed' });
+      if (selectedContestId) fetchPhotos(selectedContestId);
+    }
+  };
+
+  const handleDeletePhoto = async (photoId: string) => {
+    if (!confirm('Delete this photo?')) return;
+    const { error } = await supabase
+      .from('contest_photos')
+      .delete()
+      .eq('id', photoId);
+    if (!error) {
+      toast({ title: 'Photo Deleted' });
+      if (selectedContestId) fetchPhotos(selectedContestId);
+    }
+  };
 
   const fetchContests = async () => {
     const { data } = await supabase
@@ -167,6 +234,7 @@ const PhotoContestsManager: React.FC = () => {
             <TableHead>Dates</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Active</TableHead>
+              <TableHead>Photos</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -190,6 +258,12 @@ const PhotoContestsManager: React.FC = () => {
                 </span>
               </TableCell>
               <TableCell>{contest.is_active ? '✓' : '✗'}</TableCell>
+              <TableCell>
+                <Button size="sm" variant="outline" onClick={() => fetchPhotos(contest.id)} className="gap-1">
+                  <Image className="w-4 h-4" />
+                  View
+                </Button>
+              </TableCell>
               <TableCell>
                 <div className="flex gap-2">
                   <Button size="sm" variant="outline" onClick={() => openEdit(contest)}>
@@ -276,6 +350,74 @@ const PhotoContestsManager: React.FC = () => {
               {editing ? 'Update' : 'Create'}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Photos Management Dialog */}
+      <Dialog open={photosDialogOpen} onOpenChange={setPhotosDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Image className="w-5 h-5" />
+              Submitted Photos ({photos.length})
+            </DialogTitle>
+          </DialogHeader>
+          {photos.length === 0 ? (
+            <p className="text-center text-muted-foreground py-8">No photos submitted yet.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {photos.map((photo) => (
+                <div key={photo.id} className="border rounded-lg overflow-hidden">
+                  <img
+                    src={photo.image_url}
+                    alt={photo.caption_en || 'Contest photo'}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-3 space-y-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {photo.is_approved ? (
+                        <Badge className="bg-green-100 text-green-800">Approved</Badge>
+                      ) : (
+                        <Badge variant="secondary">Pending</Badge>
+                      )}
+                      {photo.is_winner && (
+                        <Badge className="bg-yellow-100 text-yellow-800">🏆 Winner</Badge>
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        Votes: {photo.vote_count || 0}
+                      </span>
+                    </div>
+                    {photo.caption_en && (
+                      <p className="text-sm">{language === 'bn' ? (photo.caption_bn || photo.caption_en) : photo.caption_en}</p>
+                    )}
+                    {photo.location_name && (
+                      <p className="text-xs text-muted-foreground">📍 {photo.location_name}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      {format(new Date(photo.created_at), 'dd/MM/yyyy HH:mm')}
+                    </p>
+                    <div className="flex gap-2 flex-wrap">
+                      {!photo.is_approved ? (
+                        <Button size="sm" variant="outline" className="gap-1 text-green-600" onClick={() => handleApprovePhoto(photo.id, true)}>
+                          <CheckCircle className="w-3 h-3" /> Approve
+                        </Button>
+                      ) : (
+                        <Button size="sm" variant="outline" className="gap-1 text-orange-600" onClick={() => handleApprovePhoto(photo.id, false)}>
+                          <XCircle className="w-3 h-3" /> Reject
+                        </Button>
+                      )}
+                      <Button size="sm" variant="outline" className="gap-1" onClick={() => handleToggleWinner(photo.id, !photo.is_winner)}>
+                        <Trophy className="w-3 h-3" /> {photo.is_winner ? 'Remove Winner' : 'Mark Winner'}
+                      </Button>
+                      <Button size="sm" variant="destructive" className="gap-1" onClick={() => handleDeletePhoto(photo.id)}>
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
