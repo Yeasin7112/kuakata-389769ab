@@ -33,7 +33,7 @@ const FeatureGrid: React.FC = () => {
     { icon: '🤖', titleBn: 'এআই ট্যুর প্ল্যানার', titleEn: 'AI Tour Planner', bgColor: '#FCE4EC', badge: 'AI', route: '/ai-planner' },
     { icon: '🎤', titleBn: 'ভয়েস অ্যাসিস্ট্যান্ট', titleEn: 'Voice Assistant', bgColor: '#E1F5FE', badge: 'NEW', route: 'voice' },
     { icon: '📷', titleBn: 'AR ক্যামেরা', titleEn: 'AR Camera', bgColor: '#F3E5F5', badge: 'AR', route: '/ar-camera' },
-    { icon: '🏛️', titleBn: 'ডিসি উদ্যোগ', titleEn: 'DC Initiatives', bgColor: '#F3E5F5', route: '/dc-initiatives' },
+    { icon: '🏛️', titleBn: 'পৌরসভার উদ্যোগ', titleEn: 'Municipality Initiatives', bgColor: '#F3E5F5', route: '/dc-initiatives' },
     { icon: '💬', titleBn: 'প্রশ্নোত্তর', titleEn: 'Community Q&A', bgColor: '#E8F5E9', route: '/community-qa' },
     { icon: '🎡', titleBn: 'শিশুদের রাইড', titleEn: 'Children Rides', bgColor: '#FCE4EC', route: '/children-rides' },
     { icon: '📝', titleBn: 'অভিযোগ ও পরামর্শ', titleEn: 'Complaints', bgColor: '#FFEBEE', route: '/complaints' },

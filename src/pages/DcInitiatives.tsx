@@ -65,7 +65,7 @@ const DcInitiatives: React.FC = () => {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="text-lg font-bold font-bangla">
-            {language === 'bn' ? 'ডিসি উদ্যোগ' : 'DC Initiatives'}
+            {language === 'bn' ? 'পৌরসভার উদ্যোগ' : 'Municipality Initiatives'}
           </h1>
         </div>
       </div>
@@ -79,7 +79,7 @@ const DcInitiatives: React.FC = () => {
           <div className="card-elevated p-8 text-center">
             <Landmark className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
             <p className="text-muted-foreground font-bangla">
-              {language === 'bn' ? 'কোন উদ্যোগ পাওয়া যায়নি' : 'No initiatives found'}
+              {language === 'bn' ? 'কোনো উদ্যোগ পাওয়া যায়নি' : 'No initiatives found'}
             </p>
           </div>
         ) : (
