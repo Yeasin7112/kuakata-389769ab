@@ -147,7 +147,7 @@ const DcInitiativesManager: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold font-bangla">
-          {language === 'bn' ? 'ডিসি উদ্যোগ' : 'DC Initiatives'}
+          {language === 'bn' ? 'পৌরসভার উদ্যোগ' : 'Municipality Initiatives'}
         </h2>
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
           <DialogTrigger asChild>

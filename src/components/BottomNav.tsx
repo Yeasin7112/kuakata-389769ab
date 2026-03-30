@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Home, Compass, Heart, User, Mic } from 'lucide-react';
+import { Home, Compass, Heart, User, Search } from 'lucide-react';
 import GlobalSearch from '@/components/GlobalSearch';
-import VoiceAssistant from '@/components/VoiceAssistant';
 
-type Tab = 'home' | 'explore' | 'voice' | 'saved' | 'profile';
+type Tab = 'home' | 'explore' | 'search' | 'saved' | 'profile';
 
 interface TabConfig {
   id: Tab;
@@ -19,12 +18,12 @@ const BottomNav: React.FC = () => {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  const [showVoice, setShowVoice] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
 
   const tabs: TabConfig[] = [
     { id: 'home', icon: Home, labelKey: 'home', path: '/' },
     { id: 'explore', icon: Compass, labelKey: 'explore', path: '/explore' },
-    { id: 'voice', icon: Mic, labelKey: language === 'bn' ? 'ভয়েস' : 'Voice', isAction: true },
+    { id: 'search', icon: Search, labelKey: language === 'bn' ? 'খুঁজুন' : 'Search', isAction: true },
     { id: 'saved', icon: Heart, labelKey: 'saved', path: '/saved' },
     { id: 'profile', icon: User, labelKey: 'profile', path: '/profile' },
   ];
@@ -42,7 +41,7 @@ const BottomNav: React.FC = () => {
 
   const handleTabClick = (tab: TabConfig) => {
     if (tab.isAction) {
-      setShowVoice(true);
+      setShowSearch(true);
     } else if (tab.path) {
       navigate(tab.path);
     }
@@ -86,7 +85,7 @@ const BottomNav: React.FC = () => {
           })}
         </div>
       </nav>
-      <VoiceAssistant isOpen={showVoice} onClose={() => setShowVoice(false)} />
+      <GlobalSearch isOpen={showSearch} onClose={() => setShowSearch(false)} />
     </>
   );
 };
